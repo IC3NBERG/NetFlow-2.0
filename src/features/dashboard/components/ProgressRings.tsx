@@ -89,25 +89,28 @@ export function ProgressRings({
 
   return (
     <GlassCard className="p-4 h-full flex flex-col">
-      <h3 className="text-base font-semibold mb-3">Stato Attivita</h3>
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-base font-semibold">Stato Attivita</h3>
+        <span className="text-sm font-bold font-mono text-brand">{goalPercent}%</span>
+      </div>
 
-      <div className="flex flex-col items-center gap-2 pb-3 border-b border-border">
-        <RingSVG percent={workloadClamped} size={60} strokeWidth={6} color="#00D2FF" />
-        <div className="grid grid-cols-3 gap-1 w-full">
+      <div className="flex gap-3 items-center pb-3 border-b border-border">
+        <RingSVG percent={workloadClamped} size={56} strokeWidth={5} color="#00D2FF" />
+        <div className="flex-1 grid grid-cols-3 gap-1.5">
           <StatusItem icon={<Briefcase className="h-3 w-3 text-[#00D2FF]" />} label="Attivi" value={workloadActive} />
           <StatusItem icon={<Clock className="h-3 w-3 text-pending" />} label="In attesa" value={workloadPending} />
           <StatusItem icon={<CheckCircle2 className="h-3 w-3 text-success" />} label="Incassati" value={workloadSettled} />
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col pt-3 min-h-0">
-        <div className="flex gap-1 mb-2">
+      <div className="flex-1 flex flex-col pt-2.5 min-h-0">
+        <div className="flex gap-1 mb-2.5">
           {metricViews.map((v) => (
             <button
               key={v.key}
               type="button"
               onClick={() => setMetricView(v.key)}
-              className={`rounded-full px-2 py-0.5 text-[10px] font-medium transition-all ${
+              className={`rounded-full px-2.5 py-1 text-[10px] font-medium transition-all ${
                 metricView === v.key
                   ? 'bg-brand text-white'
                   : 'bg-surface text-text-secondary hover:bg-brand/10 hover:text-brand'
@@ -120,14 +123,14 @@ export function ProgressRings({
 
         <div className="flex-1 flex items-center justify-center">
           {metricView === 'all' ? (
-            <div className="flex gap-3 justify-center">
+            <div className="flex gap-4 justify-center">
               {filteredSegments.map((seg) => {
                 const segPercent = goalTarget > 0 ? Math.min((seg.value / goalTarget) * 100, 100) : 0
                 return (
-                  <div key={seg.label} className="flex flex-col items-center gap-0.5">
-                    <RingSVG percent={segPercent} size={50} strokeWidth={5} color={seg.color} />
-                    <span className="text-[9px] font-medium text-text-secondary">{seg.label}</span>
-                    <span className="text-[10px] font-bold font-mono">{Math.round(segPercent)}%</span>
+                  <div key={seg.label} className="flex flex-col items-center gap-1">
+                    <RingSVG percent={segPercent} size={48} strokeWidth={4} color={seg.color} />
+                    <span className="text-[10px] font-medium text-text-secondary">{seg.label}</span>
+                    <span className="text-[11px] font-bold font-mono">{Math.round(segPercent)}%</span>
                   </div>
                 )
               })}
@@ -136,10 +139,10 @@ export function ProgressRings({
             filteredSegments.map((seg) => {
               const segPercent = goalTarget > 0 ? Math.min((seg.value / goalTarget) * 100, 100) : 0
               return (
-                <div key={seg.label} className="flex flex-col items-center gap-1">
-                  <RingSVG percent={segPercent} size={55} strokeWidth={5} color={seg.color} />
-                  <span className="text-[11px] font-medium">{seg.label}</span>
-                  <p className="text-[9px] text-text-secondary text-center leading-tight">
+                <div key={seg.label} className="flex flex-col items-center gap-1.5">
+                  <RingSVG percent={segPercent} size={64} strokeWidth={6} color={seg.color} />
+                  <span className="text-xs font-medium">{seg.label}</span>
+                  <p className="text-[10px] text-text-secondary text-center leading-tight">
                     {formatCurrency(viewGoalCurrent)} / {formatCurrency(goalTarget)}
                   </p>
                 </div>
@@ -149,17 +152,13 @@ export function ProgressRings({
         </div>
 
         <div className="pt-2 mt-auto">
-          <div className="flex justify-between text-[10px] mb-1">
-            <span className="text-text-secondary">Progresso</span>
-            <span className="font-medium">{goalPercent}%</span>
-          </div>
-          <div className="h-1.5 w-full rounded-full bg-border overflow-hidden">
+          <div className="h-2 w-full rounded-full bg-border overflow-hidden">
             <div
               className="h-full rounded-full transition-all duration-1000 ease-out"
               style={{ width: `${progress * 100}%`, background: 'linear-gradient(90deg, #6C5CE7, #00D2FF)' }}
             />
           </div>
-          <div className="flex justify-between text-[9px] text-text-secondary mt-0.5">
+          <div className="flex justify-between text-[10px] text-text-secondary mt-1">
             <span>{formatCurrency(goalMetricCurrent)}</span>
             <span>{formatCurrency(goalTarget)}</span>
           </div>
@@ -171,12 +170,12 @@ export function ProgressRings({
 
 function StatusItem({ icon, label, value }: { icon: React.ReactNode; label: string; value: number }) {
   return (
-    <div className="flex flex-col items-center gap-0.5 rounded-lg bg-surface/40 py-1.5">
-      <div className="flex items-center gap-0.5">
+    <div className="flex flex-col items-center gap-1 rounded-lg bg-surface/40 py-2 px-1">
+      <div className="flex items-center gap-1">
         {icon}
-        <span className="text-[9px] text-text-secondary">{label}</span>
+        <span className="text-[10px] text-text-secondary">{label}</span>
       </div>
-      <span className="text-sm font-bold font-mono">{value}</span>
+      <span className="text-base font-bold font-mono">{value}</span>
     </div>
   )
 }

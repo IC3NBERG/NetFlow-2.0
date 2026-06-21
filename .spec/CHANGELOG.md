@@ -7,6 +7,17 @@
 
 ---
 
+## [v0.30.1] - 2026-06-22
+### Stato: ProgressRings ottimizzazione spazio — layout compatto e info più dense
+- **[MEDIUM] Header compatto:** Titolo "Stato Attivita" + percentuale goal affiancati in una riga con `flex justify-between`, eliminato spazio centrato del cerchio workload.
+- **[MEDIUM] Layout workload orizzontale:** Cerchio workload (56px) + 3 status counter (Attivi/In attesa/Incassati) affiancati con `flex gap-3 items-center` + `grid-cols-3`. Occupa meno spazio verticale.
+- **[MEDIUM] StatusItem più leggibile:** Dimensioni testo `text-base` per valori e `text-[10px]` per label, padding `py-2 px-1`, gap generoso tra icone e testo.
+- **[LOW] Pill buttons più spaziose:** `px-2.5 py-1` per click più comodo su mobile e desktop.
+- **[LOW] Metriche singole più grandi:** Anello 64px (vs 55px precedenti) quando si seleziona una singola metrica (Lordo/Netto/Cash), più spazio per info importi.
+- **[LOW] Progress bar semplificata:** Rimossa label "Progresso" ridondante, barra `h-2` più visibile.
+- **Build verificata:** `npx tsc --noEmit` — 0 errori.
+- **Versione:** v0.30.1
+
 ## [v0.30.0] - 2026-06-22
 ### Stato: Audit completo — test E2E riparati, pagine auth allineate, console OK
 - **[HIGH] Fix test E2E:** Aggiornati selettori `getByPlaceholder` → `getByRole('textbox', ...)` su login e register — ora usano label HTML invece di placeholder (14 test passanti).
