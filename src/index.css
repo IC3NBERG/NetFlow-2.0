@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-brand: 108 92 231;
+    --color-surface: 255 255 255;
+    --color-surface-alt: 248 249 250;
+    --color-text-primary: 26 26 46;
+    --color-text-secondary: 99 110 114;
+    --color-success: 0 184 148;
+    --color-expense: 255 107 107;
+    --color-pending: 99 110 114;
+    --color-border: 0 0 0 0.1;
+  }
+
+  .dark {
+    --color-brand: 108 92 231;
+    --color-surface: 26 26 46;
+    --color-surface-alt: 15 15 26;
+    --color-text-primary: 255 255 255;
+    --color-text-secondary: 203 213 225;
+    --color-success: 0 184 148;
+    --color-expense: 255 107 107;
+    --color-pending: 99 110 114;
+    --color-border: 255 255 255 0.1;
+  }
+
+  * {
+    border-color: rgba(var(--color-border));
+  }
+
+  body {
+    @apply font-sans antialiased;
+    background-color: rgb(var(--color-surface-alt));
+    color: rgb(var(--color-text-primary));
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-card p-6;
+    background-color: rgb(var(--color-surface));
+  }
+
+  .btn-primary {
+    @apply rounded-full px-6 py-3 font-medium transition-all duration-200 text-white;
+    background-color: rgb(var(--color-brand));
+  }
+
+  .btn-primary:hover {
+    background-color: rgba(var(--color-brand), 0.9);
+  }
+
+  .btn-ghost {
+    @apply rounded-full px-4 py-2 transition-all duration-200;
+    color: rgb(var(--color-text-secondary));
+  }
+
+  .btn-ghost:hover {
+    background-color: rgba(var(--color-text-primary), 0.1);
+  }
+}
