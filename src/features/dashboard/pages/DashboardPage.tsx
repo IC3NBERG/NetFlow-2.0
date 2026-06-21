@@ -73,8 +73,8 @@ export function DashboardPage() {
         </div>
       </GlassCard>
     ) : (
-      <GlassCard className="p-4 md:p-6">
-        <div className="flex items-center justify-center h-48 md:h-72 text-text-secondary">
+      <GlassCard className="p-4 md:p-6 h-full flex flex-col">
+        <div className="flex-1 flex items-center justify-center text-text-secondary">
           <p>Nessun dato disponibile. Inizia a creare lavori.</p>
         </div>
       </GlassCard>
@@ -99,11 +99,11 @@ export function DashboardPage() {
   }
 
   const colSpan: Partial<Record<DashboardModuleId, string>> = {
-    'kpi-group': 'md:col-span-2 lg:col-span-4',
+    'kpi-group': 'md:col-span-2 lg:col-span-5',
     charts: 'md:col-span-2 lg:col-span-3',
-    'quick-register': 'lg:col-span-1',
-    'progress-rings': 'lg:col-span-1',
-    'bar-chart': 'md:col-span-2 lg:col-span-4',
+    'quick-register': 'lg:col-span-2',
+    'progress-rings': 'lg:col-span-2',
+    'bar-chart': 'md:col-span-2 lg:col-span-5',
   }
 
   return (
@@ -113,7 +113,7 @@ export function DashboardPage() {
         <p className="text-xs md:text-sm text-text-secondary">Panoramica finanziaria</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-5">
         {layout.filter((m) => m.visible).map((mod, index) => (
           <ModuleWrapper
             key={`${mod.id}-${mod.order}`}
@@ -125,7 +125,7 @@ export function DashboardPage() {
         ))}
 
         {data.jobs.length === 0 && (
-          <ModuleWrapper index={layout.length} className="lg:col-span-4">
+          <ModuleWrapper index={layout.length} className="lg:col-span-5">
             <GlassCard className="p-6 md:p-12 text-center">
               <p className="text-base md:text-xl font-semibold text-text-secondary">Benvenuto in NetFlow</p>
               <p className="text-xs md:text-sm text-text-secondary mt-2">

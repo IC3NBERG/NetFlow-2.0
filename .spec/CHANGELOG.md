@@ -7,6 +7,13 @@
 
 ---
 
+## [v0.29.0] - 2026-06-22
+### Stato: Dashboard grid 5 colonne — AreaChart e ProgressRings allineati in altezza
+- **[CHANGE] Griglia dashboard da 4 a 5 colonne:** `lg:grid-cols-5`. AreaChart (Andamento Economico) occupa 3 colonne, ProgressRings (Stato Attività) occupa 2 colonne → entrambi allineati in altezza e ProgressRings più largo.
+- **[FIX] Empty state AreaChart:** Sostituito `h-48 md:h-72` con `h-full flex flex-col` + `flex-1` centrato — si allinea perfettamente con la card dei dati.
+- **[FIX] ColSpan aggiornati:** KPI group → 5 colonne, charts → 3 colonne, progress-rings → 2 colonne, quick-register → 2 colonne, bar-chart → 5 colonne per occupare tutta la larghezza.
+- **Versione:** v0.29.0
+
 ## [v0.28.2] - 2026-06-22
 ### Stato: Logo centrato + RegisterPage allineata a LoginPage
 - **[FIX] Logo centrato:** Logo ora è centrato con `flex flex-col items-center` su tutte le pagine auth (Login e Register).
