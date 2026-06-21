@@ -7,6 +7,22 @@
 
 ---
 
+## [v0.27.2] - 2026-06-22
+### Stato: Fix migrazioni DB — trigger updated_at expenses, header migration
+- **[FIX] Spese senza updated_at trigger:** Aggiunto `on_expenses_updated` trigger su tabella `expenses` — il campo `updated_at` ora si aggiorna automaticamente come su tutte le altre tabelle.
+- **[FIX] Commento migration 003:** Corretto header da "002_add_pending_date" a "003_add_pending_date".
+- **[FIX] Header migration 010 e 011:** Aggiunti header con numero migrazione mancanti.
+- **Versione:** v0.27.2
+
+## [v0.27.1] - 2026-06-22
+### Stato: GitHub repo setup — README, templates, contributing guide
+- **[LOW] README.md:** Creata overview progetto con tech stack, setup, comandi e link alla documentazione `.spec/`.
+- **[LOW] Issue templates:** Aggiunti bug report (con categorie da DEBUG_AND_REPAIR.md) e feature request template.
+- **[LOW] PR template:** Basato sull'Handover Protocol di PROCESS_AND_AGENTS.md.
+- **[LOW] CONTRIBUTING.md:** Guida contribuzione con regole di codifica, commit e checklist.
+- **[LOW] SECURITY.md:** Policy di sicurezza e best practice.
+- **Versione:** v0.27.1
+
 ## [v0.27.0] - 2026-06-17
 ### Stato: Dashboard restructure — 3 fasce, modulo bar-chart, expenses modal, responsive polishing
 - **[MEDIUM] Dashboard a 3 fasce:** Griglia passata da 3 a 4 colonne. Prima fascia: KPI numerici (full width). Seconda fascia: Andamento Economico a sinistra (3/4) + Stato Attivita a destra (1/4). Terza fascia: Confronto Carta/Cash (full width).

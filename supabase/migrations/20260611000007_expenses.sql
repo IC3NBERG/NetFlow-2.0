@@ -39,3 +39,9 @@ CREATE POLICY "Users can delete own expenses"
   ON expenses FOR DELETE
   TO authenticated
   USING (auth.uid() = user_id);
+
+-- Updated_at trigger
+CREATE TRIGGER on_expenses_updated
+  BEFORE UPDATE ON expenses
+  FOR EACH ROW
+  EXECUTE FUNCTION public.handle_updated_at();

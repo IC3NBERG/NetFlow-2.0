@@ -1,4 +1,4 @@
--- Migration: 002_add_pending_date
+-- Migration: 003_add_pending_date
 -- Description: Add pending_date to jobs, auto-set dates on status change
 
 ALTER TABLE jobs ADD COLUMN pending_date date;

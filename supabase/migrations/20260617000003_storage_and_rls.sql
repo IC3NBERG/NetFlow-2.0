@@ -1,4 +1,5 @@
--- Storage bucket for user logos + RLS policies for invoices/transactions
+-- Migration: 011_storage_and_rls
+-- Description: Storage bucket for user logos + RLS policies for invoices/transactions
 
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('logos', 'logos', true)

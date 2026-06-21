@@ -1,4 +1,5 @@
--- Fix duplicate transactions on invoice payment, re-settlement guard, invoice_jobs RLS, security hardening
+-- Migration: 010_fix_triggers_and_rls
+-- Description: Fix duplicate transactions on invoice payment, re-settlement guard, invoice_jobs RLS, security hardening
 
 -- 1. handle_job_status_change: skip duplicate transactions + skip when settled via paid invoice
 CREATE OR REPLACE FUNCTION public.handle_job_status_change()
