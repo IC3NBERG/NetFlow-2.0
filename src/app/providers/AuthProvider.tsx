@@ -6,7 +6,7 @@ interface AuthContextValue {
   user: Profile | null
   isLoading: boolean
   error: string | null
-  signIn: (email: string, password: string) => Promise<void>
+  signIn: (email: string, password: string, rememberMe?: boolean) => Promise<void>
   signUp: (email: string, password: string) => Promise<void>
   signOut: () => Promise<void>
   refreshProfile: () => Promise<void>
@@ -40,7 +40,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
-        fetchProfile(session.user.id)
+        const remember = localStorage.getItem('netflow_remember_me')
+        if (remember !== 'true') {
+          supabase.auth.signOut()
+          setIsLoading(false)
+        } else {
+          fetchProfile(session.user.id)
+        }
       } else {
         setIsLoading(false)
       }
@@ -58,10 +64,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe()
   }, [fetchProfile])
 
-  async function signIn(email: string, password: string) {
+  async function signIn(email: string, password: string, rememberMe: boolean = true) {
     setError(null)
+    localStorage.setItem('netflow_remember_me', rememberMe ? 'true' : 'false')
     const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
     if (authError) {
+      localStorage.removeItem('netflow_remember_me')
       setError(authError.message === 'Invalid login credentials'
         ? 'Email o password non validi'
         : authError.message)
@@ -80,6 +88,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function signOut() {
     setError(null)
+    localStorage.removeItem('netflow_remember_me')
     await supabase.auth.signOut()
     setUser(null)
   }

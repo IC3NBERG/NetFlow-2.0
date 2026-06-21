@@ -7,6 +7,18 @@
 
 ---
 
+## [v0.28.0] - 2026-06-22
+### Stato: UX Login — label, password toggle, Ricordami, stati input
+- **[HIGH] Label esterne ai campi:** Aggiunte label "Email" e "Password" sopra i campi di input — l'utente sa sempre cosa sta inserendo anche dopo aver digitato.
+- **[HIGH] Mostra/nascondi password:** Icona Eye/EyeOff nel campo password. Permette di verificare visivamente la password digitata.
+- **[HIGH] Stati Focus/Error/Success:** Bordo viola (brand) al focus, bordo rosso (expense) in errore con messaggio sotto il campo. Ring focus brand/50 su entrambi.
+- **[MEDIUM] Pulsante Accedi:** Rimossa icona LogIn per un look più pulito e minimal.
+- **[MEDIUM] Checkbox Resta connesso:** Nuova checkbox "Resta connesso" tra password e bottone. Se deselezionata, la sessione non persiste alla chiusura del browser. Implementata via localStorage flag `netflow_remember_me`.
+- **[MEDIUM] Spaziatura migliorata:** "Password dimenticata?" allineato a destra nella stessa riga della checkbox. Spaziatura verticale aumentata per più respiro visivo.
+- **[LOW] Link Registrati:** Già in `text-brand` (viola), aggiunto `font-medium` per maggiore enfasi.
+- **Build verificata:** tsc + lint + vite build passano (0 errori).
+- **Versione:** v0.28.0
+
 ## [v0.27.2] - 2026-06-22
 ### Stato: Fix migrazioni DB — trigger updated_at expenses, header migration
 - **[FIX] Spese senza updated_at trigger:** Aggiunto `on_expenses_updated` trigger su tabella `expenses` — il campo `updated_at` ora si aggiorna automaticamente come su tutte le altre tabelle.

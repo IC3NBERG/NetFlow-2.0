@@ -8,12 +8,12 @@ import { loginSchema, type LoginFormData } from '../../../lib/validations'
 import { Card } from '../../../shared/ui/Card'
 import { Button } from '../../../shared/ui/Button'
 import { Input } from '../../../shared/ui/Input'
-import { LogIn } from 'lucide-react'
 import { Logo } from '../../../shared/ui/Logo'
 
 export function LoginPage() {
   const { signIn, error } = useAuth()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [rememberMe, setRememberMe] = useState(true)
   const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   })
@@ -21,7 +21,7 @@ export function LoginPage() {
   async function onSubmit(data: LoginFormData) {
     setIsSubmitting(true)
     try {
-      await signIn(data.email, data.password)
+      await signIn(data.email, data.password, rememberMe)
     } catch {
       // error is set in AuthProvider
     } finally {
@@ -37,9 +37,9 @@ export function LoginPage() {
         transition={{ duration: 0.4 }}
         className="w-full max-w-md"
       >
-        <Card className="space-y-5 md:space-y-6 p-5 md:p-8">
+        <Card className="space-y-6 p-6 md:p-8">
           <div className="flex flex-col items-center text-center">
-            <Logo variant="full" className="mb-3 md:mb-4 h-10 w-10 md:h-14 md:w-14" />
+            <Logo variant="full" className="mb-4 h-10 w-10 md:h-14 md:w-14" />
             <h1 className="text-xl md:text-2xl font-bold">Accedi a NetFlow</h1>
             <p className="mt-1 text-xs md:text-sm text-text-secondary">
               Inserisci le tue credenziali per continuare
@@ -52,36 +52,54 @@ export function LoginPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <Input
+              id="email"
               type="email"
-              placeholder="Email"
+              label="Email"
+              placeholder="nome@esempio.com"
               error={errors.email?.message}
               {...register('email')}
             />
 
             <Input
+              id="password"
               type="password"
-              placeholder="Password"
+              label="Password"
+              placeholder="Inserisci la password"
               error={errors.password?.message}
               {...register('password')}
             />
 
-            <div className="-mt-2 text-right">
-              <Link to="/forgot-password" className="text-xs text-text-secondary hover:text-brand hover:underline">
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="h-4 w-4 rounded border-border bg-surface text-brand focus:ring-brand/50
+                    focus:outline-none focus:ring-2 transition-colors cursor-pointer"
+                />
+                <span className="text-sm text-text-secondary group-hover:text-text-primary transition-colors">
+                  Resta connesso
+                </span>
+              </label>
+              <Link
+                to="/forgot-password"
+                className="text-sm text-text-secondary hover:text-brand hover:underline transition-colors"
+              >
                 Password dimenticata?
               </Link>
             </div>
 
             <Button className="w-full" size="lg" disabled={isSubmitting}>
-              <LogIn className="mr-2 h-4 w-4" />
               {isSubmitting ? 'Accesso in corso...' : 'Accedi'}
             </Button>
           </form>
 
           <p className="text-center text-sm text-text-secondary">
             Non hai un account?{' '}
-            <Link to="/register" className="text-brand hover:underline">
+            <Link to="/register" className="text-brand font-medium hover:underline">
               Registrati
             </Link>
           </p>
