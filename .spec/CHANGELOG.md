@@ -7,6 +7,11 @@
 
 ---
 
+## [v0.28.2] - 2026-06-22
+### Stato: Fix centratura logo pagine auth
+- **[FIX] Logo centrato:** Sostituito `mx-auto` (inefficace senza larghezza fissa) con `flex justify-center` nei wrapper del logo su RegisterPage, ForgotPasswordPage e ResetPasswordPage. LoginPage già corretta.
+- **Versione:** v0.28.2
+
 ## [v0.28.1] - 2026-06-22
 ### Stato: Version check automatico — blocca commit se package.json e CHANGELOG divergono
 - **[HIGH] Script check-version.js:** Nuovo script `scripts/check-version.js` confronta la versione in `package.json` con l'ultima in `.spec/CHANGELOG.md`. Se divergono, esce con errore.

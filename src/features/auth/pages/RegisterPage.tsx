@@ -66,7 +66,7 @@ export function RegisterPage() {
       >
         <Card className="space-y-5 md:space-y-6 p-5 md:p-8">
           <div className="text-center">
-            <div className="mx-auto mb-3 md:mb-4">
+            <div className="mb-3 md:mb-4 flex justify-center">
               <Logo variant="full" className="h-10 w-10 md:h-14 md:w-14" />
             </div>
             <h1 className="text-xl md:text-2xl font-bold">Crea il tuo account</h1>
