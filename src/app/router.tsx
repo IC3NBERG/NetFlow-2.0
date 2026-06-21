@@ -19,6 +19,8 @@ const SettingsPage = lazy(() => import('../features/settings/pages/SettingsPage'
 const GuidePage = lazy(() => import('../features/guide/pages/GuidePage').then(m => ({ default: m.GuidePage })))
 const AccountPage = lazy(() => import('../features/account/pages/AccountPage').then(m => ({ default: m.AccountPage })))
 const LegalPage = lazy(() => import('../features/legal/pages/LegalPage').then(m => ({ default: m.LegalPage })))
+const QuotesPage = lazy(() => import('../features/quotes/pages/QuotesPage').then(m => ({ default: m.QuotesPage })))
+const CalendarPage = lazy(() => import('../features/calendar/pages/CalendarPage').then(m => ({ default: m.CalendarPage })))
 
 function PageLoader() {
   return (
@@ -74,9 +76,11 @@ export function AppRouter() {
         <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
           <Route path="/dashboard" element={<Suspense fallback={<PageLoader />}><DashboardPage /></Suspense>} />
           <Route path="/jobs" element={<Suspense fallback={<PageLoader />}><JobsPage /></Suspense>} />
+          <Route path="/quotes" element={<Suspense fallback={<PageLoader />}><QuotesPage /></Suspense>} />
           <Route path="/clients" element={<Suspense fallback={<PageLoader />}><ClientsPage /></Suspense>} />
           <Route path="/invoicing" element={<Suspense fallback={<PageLoader />}><InvoicingPage /></Suspense>} />
           <Route path="/ledger" element={<Suspense fallback={<PageLoader />}><RegisterPage /></Suspense>} />
+          <Route path="/calendar" element={<Suspense fallback={<PageLoader />}><CalendarPage /></Suspense>} />
           <Route path="/expenses" element={<Suspense fallback={<PageLoader />}><ExpensesPage /></Suspense>} />
           <Route path="/settings" element={<Suspense fallback={<PageLoader />}><SettingsPage /></Suspense>} />
           <Route path="/guide" element={<Suspense fallback={<PageLoader />}><GuidePage /></Suspense>} />

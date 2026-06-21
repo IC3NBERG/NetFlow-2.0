@@ -8,6 +8,8 @@ import {
   Settings,
   Users,
   LogOut,
+  FileSpreadsheet,
+  CalendarDays,
 } from 'lucide-react'
 import { cn } from '../../lib/utils'
 import { useAuth } from '../../app/providers/AuthProvider'
@@ -17,10 +19,11 @@ const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/jobs', icon: Briefcase, label: 'Lavori' },
   { to: '/clients', icon: Users, label: 'Clienti' },
-  { to: '/invoicing', icon: FileText, label: 'Fatturazione' },
-  { to: '/ledger', icon: Archive, label: 'Registro' },
+  { to: '/quotes', icon: FileSpreadsheet, label: 'Preventivi' },
+  { to: '/invoicing', icon: FileText, label: 'Fatture' },
   { to: '/expenses', icon: Receipt, label: 'Uscite' },
-  { to: '/settings', icon: Settings, label: 'Impostazioni' },
+  { to: '/calendar', icon: CalendarDays, label: 'Calendario' },
+  { to: '/ledger', icon: Archive, label: 'Registro' },
 ]
 
 export function Sidebar() {
@@ -60,6 +63,20 @@ export function Sidebar() {
       </nav>
 
       <div className="px-3 py-3 space-y-2" style={{ boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06)' }}>
+        <NavLink
+          to="/settings"
+          className={({ isActive }) =>
+            cn(
+              'flex items-center gap-3 rounded-full px-4 py-3 text-sm font-medium transition-all duration-200',
+              isActive
+                ? 'bg-brand text-white'
+                : 'text-text-secondary hover:bg-white/5 hover:text-text-primary',
+            )
+          }
+        >
+          <Settings className="h-5 w-5" />
+          Impostazioni
+        </NavLink>
         <button
           onClick={handleLogout}
           className="flex w-full items-center gap-3 rounded-full px-4 py-3 text-sm font-medium text-text-secondary hover:bg-expense/10 hover:text-expense transition-all duration-200"

@@ -7,8 +7,9 @@ import { SyncBanner } from '../../shared/ui/SyncBanner'
 import { BackupReminder } from '../../shared/ui/BackupReminder'
 import { NotificationCenter } from '../../shared/ui/NotificationCenter'
 import { FiscalYearSelector } from '../../shared/ui/FiscalYearSelector'
+import { CommandPalette } from '../../shared/ui/CommandPalette'
 import { cn } from '../../lib/utils'
-import { Info } from 'lucide-react'
+import { Info, Search } from 'lucide-react'
 
 export function MainLayout() {
   const { isOnline, queueLength, isSyncing, syncStatus } = useSync()
@@ -17,6 +18,7 @@ export function MainLayout() {
 
   return (
     <div className="min-h-screen bg-surface-alt">
+      <CommandPalette />
       <SyncBanner />
       <BackupReminder />
       <Sidebar />
@@ -28,6 +30,15 @@ export function MainLayout() {
             </div>
           </div>
           <div className="flex items-center gap-2 md:gap-4">
+            <button
+              onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { metaKey: true, key: 'k' }))}
+              className="hidden md:inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs text-text-secondary hover:bg-white/5 transition-all border border-border"
+              title="Cerca (Cmd+K)"
+            >
+              <Search className="h-3.5 w-3.5" />
+              <span className="hidden lg:inline">Cerca...</span>
+              <kbd className="rounded border border-border px-1 text-[9px]">⌘K</kbd>
+            </button>
             <button
               onClick={() => navigate('/guide')}
               className="hidden md:inline-flex rounded-full p-2 text-text-secondary hover:bg-white/5 hover:text-brand transition-all"

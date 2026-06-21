@@ -7,6 +7,8 @@ import { Input } from '../../../shared/ui/Input'
 import { FormSection } from '../../../shared/ui/FormSection'
 import { Button } from '../../../shared/ui/Button'
 import { ClientSelect } from './ClientSelect'
+import { AttachmentsField } from '../../../shared/ui/AttachmentsField'
+import { CurrencySelect } from '../../../shared/ui/CurrencySelect'
 import { useAuth } from '../../../app/providers/AuthProvider'
 import { useFiscalSetup } from '../../../lib/hooks/useFiscalSetup'
 import { netToGross, grossToNet, computeJobNetAmount } from '../../../lib/tax'
@@ -25,6 +27,8 @@ const jobSchema = z.object({
   start_date: z.string().min(1, 'Data richiesta'),
   pending_date: z.string().nullable(),
   end_date: z.string().nullable(),
+  attachment_urls: z.array(z.string()).default([]),
+  currency: z.string().default('EUR'),
 })
 
 export type JobFormData = z.infer<typeof jobSchema>
@@ -58,6 +62,8 @@ export function JobFormModal({ open, onClose, onSubmit, initialData, isSubmittin
       start_date: initialData.start_date,
       pending_date: initialData.pending_date,
       end_date: initialData.end_date,
+      attachment_urls: initialData.attachment_urls ?? [],
+      currency: initialData.currency ?? 'EUR',
     } : {
       title: '',
       description: '',
@@ -347,6 +353,21 @@ export function JobFormModal({ open, onClose, onSubmit, initialData, isSubmittin
             </div>
           </label>
         )}
+      </FormSection>
+
+      <FormSection title="Valuta e Allegati">
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-sm text-text-secondary mb-1">Valuta</label>
+            <CurrencySelect value={watch('currency')} onChange={(v) => setValue('currency', v)} />
+          </div>
+        </div>
+        <div className="mt-3">
+          <AttachmentsField
+            urls={watch('attachment_urls')}
+            onChange={(urls) => setValue('attachment_urls', urls)}
+          />
+        </div>
       </FormSection>
 
       {initialData && (

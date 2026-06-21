@@ -59,6 +59,8 @@ export interface Job {
   start_date: string
   pending_date: string | null
   end_date: string | null
+  attachment_urls: string[]
+  currency: string
   created_at: string
   updated_at: string
 }
@@ -105,6 +107,7 @@ export interface Invoice {
   due_date: string | null
   paid_date: string | null
   pdf_url: string | null
+  currency: string
   created_at: string
 }
 
@@ -148,6 +151,75 @@ export interface Expense {
   amount: number
   category: string | null
   date: string
+  attachment_urls: string[]
+  currency: string
   created_at: string
   updated_at: string
+}
+
+export type QuoteStatus = 'draft' | 'sent' | 'accepted' | 'rejected' | 'converted'
+
+export interface Quote {
+  id: string
+  user_id: string
+  client_id: string | null
+  quote_number: string
+  title: string
+  description: string | null
+  status: QuoteStatus
+  gross_amount: number
+  tax_amount: number
+  net_amount: number
+  tax_rate: number
+  valid_until: string | null
+  issued_date: string
+  converted_job_id: string | null
+  notes: string | null
+  currency: string
+  exchange_rate: number | null
+  created_at: string
+  updated_at: string
+}
+
+export interface Tag {
+  id: string
+  user_id: string
+  name: string
+  color: string
+  created_at: string
+}
+
+export interface JobTag {
+  job_id: string
+  tag_id: string
+  created_at: string
+}
+
+export interface ExpenseTag {
+  expense_id: string
+  tag_id: string
+  created_at: string
+}
+
+export interface AuditLog {
+  id: string
+  user_id: string
+  table_name: string
+  record_id: string | null
+  operation: 'INSERT' | 'UPDATE' | 'DELETE'
+  old_data: Record<string, unknown> | null
+  new_data: Record<string, unknown> | null
+  ip_address: string | null
+  created_at: string
+}
+
+export interface Share {
+  id: string
+  user_id: string
+  token: string
+  access_level: 'view' | 'export'
+  description: string | null
+  expires_at: string | null
+  last_accessed: string | null
+  created_at: string
 }

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Plus } from 'lucide-react'
 import { Button } from '../../../shared/ui/Button'
 import { useJobs, useCreateJob, useUpdateJob, useDeleteJob } from '../../../lib/hooks/useJobs'
+import { useCreateQuote } from '../../../lib/hooks/useQuotes'
 import { useJobsUIStore } from '../../../lib/stores/jobsUI'
 import { JobCard } from '../components/JobCard'
 import { JobFormModal, type JobFormData } from '../components/JobFormModal'
@@ -34,6 +35,7 @@ export function JobsPage() {
   const createJob = useCreateJob()
   const updateJob = useUpdateJob()
   const deleteJob = useDeleteJob()
+  const createQuote = useCreateQuote()
   const { activeTab, activeFilter, isFormOpen, editingJobId, setActiveTab, setActiveFilter, openForm, closeForm } = useJobsUIStore()
   const [toast, setToast] = useState<ToastState>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -50,7 +52,7 @@ export function JobsPage() {
 
   async function handleSubmit(data: JobFormData) {
     setIsSubmitting(true)
-    const payload = { ...data, description: data.description || null, pending_date: data.pending_date || null, end_date: data.end_date || null, client_id: data.client_id || null }
+    const payload = { ...data, description: data.description || null, pending_date: data.pending_date || null, end_date: data.end_date || null, client_id: data.client_id || null, currency: data.currency || 'EUR', attachment_urls: data.attachment_urls || [] }
     try {
       if (editingJob) {
         await updateJob.mutateAsync({ id: editingJob.id, ...payload })
@@ -61,6 +63,22 @@ export function JobsPage() {
           : 'active' as const
         await createJob.mutateAsync({ ...payload, status })
         setToast({ message: 'Lavoro creato', type: 'success' })
+        try {
+          const grossAmount = data.amount_card + data.amount_cash
+          const netAmount = data.net_amount
+          const taxAmount = grossAmount - netAmount
+          await createQuote.mutateAsync({
+            client_id: data.client_id ?? undefined,
+            title: data.title,
+            description: data.description,
+            gross_amount: grossAmount,
+            tax_amount: Math.max(taxAmount, 0),
+            net_amount: netAmount,
+            tax_rate: grossAmount > 0 ? Math.round((Math.max(taxAmount, 0) / grossAmount) * 100) : 22,
+          })
+        } catch {
+          // quote creation is best-effort
+        }
       }
       closeForm()
     } catch (err) {

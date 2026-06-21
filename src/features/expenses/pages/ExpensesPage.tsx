@@ -10,6 +10,8 @@ import { formatCurrency } from '../../../lib/calculations'
 import { useExpenses } from '../../../lib/hooks/useExpenses'
 import { isOfflineQueued, isOfflineSyncDisabled } from '../../../lib/syncExecute'
 import { Toast } from '../../../shared/ui/Toast'
+import { AttachmentsField } from '../../../shared/ui/AttachmentsField'
+import { CurrencySelect } from '../../../shared/ui/CurrencySelect'
 import type { Expense } from '../../../types/database'
 
 type ToastState = { message: string; type: 'success' | 'error' | 'info' } | null
@@ -35,6 +37,8 @@ export function ExpensesPage() {
   const [category, setCategory] = useState('Altro')
   const [description, setDescription] = useState('')
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10))
+  const [attachmentUrls, setAttachmentUrls] = useState<string[]>([])
+  const [expenseCurrency, setExpenseCurrency] = useState('EUR')
 
   function resetForm() {
     setTitle('')
@@ -42,6 +46,8 @@ export function ExpensesPage() {
     setCategory('Altro')
     setDescription('')
     setDate(new Date().toISOString().slice(0, 10))
+    setAttachmentUrls([])
+    setExpenseCurrency('EUR')
     setEditingId(null)
     setIsFormOpen(false)
   }
@@ -71,6 +77,8 @@ export function ExpensesPage() {
       category,
       description: description || null,
       date,
+      currency: expenseCurrency,
+      attachment_urls: attachmentUrls,
     }
 
     try {
@@ -225,6 +233,11 @@ export function ExpensesPage() {
               onChange={(e) => setDescription(e.target.value)}
             />
 
+            <div>
+              <label className="block text-sm text-text-secondary mb-1">Valuta</label>
+              <CurrencySelect value={expenseCurrency} onChange={setExpenseCurrency} />
+            </div>
+
             <Input
               label="Data"
               type="date"
@@ -232,6 +245,10 @@ export function ExpensesPage() {
               onChange={(e) => setDate(e.target.value)}
             />
           </FormSection>
+
+          <div className="px-6 pb-4">
+            <AttachmentsField urls={attachmentUrls} onChange={setAttachmentUrls} />
+          </div>
 
           <div className="flex gap-2 pt-4">
             <button onClick={resetForm} className="flex-1 rounded-full bg-surface py-2.5 text-sm font-medium text-text-secondary hover:bg-surface/80 transition-colors">

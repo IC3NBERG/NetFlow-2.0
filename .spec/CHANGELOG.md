@@ -7,6 +7,39 @@
 
 ---
 
+## [v0.32.0] - 2026-06-22
+### Stato: UX avanzata — Eventi calendario, auto-preventivo, navigazione ottimizzata
+- **[MEDIUM] Eventi calendario manuali:** Nuova tabella `custom_events` con RLS. Pulsante "Nuovo evento" in pagina `/calendar` e nel dettaglio giorno. Modal con titolo, descrizione, data, colore. Eliminazione immediata. `useCustomEvents` hook.
+- **[MEDIUM] Auto-preventivo su lavoro:** Alla creazione di un lavoro in `/jobs`, viene generato automaticamente un preventivo (stato bozza) con gli stessi importi lordo/netto, cliente e aliquota. Best-effort — non blocca la creazione del lavoro.
+- **[LOW] Sidebar/BottomBar riordinate:** Nuovo ordine: Dashboard → Lavori → Clienti → Preventivi → Fatture → Uscite → Calendario → Registro. Impostazioni spostato sotto il nav (sopra Esci).
+- **[HIGH] Account management potenziato:** RPC `delete_user_account` — elimina `auth.users` con cascata su tutte le tabelle (distruzione totale account). RPC `clean_user_data` — cancella tutti i dati (lavori, fatture, clienti, spese, preventivi, tag, audit, shares, eventi) mantenendo il profilo attivo. Doppia conferma per entrambi.
+- **Migrazione DB #014:** Tabella `custom_events` + RPC `delete_user_account` + RPC `clean_user_data`
+- **Dipendenze aggiunte:** nessuna
+- **Build verificata:** `npx tsc --noEmit` — 0 errori. `npm run build` — 55 precache.
+- **Test:** `npx vitest run` — 4/4 test passanti.
+- **Versione:** v0.32.0
+
+## [v0.31.0] - 2026-06-22
+### Stato: Feature Expansion — 15 nuove funzionalità
+- **[MAJOR] Migrazione DB #12:** Nuove tabelle `tags`, `job_tags`, `expense_tags`, `quotes`, `audit_log`, `shares`. Colonne `attachment_urls` e `currency` su jobs/expenses/invoices. Trigger audit su 5 tabelle. RLS per tutte le nuove tabelle.
+- **[HIGH] Preventivi (#4):** Nuova pagina `/quotes` con CRUD completo. Stati: bozza/inviato/accettato/rifiutato/convertito. Conversione 1-click in lavoro. Calcolo automatico IVA. Numerazione automatica.
+- **[HIGH] Tag & Filtri (#15):** Nuovo `TagsManager` in Impostazioni. Colori personalizzabili. Filtri per tag su lavori e spese. Tag selector embeddable.
+- **[HIGH] Audit Trail (#16):** Tabella `audit_log` popolata da trigger PostgreSQL su INSERT/UPDATE/DELETE per jobs, invoices, clients, expenses, quotes. Viewer in Impostazioni.
+- **[HIGH] Ricerca Globale Cmd+K (#5):** Nuova `CommandPalette` accessibile via ⌘K/ctrl+K. Ricerca full-text in lavori, clienti, fatture, spese. Navigazione rapida con tastiera.
+- **[HIGH] PDF Fatture (#1):** Generazione PDF lato client con `@react-pdf/renderer`. Template professionale con logo, dati mittente/cliente, dettaglio lavori, IVA. Download diretto dalla lista fatture.
+- **[HIGH] QR Code fatture (#18):** QR code dinamico per ogni fattura contenente dati di pagamento. Scaricabile come PNG. Visualizzabile direttamente nella card fattura.
+- **[MEDIUM] Calendario Scadenze (#3):** Nuova pagina `/calendar`. Vista mensile con eventi da `pending_date`, `end_date`, `due_date`. Giorni con scadenze evidenziati. Dettaglio click sul giorno.
+- **[MEDIUM] Condivisione Commercialista (#10):** Gestione link di condivisione in Impostazioni. Accesso view-only o view+export. Scadenza configurabile. Copia link con un click.
+- **[MEDIUM] Allegati/Documenti (#8):** Colonna `attachment_urls` (JSONB) su jobs e expenses. Pronta per storage Cloudflare R2 tramite link firmati.
+- **[MEDIUM] Multi-Valuta (#14):** Colonna `currency` su jobs, invoices, expenses, quotes. Utility `exchangeRate.ts` con caching 12h. Supporto EUR/USD/GBP/CHF. `CurrencySelect` component.
+- **[MEDIUM] GDPR Avanzato (#20):** Tab Privacy in Impostazioni potenziata con portabilità dati (download JSON completo) e cancellazione account (2-step confirm).
+- **[LOW] Sidebar/BottomBar aggiornate:** Aggiunte voci Preventivi e Calendario alla sidebar desktop e bottom bar mobile.
+- **[LOW] Header:** Aggiunto pulsante Cerca (⌘K) nell'header accanto a Guida Fiscale.
+- **Dipendenze aggiunte:** `@react-pdf/renderer`, `qrcode`, `date-fns` + `@types/qrcode`
+- **Build verificata:** `npx tsc --noEmit` — 0 errori. `npm run build` — OK.
+- **Test:** `npx vitest run` — 4/4 test passanti.
+- **Versione:** v0.31.0
+
 ## [v0.30.1] - 2026-06-22
 ### Stato: ProgressRings ottimizzazione spazio — layout compatto e info più dense
 - **[MEDIUM] Header compatto:** Titolo "Stato Attivita" + percentuale goal affiancati in una riga con `flex justify-between`, eliminato spazio centrato del cerchio workload.

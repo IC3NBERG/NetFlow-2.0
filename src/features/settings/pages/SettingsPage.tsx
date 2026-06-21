@@ -15,9 +15,13 @@ import { useFiscalSetup, useUpsertFiscalSetup } from '../../../lib/hooks/useFisc
 import { setSyncEnabled } from '../../../lib/syncBridge'
 import { useFiscalYearStore } from '../../../lib/stores/fiscalYear'
 import { supabase } from '../../../lib/supabase'
+import { TagsManager } from '../../tags/TagsManager'
+import { SharesManager } from '../components/SharesManager'
+import { AuditLogViewer } from '../components/AuditLogViewer'
 import {
   User, Moon, Sun, Monitor, RefreshCw, Download, Upload, Bell, Database,
-  FileText, Shield, Save, AlertTriangle, Calendar,
+  FileText, Shield, Save, AlertTriangle, Calendar, Tag, Share2, History,
+  Trash2,
 } from 'lucide-react'
 import { type Theme, type TaxRegime, type GoalMetric } from '../../../types/database'
 import { exportToCSV, exportToJSON } from '../../../lib/export'
@@ -26,7 +30,7 @@ import { hardResetPwa } from '../../../lib/pwaReset'
 import { cn } from '../../../lib/utils'
 
 type ToastState = { message: string; type: 'success' | 'error' | 'info' } | null
-type SettingsTab = 'profile' | 'preferences' | 'invoices' | 'backup' | 'legal'
+type SettingsTab = 'profile' | 'preferences' | 'invoices' | 'backup' | 'legal' | 'sharing' | 'audit'
 
 const themes: { value: Theme; label: string; icon: typeof Sun }[] = [
   { value: 'system', label: 'Sistema', icon: Monitor },
@@ -39,6 +43,8 @@ const tabs: { id: SettingsTab; label: string; icon: typeof User }[] = [
   { id: 'preferences', label: 'Preferenze', icon: Moon },
   { id: 'invoices', label: 'Fatture', icon: FileText },
   { id: 'backup', label: 'Backup', icon: Database },
+  { id: 'sharing', label: 'Condivisione', icon: Share2 },
+  { id: 'audit', label: 'Audit Log', icon: History },
   { id: 'legal', label: 'Privacy', icon: Shield },
 ]
 
@@ -420,6 +426,17 @@ export function SettingsPage() {
               </div>
             </GlassCard>
           </motion.div>
+
+          <motion.div variants={itemAnim}>
+            <GlassCard className="p-4 md:p-6 space-y-3 md:space-y-4">
+              <div className="flex items-center gap-3">
+                <Tag className="h-4 md:h-5 w-4 md:w-5 text-brand" />
+                <h3 className="text-base md:text-lg font-semibold">Tag</h3>
+              </div>
+              <p className="text-xs md:text-sm text-text-secondary">Gestisci i tag per organizzare lavori e spese</p>
+              <TagsManager />
+            </GlassCard>
+          </motion.div>
         </motion.div>
       )}
 
@@ -573,6 +590,42 @@ export function SettingsPage() {
         </motion.div>
       )}
 
+      {activeTab === 'sharing' && (
+        <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
+          <motion.div variants={itemAnim}>
+            <GlassCard className="p-4 md:p-6 space-y-4">
+              <div className="flex items-center gap-3">
+                <Share2 className="h-5 w-5 text-brand" />
+                <h3 className="text-lg font-semibold">Condivisione con Commercialista</h3>
+              </div>
+              <p className="text-sm text-text-secondary">
+                Crea link di sola lettura per condividere i tuoi dati con il commercialista.
+                I link possono essere revocati in qualsiasi momento.
+              </p>
+              <SharesManager />
+            </GlassCard>
+          </motion.div>
+        </motion.div>
+      )}
+
+      {activeTab === 'audit' && (
+        <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
+          <motion.div variants={itemAnim}>
+            <GlassCard className="p-4 md:p-6 space-y-4">
+              <div className="flex items-center gap-3">
+                <History className="h-5 w-5 text-brand" />
+                <h3 className="text-lg font-semibold">Registro Modifiche (Audit Log)</h3>
+              </div>
+              <p className="text-sm text-text-secondary">
+                Cronologia delle modifiche a lavori, fatture, clienti e spese.
+                I dati vengono conservati per la durata dell'account.
+              </p>
+              <AuditLogViewer />
+            </GlassCard>
+          </motion.div>
+        </motion.div>
+      )}
+
       {activeTab === 'legal' && (
         <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
           {legalSections.map((section) => {
@@ -589,6 +642,84 @@ export function SettingsPage() {
               </motion.div>
             )
           })}
+          <motion.div variants={itemAnim}>
+            <GlassCard className="p-4 md:p-6 space-y-3">
+              <div className="flex items-center gap-3">
+                <Download className="h-5 w-5 text-brand" />
+                <h3 className="text-base md:text-lg font-semibold">Portabilità dati</h3>
+              </div>
+              <p className="text-sm text-text-secondary">
+                Scarica una copia completa di tutti i tuoi dati personali (diritto alla portabilità, art. 20 GDPR)
+              </p>
+              <Button variant="secondary" onClick={async () => {
+                if (!user) return
+                const tables = ['jobs', 'invoices', 'clients', 'expenses', 'quotes', 'tags']
+                const allData: Record<string, unknown[]> = {}
+                for (const table of tables) {
+                  const { data } = await supabase.from(table as 'jobs').select('*').eq('user_id', user.id)
+                  allData[table] = data ?? []
+                }
+                const blob = new Blob([JSON.stringify(allData, null, 2)], { type: 'application/json' })
+                const a = document.createElement('a')
+                a.href = URL.createObjectURL(blob)
+                a.download = `netflow-data-export-${new Date().toISOString().slice(0, 10)}.json`
+                a.click()
+                setToast({ message: 'Esportazione dati completata', type: 'success' })
+              }}>
+                <Download className="h-4 w-4" /> Scarica tutti i dati
+              </Button>
+            </GlassCard>
+          </motion.div>
+          <motion.div variants={itemAnim}>
+            <GlassCard className="p-4 md:p-6 space-y-3">
+              <div className="flex items-center gap-3">
+                <RefreshCw className="h-5 w-5 text-[#F59E0B]" />
+                <h3 className="text-base md:text-lg font-semibold">Pulisci account</h3>
+              </div>
+              <p className="text-sm text-text-secondary">
+                Cancella tutti i dati (lavori, fatture, clienti, spese, preventivi, tag, audit log, condivisioni, eventi del calendario).
+                Il profilo e le impostazioni rimangono intatti.
+              </p>
+              <Button variant="danger" onClick={async () => {
+                if (!window.confirm('Sei sicuro di voler cancellare TUTTI i dati? Questa azione è irreversibile.')) return
+                if (!window.confirm('CONFERMA FINALE: tutti i dati finanziari verranno cancellati permanentemente. Il profilo resterà attivo.')) return
+                const { error } = await supabase.rpc('clean_user_data')
+                if (error) {
+                  setToast({ message: 'Errore durante la pulizia. Contatta il supporto.', type: 'error' })
+                } else {
+                  setToast({ message: 'Tutti i dati cancellati con successo', type: 'success' })
+                  queryClient.invalidateQueries()
+                }
+              }}>
+                <RefreshCw className="h-4 w-4" /> Pulisci account
+              </Button>
+            </GlassCard>
+          </motion.div>
+          <motion.div variants={itemAnim}>
+            <GlassCard className="p-4 md:p-6 space-y-3">
+              <div className="flex items-center gap-3">
+                <Trash2 className="h-5 w-5 text-expense" />
+                <h3 className="text-base md:text-lg font-semibold">Eliminazione account</h3>
+              </div>
+              <p className="text-sm text-text-secondary">
+                Elimina permanentemente il tuo account e tutti i dati associati.
+                Questa azione è irreversibile.
+              </p>
+              <Button variant="danger" onClick={async () => {
+                if (!window.confirm('Sei sicuro di voler eliminare il tuo account? I dati verranno persi definitivamente.')) return
+                if (!window.confirm('CONFERMA FINALE: questa azione è irreversibile. Tutti i dati finanziari e il profilo verranno cancellati. Non potrai più accedere.')) return
+                const { error } = await supabase.rpc('delete_user_account')
+                if (error) {
+                  setToast({ message: 'Errore durante l\'eliminazione. Contatta il supporto.', type: 'error' })
+                } else {
+                  setToast({ message: 'Account eliminato con successo', type: 'success' })
+                  window.location.href = '/login'
+                }
+              }}>
+                <Trash2 className="h-4 w-4" /> Elimina account
+              </Button>
+            </GlassCard>
+          </motion.div>
         </motion.div>
       )}
 

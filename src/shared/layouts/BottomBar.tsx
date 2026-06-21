@@ -1,14 +1,16 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, Briefcase, FileText, Archive, Receipt, Users, Settings } from 'lucide-react'
+import { LayoutDashboard, Briefcase, FileText, Archive, Receipt, Users, Settings, FileSpreadsheet, CalendarDays } from 'lucide-react'
 import { cn } from '../../lib/utils'
 
 const bottomNavItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/jobs', icon: Briefcase, label: 'Lavori' },
   { to: '/clients', icon: Users, label: 'Clienti' },
+  { to: '/quotes', icon: FileSpreadsheet, label: 'Preventivi' },
   { to: '/invoicing', icon: FileText, label: 'Fatture' },
-  { to: '/ledger', icon: Archive, label: 'Registro' },
   { to: '/expenses', icon: Receipt, label: 'Uscite' },
+  { to: '/calendar', icon: CalendarDays, label: 'Calendario' },
+  { to: '/ledger', icon: Archive, label: 'Registro' },
   { to: '/settings', icon: Settings, label: 'Impostazioni' },
 ]
 

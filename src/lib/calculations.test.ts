@@ -33,7 +33,7 @@ describe('calculateMetrics balance', () => {
       status: 'completed_settled', payment_method: 'card',
       amount_card: 1000, amount_cash: 0, net_amount: 700,
       include_cash_in_invoice: false, start_date: '2026-01-01',
-      pending_date: null, end_date: '2026-01-15', created_at: '', updated_at: '',
+      pending_date: null, end_date: '2026-01-15', attachment_urls: [], currency: 'EUR', created_at: '', updated_at: '',
     }]
     const m = calculateMetrics(jobs, 100, 'occasional')
     expect(m.balance).toBe(600)
