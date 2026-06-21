@@ -7,6 +7,12 @@
 
 ---
 
+## [v0.28.1] - 2026-06-22
+### Stato: Version check automatico — blocca commit se package.json e CHANGELOG divergono
+- **[HIGH] Script check-version.js:** Nuovo script `scripts/check-version.js` confronta la versione in `package.json` con l'ultima in `.spec/CHANGELOG.md`. Se divergono, esce con errore.
+- **[MEDIUM] Integrato in lint:** `npm run lint` ora esegue il version check prima di ESLint. Il commit viene bloccato automaticamente se le versioni non coincidono.
+- **Versione:** v0.28.1
+
 ## [v0.28.0] - 2026-06-22
 ### Stato: UX Login — label, password toggle, Ricordami, stati input
 - **[HIGH] Label esterne ai campi:** Aggiunte label "Email" e "Password" sopra i campi di input — l'utente sa sempre cosa sta inserendo anche dopo aver digitato.
