@@ -8,8 +8,9 @@
 ---
 
 ## [v0.28.2] - 2026-06-22
-### Stato: Fix centratura logo pagine auth
-- **[FIX] Logo centrato:** Sostituito `mx-auto` (inefficace senza larghezza fissa) con `flex justify-center` nei wrapper del logo su RegisterPage, ForgotPasswordPage e ResetPasswordPage. LoginPage già corretta.
+### Stato: Logo centrato + RegisterPage allineata a LoginPage
+- **[FIX] Logo centrato:** Logo ora è centrato con `flex flex-col items-center` su tutte le pagine auth (Login e Register).
+- **[MEDIUM] RegisterPage aggiornata:** Aggiunte label esterne ai campi (Nome, Email, Password, Conferma password), password toggle, rimossa icona UserPlus dal pulsante, link "Accedi" in `text-brand font-medium`. Allineata allo stile della LoginPage.
 - **Versione:** v0.28.2
 
 ## [v0.28.1] - 2026-06-22

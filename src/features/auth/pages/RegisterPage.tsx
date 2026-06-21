@@ -8,7 +8,7 @@ import { registerSchema, type RegisterFormData } from '../../../lib/validations'
 import { Card } from '../../../shared/ui/Card'
 import { Button } from '../../../shared/ui/Button'
 import { Input } from '../../../shared/ui/Input'
-import { UserPlus, MailCheck } from 'lucide-react'
+import { MailCheck } from 'lucide-react'
 import { Logo } from '../../../shared/ui/Logo'
 
 export function RegisterPage() {
@@ -64,11 +64,9 @@ export function RegisterPage() {
         transition={{ duration: 0.4 }}
         className="w-full max-w-md"
       >
-        <Card className="space-y-5 md:space-y-6 p-5 md:p-8">
-          <div className="text-center">
-            <div className="mb-3 md:mb-4 flex justify-center">
-              <Logo variant="full" className="h-10 w-10 md:h-14 md:w-14" />
-            </div>
+        <Card className="space-y-6 p-6 md:p-8">
+          <div className="flex flex-col items-center text-center">
+            <Logo variant="full" className="mb-4 h-10 w-10 md:h-14 md:w-14" />
             <h1 className="text-xl md:text-2xl font-bold">Crea il tuo account</h1>
             <p className="mt-1 text-xs md:text-sm text-text-secondary">
               Registrati per iniziare a tracciare le tue finanze
@@ -81,41 +79,48 @@ export function RegisterPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <Input
+              id="fullName"
               type="text"
-              placeholder="Nome completo"
+              label="Nome completo"
+              placeholder="Mario Rossi"
               error={errors.fullName?.message}
               {...register('fullName')}
             />
             <Input
+              id="email"
               type="email"
-              placeholder="Email"
+              label="Email"
+              placeholder="nome@esempio.com"
               error={errors.email?.message}
               {...register('email')}
             />
             <Input
+              id="password"
               type="password"
-              placeholder="Password"
+              label="Password"
+              placeholder="Min. 8 caratteri"
               error={errors.password?.message}
               {...register('password')}
             />
             <Input
+              id="confirmPassword"
               type="password"
-              placeholder="Conferma password"
+              label="Conferma password"
+              placeholder="Ripeti la password"
               error={errors.confirmPassword?.message}
               {...register('confirmPassword')}
             />
 
             <Button className="w-full" size="lg" disabled={isSubmitting}>
-              <UserPlus className="mr-2 h-4 w-4" />
               {isSubmitting ? 'Registrazione in corso...' : 'Registrati'}
             </Button>
           </form>
 
           <p className="text-center text-sm text-text-secondary">
             Hai già un account?{' '}
-            <Link to="/login" className="text-brand hover:underline">
+            <Link to="/login" className="text-brand font-medium hover:underline">
               Accedi
             </Link>
           </p>
