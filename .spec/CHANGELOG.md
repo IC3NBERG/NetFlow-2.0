@@ -7,6 +7,12 @@
 
 ---
 
+## [v0.29.1] - 2026-06-22
+### Stato: Audit finale — allineamento .env.example e COMMANDS.md
+- **[FIX] .env.example:** Riferimenti aggiornati da `fintrack` a `NetFlow`.
+- **[FIX] COMMANDS.md:** Aggiunto `version check` in sezione lint, stato Supabase attuale, deploy con `npm run deploy`.
+- **Versione:** v0.29.1
+
 ## [v0.29.0] - 2026-06-22
 ### Stato: Dashboard grid 5 colonne — AreaChart e ProgressRings allineati in altezza
 - **[CHANGE] Griglia dashboard da 4 a 5 colonne:** `lg:grid-cols-5`. AreaChart (Andamento Economico) occupa 3 colonne, ProgressRings (Stato Attività) occupa 2 colonne → entrambi allineati in altezza e ProgressRings più largo.
