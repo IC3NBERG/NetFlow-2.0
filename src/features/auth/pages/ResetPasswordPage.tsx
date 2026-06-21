@@ -8,7 +8,7 @@ import { updatePasswordSchema, type UpdatePasswordFormData } from '../../../lib/
 import { Card } from '../../../shared/ui/Card'
 import { Button } from '../../../shared/ui/Button'
 import { Input } from '../../../shared/ui/Input'
-import { Lock, Loader2, CheckCircle } from 'lucide-react'
+import { Loader2, CheckCircle } from 'lucide-react'
 import { Logo } from '../../../shared/ui/Logo'
 
 export function ResetPasswordPage() {
@@ -74,7 +74,7 @@ export function ResetPasswordPage() {
           animate={{ opacity: 1, scale: 1 }}
           className="w-full max-w-md"
         >
-          <Card className="space-y-5 md:space-y-6 text-center p-5 md:p-8">
+          <Card className="space-y-6 text-center p-6 md:p-8">
             <div className="mx-auto flex h-10 w-10 md:h-14 md:w-14 items-center justify-center rounded-full bg-success/20">
               <CheckCircle className="h-5 md:h-7 w-5 md:w-7 text-success" />
             </div>
@@ -96,11 +96,9 @@ export function ResetPasswordPage() {
         transition={{ duration: 0.4 }}
         className="w-full max-w-md"
       >
-        <Card className="space-y-5 md:space-y-6 p-5 md:p-8">
-          <div className="text-center">
-            <div className="mx-auto mb-3 md:mb-4">
-              <Logo variant="full" className="h-10 w-10 md:h-14 md:w-14" />
-            </div>
+        <Card className="space-y-6 p-6 md:p-8">
+          <div className="flex flex-col items-center text-center">
+            <Logo variant="full" className="mb-4 h-10 w-10 md:h-14 md:w-14" />
             <h1 className="text-xl md:text-2xl font-bold">Nuova password</h1>
             <p className="mt-1 text-xs md:text-sm text-text-secondary">
               Scegli una nuova password per il tuo account
@@ -120,22 +118,25 @@ export function ResetPasswordPage() {
           )}
 
           {isReady && (
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
               <Input
+                id="password"
                 type="password"
-                placeholder="Nuova password"
+                label="Nuova password"
+                placeholder="Min. 8 caratteri"
                 error={errors.password?.message}
                 {...register('password')}
               />
               <Input
+                id="confirmPassword"
                 type="password"
-                placeholder="Conferma nuova password"
+                label="Conferma password"
+                placeholder="Ripeti la password"
                 error={errors.confirmPassword?.message}
                 {...register('confirmPassword')}
               />
 
               <Button className="w-full" size="lg" disabled={isSubmitting}>
-                <Lock className="mr-2 h-4 w-4" />
                 {isSubmitting ? 'Aggiornamento in corso...' : 'Aggiorna password'}
               </Button>
             </form>

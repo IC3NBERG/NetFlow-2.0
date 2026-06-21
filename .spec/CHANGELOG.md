@@ -7,7 +7,18 @@
 
 ---
 
-## [v0.29.1] - 2026-06-22
+## [v0.30.0] - 2026-06-22
+### Stato: Audit completo — test E2E riparati, pagine auth allineate, console OK
+- **[HIGH] Fix test E2E:** Aggiornati selettori `getByPlaceholder` → `getByRole('textbox', ...)` su login e register — ora usano label HTML invece di placeholder (14 test passanti).
+- **[MEDIUM] ForgotPasswordPage allineata:** Aggiunte label, logo centrato, rimossa icona dal pulsante, stile coerente con LoginPage.
+- **[MEDIUM] ResetPasswordPage allineata:** Aggiunte label, password toggle, logo centrato, stile coerente.
+- **[VERIFIED] npm run lint:** 0 errori + version check passa.
+- **[VERIFIED] npx tsc --noEmit:** 0 errori.
+- **[VERIFIED] npm run build:** Build produce dist/ con PWA.
+- **[VERIFIED] npm run test:e2e:** 14/14 test passanti (Playwright).
+- **[VERIFIED] npx vitest run:** 4/4 test unitari passanti.
+- **[VERIFIED] Console browser:** 0 errori JS, 0 warning.
+- **Versione:** v0.30.0
 ### Stato: Audit finale — allineamento .env.example e COMMANDS.md
 - **[FIX] .env.example:** Riferimenti aggiornati da `fintrack` a `NetFlow`.
 - **[FIX] COMMANDS.md:** Aggiunto `version check` in sezione lint, stato Supabase attuale, deploy con `npm run deploy`.

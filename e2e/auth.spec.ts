@@ -10,10 +10,10 @@ test.describe('Auth Flow', () => {
   test('renders register page', async ({ page }) => {
     await page.goto('/register')
     await expect(page.getByText('Crea il tuo account')).toBeVisible()
-    await expect(page.getByPlaceholder('Nome completo')).toBeVisible()
-    await expect(page.getByPlaceholder('Email')).toBeVisible()
+    await expect(page.getByRole('textbox', { name: 'Nome completo' })).toBeVisible()
+    await expect(page.getByRole('textbox', { name: 'Email' })).toBeVisible()
     await expect(page.getByRole('textbox', { name: 'Password', exact: true })).toBeVisible()
-    await expect(page.getByPlaceholder('Conferma password')).toBeVisible()
+    await expect(page.getByRole('textbox', { name: 'Conferma password' })).toBeVisible()
   })
 
   test('shows validation errors on empty login', async ({ page }) => {
@@ -30,7 +30,7 @@ test.describe('Auth Flow', () => {
   test('renders forgot password page', async ({ page }) => {
     await page.goto('/forgot-password')
     await expect(page.getByText('Recupera password')).toBeVisible()
-    await expect(page.getByPlaceholder('Email')).toBeVisible()
+    await expect(page.getByLabel('Email')).toBeVisible()
     await expect(page.getByText('Torna al login')).toBeVisible()
   })
 

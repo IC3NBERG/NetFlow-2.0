@@ -8,7 +8,7 @@ import { resetPasswordSchema, type ResetPasswordFormData } from '../../../lib/va
 import { Card } from '../../../shared/ui/Card'
 import { Button } from '../../../shared/ui/Button'
 import { Input } from '../../../shared/ui/Input'
-import { Mail, ArrowLeft, MailCheck } from 'lucide-react'
+import { ArrowLeft, MailCheck } from 'lucide-react'
 import { Logo } from '../../../shared/ui/Logo'
 
 export function ForgotPasswordPage() {
@@ -41,7 +41,7 @@ export function ForgotPasswordPage() {
           animate={{ opacity: 1, scale: 1 }}
           className="w-full max-w-md"
         >
-          <Card className="space-y-5 md:space-y-6 text-center p-5 md:p-8">
+          <Card className="space-y-6 text-center p-6 md:p-8">
             <div className="mx-auto flex h-10 w-10 md:h-14 md:w-14 items-center justify-center rounded-full bg-brand/20">
               <MailCheck className="h-5 md:h-7 w-5 md:w-7 text-brand" />
             </div>
@@ -66,11 +66,9 @@ export function ForgotPasswordPage() {
         transition={{ duration: 0.4 }}
         className="w-full max-w-md"
       >
-        <Card className="space-y-5 md:space-y-6 p-5 md:p-8">
-          <div className="text-center">
-            <div className="mx-auto mb-3 md:mb-4">
-              <Logo variant="full" className="h-10 w-10 md:h-14 md:w-14" />
-            </div>
+        <Card className="space-y-6 p-6 md:p-8">
+          <div className="flex flex-col items-center text-center">
+            <Logo variant="full" className="mb-4 h-10 w-10 md:h-14 md:w-14" />
             <h1 className="text-xl md:text-2xl font-bold">Recupera password</h1>
             <p className="mt-1 text-xs md:text-sm text-text-secondary">
               Inserisci la tua email per ricevere il link di reset
@@ -83,22 +81,23 @@ export function ForgotPasswordPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <Input
+              id="email"
               type="email"
-              placeholder="Email"
+              label="Email"
+              placeholder="nome@esempio.com"
               error={errors.email?.message}
               {...register('email')}
             />
 
             <Button className="w-full" size="lg" disabled={isSubmitting}>
-              <Mail className="mr-2 h-4 w-4" />
               {isSubmitting ? 'Invio in corso...' : 'Invia link di recupero'}
             </Button>
           </form>
 
           <p className="text-center text-sm text-text-secondary">
-            <Link to="/login" className="inline-flex items-center gap-1 text-brand hover:underline">
+            <Link to="/login" className="inline-flex items-center gap-1 text-brand font-medium hover:underline">
               <ArrowLeft className="h-3 w-3" />
               Torna al login
             </Link>
