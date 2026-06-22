@@ -15,6 +15,7 @@
   - `handle_updated_at`: rimosso SECURITY DEFINER (trigger function)
   - `auth_rls_initplan` (expenses): RLS riscritte con `(select auth.uid())` al posto di `auth.uid()` diretto
   - `multiple_permissive_policies` (shares): unificate `shares_user_isolation` + `shares_token_access` in singola policy `shares_select`
+- **UI Fix:** Rimosso bordo da `GlassCard` e `EmptyState`. Sostituiti `bg-white/5` → `bg-surface`, `hover:bg-white/5` → `hover:bg-surface/80`, `ring-white` → `ring-brand`, boxShadow inline → `border-border`. Hardcoded hex (`#FDCB6E`, `#00B894`, `#F59E0B`, `#00D2FF`) → token tema (`text-pending`, `text-success`, `text-brand/70`). Coerenza visiva cross-tema.
 - **Build verificata:** `npx tsc --noEmit` — 0 errori. `npm run build` — OK.
 - **Test:** `npx vitest run` — 4/4 test passanti.
 - **Versione:** v0.32.1

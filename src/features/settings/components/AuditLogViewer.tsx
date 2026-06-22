@@ -33,7 +33,7 @@ export function AuditLogViewer() {
   return (
     <div className="space-y-2 max-h-96 overflow-y-auto">
       {logs.map((log) => (
-        <div key={log.id} className="flex items-start gap-3 rounded-xl bg-white/5 px-4 py-3">
+        <div key={log.id} className="flex items-start gap-3 rounded-xl bg-surface/60 px-4 py-3">
           <span className="text-sm mt-0.5">{operationIcons[log.operation]}</span>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium">

@@ -43,7 +43,7 @@ export function SharesManager() {
       </div>
 
       {showForm && (
-        <div className="space-y-3 p-4 rounded-xl bg-white/5">
+        <div className="space-y-3 p-4 rounded-xl bg-surface/60">
           <div>
             <label className="block text-sm font-medium mb-1">Descrizione</label>
             <input
@@ -87,7 +87,7 @@ export function SharesManager() {
       )}
 
       {shares?.map((share) => (
-        <div key={share.id} className="flex items-center gap-3 rounded-xl bg-white/5 px-4 py-3">
+        <div key={share.id} className="flex items-center gap-3 rounded-xl bg-surface/60 px-4 py-3">
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium truncate">{share.description || 'Link di condivisione'}</p>
             <p className="text-xs text-text-secondary">
@@ -100,7 +100,7 @@ export function SharesManager() {
               navigator.clipboard.writeText(getShareUrl(share.token))
               setCopiedId(share.id)
             }}
-            className="rounded-full p-2 text-text-secondary hover:bg-white/10 transition-colors"
+            className="rounded-full p-2 text-text-secondary hover:bg-surface/80 transition-colors"
             title="Copia link"
           >
             {copiedId === share.id ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
@@ -109,7 +109,7 @@ export function SharesManager() {
             href={getShareUrl(share.token)}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-full p-2 text-text-secondary hover:bg-white/10 transition-colors"
+            className="rounded-full p-2 text-text-secondary hover:bg-surface/80 transition-colors"
             title="Apri link"
           >
             <ExternalLink className="h-4 w-4" />

@@ -54,7 +54,7 @@ export function AttachmentsField({ urls, onChange }: AttachmentsFieldProps) {
       {urls.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {urls.map((url, i) => (
-            <div key={i} className="group relative rounded-xl bg-white/5 px-3 py-2 pr-8 text-xs">
+            <div key={i} className="group relative rounded-xl bg-surface/60 px-3 py-2 pr-8 text-xs">
               {isImage(url) ? (
                 <div className="flex items-center gap-1.5">
                   <Image className="h-3.5 w-3.5 text-brand shrink-0" />

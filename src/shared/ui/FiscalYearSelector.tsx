@@ -9,7 +9,7 @@ export function FiscalYearSelector() {
     <div className="flex items-center gap-2">
       <button
         onClick={() => setYear(year - 1)}
-        className="rounded-full p-1 text-text-secondary hover:bg-white/5 hover:text-text-primary transition-all"
+        className="rounded-full p-1 text-text-secondary hover:bg-surface/80 hover:text-text-primary transition-all"
       >
         <ChevronLeft className="h-4 w-4" />
       </button>
@@ -18,7 +18,7 @@ export function FiscalYearSelector() {
       </span>
       <button
         onClick={() => setYear(year + 1)}
-        className="rounded-full p-1 text-text-secondary hover:bg-white/5 hover:text-text-primary transition-all"
+        className="rounded-full p-1 text-text-secondary hover:bg-surface/80 hover:text-text-primary transition-all"
         disabled={year >= currentYear}
       >
         <ChevronRight className={`h-4 w-4 ${year >= currentYear ? 'opacity-30' : ''}`} />

@@ -330,7 +330,7 @@ export function SettingsPage() {
                 'flex items-center gap-1 md:gap-2 rounded-full px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-medium transition-all shrink-0',
                 activeTab === tab.id
                   ? 'bg-brand text-white'
-                  : 'text-text-secondary hover:bg-white/5 hover:text-text-primary',
+                  : 'text-text-secondary hover:bg-surface/80 hover:text-text-primary',
               )}
             >
               <Icon className="h-4 w-4" />
@@ -473,7 +473,7 @@ export function SettingsPage() {
           <motion.div variants={itemAnim}>
             <GlassCard className="p-4 md:p-6 space-y-3 md:space-y-4">
               <div className="flex items-center gap-3">
-                <RefreshCw className="h-4 md:h-5 w-4 md:w-5 text-[#00D2FF]" />
+                <RefreshCw className="h-4 md:h-5 w-4 md:w-5 text-brand/70" />
                 <h3 className="text-base md:text-lg font-semibold">Sincronizzazione</h3>
               </div>
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
@@ -499,7 +499,7 @@ export function SettingsPage() {
           <motion.div variants={itemAnim}>
             <GlassCard className="p-4 md:p-6 space-y-3 md:space-y-4">
               <div className="flex items-center gap-3">
-                <Bell className="h-4 md:h-5 w-4 md:w-5 text-[#F59E0B]" />
+                <Bell className="h-4 md:h-5 w-4 md:w-5 text-pending" />
                 <h3 className="text-base md:text-lg font-semibold">Notifiche e preferenze</h3>
               </div>
               {settingsLoading ? (
@@ -536,7 +536,7 @@ export function SettingsPage() {
           <motion.div variants={itemAnim}>
             <GlassCard className="p-4 md:p-6 space-y-3 md:space-y-4">
               <div className="flex items-center gap-3">
-                <FileText className="h-4 md:h-5 w-4 md:w-5 text-[#00D2FF]" />
+                <FileText className="h-4 md:h-5 w-4 md:w-5 text-brand/70" />
                 <h3 className="text-base md:text-lg font-semibold">Personalizzazione Fatture</h3>
               </div>
               <p className="text-xs md:text-sm text-text-secondary">Configura il template delle tue parcelle e fatture</p>
@@ -581,7 +581,7 @@ export function SettingsPage() {
               </div>
               <div className="rounded-card border border-border bg-surface/50 px-4 py-3">
                 <p className="text-xs text-text-secondary">
-                  <AlertTriangle className="inline h-3 w-3 mr-1 text-[#F59E0B]" />
+                  <AlertTriangle className="inline h-3 w-3 mr-1 text-pending" />
                   Il ripristino valida automaticamente lo schema del file JSON e forza l'user_id dell'utente corrente per prevenire accesso a dati altrui.
                 </p>
               </div>
@@ -673,7 +673,7 @@ export function SettingsPage() {
           <motion.div variants={itemAnim}>
             <GlassCard className="p-4 md:p-6 space-y-3">
               <div className="flex items-center gap-3">
-                <RefreshCw className="h-5 w-5 text-[#F59E0B]" />
+                <RefreshCw className="h-5 w-5 text-pending" />
                 <h3 className="text-base md:text-lg font-semibold">Pulisci account</h3>
               </div>
               <p className="text-sm text-text-secondary">

@@ -120,7 +120,7 @@ export function CalendarPage() {
                 className={`relative min-h-[72px] rounded-xl p-1.5 text-left transition-all ${
                   !isSameMonth(day, currentDate) ? 'opacity-30' : ''
                 } ${isToday(day) ? 'ring-1 ring-brand' : ''} ${
-                  selectedDate && isSameDay(day, selectedDate) ? 'bg-brand/20' : 'hover:bg-white/5'
+                  selectedDate && isSameDay(day, selectedDate) ? 'bg-brand/20' : 'hover:bg-surface/80'
                 }`}
               >
                 <span className={`text-sm font-medium ${isToday(day) ? 'text-brand' : 'text-text-secondary'}`}>
@@ -131,7 +131,7 @@ export function CalendarPage() {
                     <div
                       key={e.id}
                       className={`h-1.5 w-full rounded-full ${
-                        e.type === 'deadline' ? 'bg-expense' : e.type === 'pending' ? 'bg-[#FDCB6E]' : e.type === 'invoice' ? 'bg-[#00B894]' : ''
+                        e.type === 'deadline' ? 'bg-expense' : e.type === 'pending' ? 'bg-pending/60' : e.type === 'invoice' ? 'bg-success/60' : ''
                       }`}
                       style={e.type === 'custom' ? { backgroundColor: e.color, height: '6px', borderRadius: '999px' } : {}}
                     />
@@ -165,10 +165,10 @@ export function CalendarPage() {
             ) : (
               <div className="space-y-2">
                 {selectedEvents.map((e) => (
-                  <div key={e.id} className="flex items-center gap-3 rounded-xl bg-white/5 px-4 py-3">
+                  <div key={e.id} className="flex items-center gap-3 rounded-xl bg-surface/60 px-4 py-3">
                     {e.type === 'deadline' ? <AlertCircle className="h-4 w-4 text-expense" /> :
-                     e.type === 'pending' ? <CreditCard className="h-4 w-4 text-[#FDCB6E]" /> :
-                     e.type === 'invoice' ? <CalendarDays className="h-4 w-4 text-[#00B894]" /> :
+                     e.type === 'pending' ? <CreditCard className="h-4 w-4 text-pending" /> :
+                     e.type === 'invoice' ? <CalendarDays className="h-4 w-4 text-success" /> :
                      <div className="h-4 w-4 rounded-full" style={{ backgroundColor: e.color }} />}
                     <span className="text-sm flex-1">{e.label}</span>
                     <Badge variant={e.type === 'deadline' ? 'danger' : e.type === 'pending' ? 'warning' : e.type === 'invoice' ? 'success' : 'info'}>
@@ -225,7 +225,7 @@ export function CalendarPage() {
                   key={c}
                   type="button"
                   onClick={() => setEventColor(c)}
-                  className={`h-8 w-8 rounded-full transition-all ${eventColor === c ? 'ring-2 ring-white ring-offset-2 ring-offset-surface' : ''}`}
+                  className={`h-8 w-8 rounded-full transition-all ${eventColor === c ? 'ring-2 ring-brand ring-offset-2 ring-offset-surface' : ''}`}
                   style={{ backgroundColor: c }}
                 />
               ))}

@@ -136,7 +136,7 @@ export function CommandPalette() {
                     onClick={() => handleSelect(result)}
                     className={cn(
                       'flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left transition-colors',
-                      i === selectedIndex ? 'bg-brand/20 text-text-primary' : 'text-text-secondary hover:bg-white/5 hover:text-text-primary',
+                      i === selectedIndex ? 'bg-brand/20 text-text-primary' : 'text-text-secondary hover:bg-surface/80 hover:text-text-primary',
                     )}
                   >
                     <Icon className="h-4 w-4 shrink-0" />

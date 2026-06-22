@@ -36,7 +36,7 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="fixed left-0 top-0 z-40 hidden h-screen w-[280px] flex-col bg-surface/60 backdrop-blur-xl md:flex" style={{ boxShadow: '1px 0 0 rgba(255,255,255,0.06)' }}>
+    <aside className="fixed left-0 top-0 z-40 hidden h-screen w-[280px] flex-col bg-surface/60 backdrop-blur-xl md:flex border-r border-border/30">
       <div className="flex items-center gap-3 px-6 py-6">
         <Logo />
         <span className="text-xl font-bold">NetFlow</span>
@@ -52,7 +52,7 @@ export function Sidebar() {
                 'flex items-center gap-3 rounded-full px-4 py-3 text-sm font-medium transition-all duration-200',
                 isActive
                   ? 'bg-brand text-white'
-                  : 'text-text-secondary hover:bg-white/5 hover:text-text-primary',
+                  : 'text-text-secondary hover:bg-surface/80 hover:text-text-primary',
               )
             }
           >
@@ -62,7 +62,7 @@ export function Sidebar() {
         ))}
       </nav>
 
-      <div className="px-3 py-3 space-y-2" style={{ boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06)' }}>
+      <div className="px-3 py-3 space-y-2 border-t border-border/30">
         <NavLink
           to="/settings"
           className={({ isActive }) =>
@@ -70,12 +70,12 @@ export function Sidebar() {
               'flex items-center gap-3 rounded-full px-4 py-3 text-sm font-medium transition-all duration-200',
               isActive
                 ? 'bg-brand text-white'
-                : 'text-text-secondary hover:bg-white/5 hover:text-text-primary',
-            )
-          }
-        >
-          <Settings className="h-5 w-5" />
-          Impostazioni
+: 'text-text-secondary hover:bg-surface/80 hover:text-text-primary',
+              )
+            }
+          >
+            <Settings className="h-5 w-5" />
+            Impostazioni
         </NavLink>
         <button
           onClick={handleLogout}

@@ -239,10 +239,10 @@ export function ClientsPage() {
                     </div>
                   </div>
                   <div className="flex gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity shrink-0">
-                    <button onClick={() => openEdit(client)} className="rounded-full p-1.5 text-text-secondary hover:bg-white/5 hover:text-brand min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0">
+                    <button onClick={() => openEdit(client)} className="rounded-full p-1.5 text-text-secondary hover:bg-surface/80 hover:text-brand min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0">
                       <Pencil className="h-3.5 md:h-4 w-3.5 md:w-4" />
                     </button>
-                    <button onClick={() => handleDelete(client.id)} className="rounded-full p-1.5 text-text-secondary hover:bg-white/5 hover:text-expense min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0">
+                    <button onClick={() => handleDelete(client.id)} className="rounded-full p-1.5 text-text-secondary hover:bg-surface/80 hover:text-expense min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0">
                       <Trash2 className="h-3.5 md:h-4 w-3.5 md:w-4" />
                     </button>
                   </div>

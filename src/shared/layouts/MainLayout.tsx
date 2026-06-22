@@ -23,7 +23,7 @@ export function MainLayout() {
       <BackupReminder />
       <Sidebar />
       <div className="lg:ml-[280px] md:ml-[72px] ml-0 pb-20 md:pb-0">
-        <header className="sticky top-0 z-30 flex items-center justify-between bg-surface-alt/80 backdrop-blur-md px-4 md:px-6 lg:px-8 py-3 md:py-4" style={{ boxShadow: '0 1px 0 rgba(255,255,255,0.06)' }}>
+        <header className="sticky top-0 z-30 flex items-center justify-between bg-surface-alt/80 backdrop-blur-md px-4 md:px-6 lg:px-8 py-3 md:py-4 border-b border-border/30">
           <div className="flex items-center gap-4">
             <div className="hidden md:block">
               <FiscalYearSelector />
@@ -32,7 +32,7 @@ export function MainLayout() {
           <div className="flex items-center gap-2 md:gap-4">
             <button
               onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { metaKey: true, key: 'k' }))}
-              className="hidden md:inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs text-text-secondary hover:bg-white/5 transition-all border border-border"
+              className="hidden md:inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs text-text-secondary hover:bg-surface/80 transition-all border border-border"
               title="Cerca (Cmd+K)"
             >
               <Search className="h-3.5 w-3.5" />
@@ -41,7 +41,7 @@ export function MainLayout() {
             </button>
             <button
               onClick={() => navigate('/guide')}
-              className="hidden md:inline-flex rounded-full p-2 text-text-secondary hover:bg-white/5 hover:text-brand transition-all"
+              className="hidden md:inline-flex rounded-full p-2 text-text-secondary hover:bg-surface/80 hover:text-brand transition-all"
               title="Guida Fiscale"
             >
               <Info className="h-5 w-5" />

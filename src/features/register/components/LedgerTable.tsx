@@ -148,7 +148,7 @@ export function LedgerTable({ entries, onViewDetail }: LedgerTableProps) {
                 <motion.tr
                   key={entry.id}
                   variants={item}
-                  className="border-b border-border/50 hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
+                  className="border-b border-border/50 hover:bg-surface/80 transition-colors cursor-pointer"
                   onClick={() => onViewDetail && onViewDetail(entry)}
                 >
                   <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap">

@@ -32,7 +32,7 @@ export function TagsManager() {
       </div>
 
       {showForm && (
-        <form onSubmit={handleCreate} className="space-y-3 p-4 rounded-xl bg-white/5">
+        <form onSubmit={handleCreate} className="space-y-3 p-4 rounded-xl bg-surface/60">
           <div>
             <label className="block text-sm font-medium mb-1">Nome</label>
             <input
@@ -50,7 +50,7 @@ export function TagsManager() {
                   key={c}
                   type="button"
                   onClick={() => setNewColor(c)}
-                  className={`h-8 w-8 rounded-full transition-all ${newColor === c ? 'ring-2 ring-white ring-offset-1 ring-offset-surface' : ''}`}
+                  className={`h-8 w-8 rounded-full transition-all ${newColor === c ? 'ring-2 ring-brand ring-offset-1 ring-offset-surface' : ''}`}
                   style={{ backgroundColor: c }}
                 />
               ))}
@@ -101,7 +101,7 @@ export function TagSelector({ selected, onChange }: { selected: string[]; onChan
           type="button"
           onClick={() => toggle(tag.id)}
           className={`rounded-full px-3 py-1 text-xs font-medium transition-all ${
-            selected.includes(tag.id) ? 'ring-1 ring-white' : 'opacity-60 hover:opacity-100'
+            selected.includes(tag.id) ? 'ring-1 ring-brand' : 'opacity-60 hover:opacity-100'
           }`}
           style={{ backgroundColor: tag.color + '20', color: tag.color }}
         >

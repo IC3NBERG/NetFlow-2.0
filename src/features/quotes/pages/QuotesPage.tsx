@@ -220,7 +220,7 @@ export function QuotesPage() {
                   />
                 </div>
               </div>
-              <div className="text-sm text-text-secondary space-y-1 p-3 rounded-xl bg-white/5">
+              <div className="text-sm text-text-secondary space-y-1 p-3 rounded-xl bg-surface/60">
                 <p>Netto: <span className="text-text-primary font-mono">{new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(netAmount)}</span></p>
                 <p>IVA: <span className="text-text-primary font-mono">{new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(taxAmount)}</span></p>
               </div>
