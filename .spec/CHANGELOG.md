@@ -7,6 +7,18 @@
 
 ---
 
+## [v0.32.1] - 2026-06-22
+### Stato: Security hardening — warning Supabase risolti
+- **Migrazione DB #015:** Fix warning Supabase lint:
+  - `public_bucket_allows_listing`: SELECT su storage scoped per user (attachments + logos)
+  - `anon_security_definer_function_executable`: REVOKE EXECUTE da anon su tutti gli RPC SECURITY DEFINER non necessari
+  - `handle_updated_at`: rimosso SECURITY DEFINER (trigger function)
+  - `auth_rls_initplan` (expenses): RLS riscritte con `(select auth.uid())` al posto di `auth.uid()` diretto
+  - `multiple_permissive_policies` (shares): unificate `shares_user_isolation` + `shares_token_access` in singola policy `shares_select`
+- **Build verificata:** `npx tsc --noEmit` — 0 errori. `npm run build` — OK.
+- **Test:** `npx vitest run` — 4/4 test passanti.
+- **Versione:** v0.32.1
+
 ## [v0.32.0] - 2026-06-22
 ### Stato: UX avanzata — Eventi calendario, auto-preventivo, navigazione ottimizzata
 - **[MEDIUM] Eventi calendario manuali:** Nuova tabella `custom_events` con RLS. Pulsante "Nuovo evento" in pagina `/calendar` e nel dettaglio giorno. Modal con titolo, descrizione, data, colore. Eliminazione immediata. `useCustomEvents` hook.
