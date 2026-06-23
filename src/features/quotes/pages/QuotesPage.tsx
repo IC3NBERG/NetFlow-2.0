@@ -218,7 +218,7 @@ export function QuotesPage() {
           amount_cash: quote.amount_cash,
           include_cash_in_invoice: quote.include_cash_in_invoice,
           net_amount: quote.net_amount,
-          status: 'completed_pending',
+          status: 'active',
         },
       })
       setToast({ message: 'Preventivo convertito in lavoro con successo', type: 'success' })

@@ -92,7 +92,7 @@ export function useConvertQuoteToJob() {
         amount_cash: number
         include_cash_in_invoice: boolean
         net_amount: number
-        status: 'completed_pending'
+        status: 'active'
       }
     }) => {
       if (!user) throw new Error('Not authenticated')
