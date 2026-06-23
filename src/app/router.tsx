@@ -55,8 +55,8 @@ export function AppRouter() {
         <Route path="/shared/:token" element={<SharedViewPage />} />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route element={<ProtectedRoute />}>
-          {protectedRouteConfig.map(({ path }) => (
-            <Route key={path} path={path} />
+          {protectedRouteConfig.map(({ path, element }) => (
+            <Route key={path} path={path} element={element} />
           ))}
         </Route>
         <Route path="*" element={<NotFoundPage />} />

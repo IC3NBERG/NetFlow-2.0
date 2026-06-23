@@ -27,6 +27,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      injectRegister: null,
       includeAssets: ['fonts/*', 'icons/*', 'logo.jpg'],
       manifest: {
         name: 'NetFlow',

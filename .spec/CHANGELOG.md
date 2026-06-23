@@ -7,6 +7,12 @@
 
 ---
 
+## [v0.34.2] - 2026-06-23
+### Stato: Fix PWA cache — aggiornamenti automatici senza cancellare cache
+- **[HIGH] PWA auto-update:** Sostituita la registrazione SW minima di `vite-plugin-pwa` con `workbox-window` in `src/lib/pwaRegistration.ts`. Quando viene rilevata una nuova versione, il Service Worker aggiornato prende subito il controllo e la pagina si ricarica automaticamente — l'utente non deve più svuotare la cache manualmente.
+- **[FIX] React Router warnings:** Passato `element` ai `<Route>` protetti in `router.tsx` e sostituita la ricerca manuale del componente in `MainLayout` con `<Outlet />` — eliminati i warning "Matched leaf route at location ... does not have an element or Component".
+- **Build:** `npx tsc --noEmit` — 0 errori. `npm run build` — ok.
+
 ## [v0.34.1] - 2026-06-23
 ### Stato: Fix pagine vuote nelle transizioni — rimosso AnimatePresence, key-based motion.div
 - **[FIX] Pagine vuote su cambio rotta:** Rimosso `AnimatePresence mode="wait"` e conditional rendering che causava pagine bianche durante le transizioni. Sostituito con `motion.div key={location.pathname}` + spring entrance (`opacity: 0→1, x: 30→0`). Quando il `key` cambia, React smonta immediatamente la vecchia pagina (nessun exit) e monta la nuova con entrance animation — zero pagine vuote.

@@ -1,11 +1,9 @@
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, Outlet, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Sidebar } from './Sidebar'
 import { BottomBar } from './BottomBar'
 import { useSync } from '../../app/providers/SyncProvider'
 import { useRealtimeSync } from '../../lib/hooks/useRealtimeSync'
-import { protectedRouteConfig } from '../../app/protectedRouteConfig'
-import { NotFoundPage } from '../../features/not-found/pages/NotFoundPage'
 import { SyncBanner } from '../../shared/ui/SyncBanner'
 import { BackupReminder } from '../../shared/ui/BackupReminder'
 import { NotificationCenter } from '../../shared/ui/NotificationCenter'
@@ -78,20 +76,14 @@ export function MainLayout() {
           </div>
         </header>
         <main className="p-4 md:p-6 lg:p-8">
-          {(() => {
-            const matched = protectedRouteConfig.find(r => r.path === location.pathname)
-            const content = matched?.element ?? <NotFoundPage />
-            return (
-              <motion.div
-                key={location.pathname}
-                initial={{ opacity: 0, x: 30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-              >
-                {content}
-              </motion.div>
-            )
-          })()}
+          <motion.div
+            key={location.pathname}
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+          >
+            <Outlet />
+          </motion.div>
         </main>
       </div>
       <BottomBar />
