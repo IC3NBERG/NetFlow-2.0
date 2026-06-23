@@ -13,7 +13,7 @@ export function useQuotes(clientId?: string | null) {
       if (!user) throw new Error('Not authenticated')
       let query = supabase
         .from('quotes')
-        .select('*, clients!inner(name)')
+        .select('*, clients(name)')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
       if (clientId) query = query.eq('client_id', clientId)
