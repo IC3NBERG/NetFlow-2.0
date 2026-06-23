@@ -43,12 +43,12 @@ export function useLedgerData() {
   const jobsQuery = useQuery({
     queryKey: ['ledger', 'jobs', year],
     queryFn: async () => {
-      const { data: user } = await supabase.auth.getUser()
-      if (!user.user) throw new Error('Not authenticated')
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.user) throw new Error('Not authenticated')
       const { data, error } = await supabase
         .from('jobs')
         .select('*')
-        .eq('user_id', user.user.id)
+        .eq('user_id', session.user.id)
         .in('status', ['completed_settled', 'completed_pending'])
         .gte('start_date', range.gte)
         .lte('start_date', range.lte)
@@ -62,12 +62,12 @@ export function useLedgerData() {
   const clientsQuery = useQuery({
     queryKey: ['ledger', 'clients'],
     queryFn: async () => {
-      const { data: user } = await supabase.auth.getUser()
-      if (!user.user) throw new Error('Not authenticated')
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.user) throw new Error('Not authenticated')
       const { data, error } = await supabase
         .from('clients')
         .select('*')
-        .eq('user_id', user.user.id)
+        .eq('user_id', session.user.id)
       if (error) throw error
       return (data ?? []) as unknown as Client[]
     },
@@ -77,12 +77,12 @@ export function useLedgerData() {
   const fiscalSetupQuery = useQuery({
     queryKey: ['ledger', 'fiscal_setup', year],
     queryFn: async () => {
-      const { data: user } = await supabase.auth.getUser()
-      if (!user.user) return null
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.user) return null
       const { data, error } = await supabase
         .from('fiscal_setups')
         .select('*')
-        .eq('user_id', user.user.id)
+        .eq('user_id', session.user.id)
         .eq('year', year)
         .maybeSingle()
       if (error) throw error

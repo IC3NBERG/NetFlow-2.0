@@ -223,7 +223,7 @@ export function JobFormModal({ open, onClose, onSubmit, initialData, isSubmittin
 
   const formContent = (
     <form onSubmit={handleSubmit(onSubmit)} className="w-full">
-      <FormSection title="Dati Principali">
+      <FormSection title="Dati Principali" className="relative z-30">
         <Input
           label="Titolo *"
           placeholder="Consulenza trimestrale"

@@ -12,12 +12,12 @@ export function useJobs() {
   return useQuery({
     queryKey: ['jobs', year],
     queryFn: async () => {
-      const { data: user } = await supabase.auth.getUser()
-      if (!user.user) throw new Error('Not authenticated')
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.user) throw new Error('Not authenticated')
       const { data, error } = await supabase
         .from('jobs')
         .select('*')
-        .eq('user_id', user.user.id)
+        .eq('user_id', session.user.id)
         .gte('start_date', range.gte)
         .lte('start_date', range.lte)
         .order('created_at', { ascending: false })
@@ -32,9 +32,9 @@ export function useCreateJob() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (job: Omit<Job, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
-      const { data: user } = await supabase.auth.getUser()
-      if (!user.user) throw new Error('Not authenticated')
-      const payload = { ...job, user_id: user.user.id }
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.user) throw new Error('Not authenticated')
+      const payload = { ...job, user_id: session.user.id }
       return executeWithSync(
         { table: 'jobs', operation: 'insert', payload },
         async () => {

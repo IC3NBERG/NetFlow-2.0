@@ -12,12 +12,12 @@ export function useInvoices() {
   return useQuery({
     queryKey: ['invoices', year],
     queryFn: async () => {
-      const { data: user } = await supabase.auth.getUser()
-      if (!user.user) throw new Error('Not authenticated')
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.user) throw new Error('Not authenticated')
       const { data, error } = await supabase
         .from('invoices')
         .select('*')
-        .eq('user_id', user.user.id)
+        .eq('user_id', session.user.id)
         .gte('issued_date', range.gte)
         .lte('issued_date', range.lte)
         .order('issued_date', { ascending: false })
@@ -32,9 +32,9 @@ export function useCreateInvoice() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (invoice: Omit<Invoice, 'id' | 'created_at'>) => {
-      const { data: user } = await supabase.auth.getUser()
-      if (!user.user) throw new Error('Not authenticated')
-      const payload = { ...invoice, user_id: user.user.id }
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.user) throw new Error('Not authenticated')
+      const payload = { ...invoice, user_id: session.user.id }
       return executeWithSync(
         { table: 'invoices', operation: 'insert', payload },
         async () => {

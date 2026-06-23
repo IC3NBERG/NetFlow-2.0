@@ -22,7 +22,6 @@ import {
   GripVertical,
   RotateCcw,
   Sliders,
-  Sparkles,
 } from 'lucide-react'
 import { type Theme } from '../../../types/database'
 
@@ -106,8 +105,7 @@ export function CustomizationPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl md:text-3xl font-bold flex items-center gap-2">
-          <Sparkles className="h-7 w-7 text-brand" />
+        <h2 className="text-2xl md:text-3xl font-bold">
           Personalizzazione
         </h2>
         <p className="text-xs md:text-sm text-text-secondary">

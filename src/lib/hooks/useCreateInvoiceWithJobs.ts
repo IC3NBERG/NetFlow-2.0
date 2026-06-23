@@ -38,11 +38,11 @@ export function useCreateInvoiceWithJobs() {
       const netAmount = grossAmount - taxAmount
       const invoiceNumber = await generateInvoiceNumber(type)
 
-      const { data: userData } = await supabase.auth.getUser()
-      if (!userData.user) throw new Error('Not authenticated')
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.user) throw new Error('Not authenticated')
 
       const payload = {
-        user_id: userData.user.id,
+        user_id: session.user.id,
         invoice_number: invoiceNumber,
         type,
         gross_amount: grossAmount,

@@ -8,12 +8,12 @@ export function useFiscalSetup() {
   return useQuery({
     queryKey: ['fiscal_setup', year],
     queryFn: async () => {
-      const { data: user } = await supabase.auth.getUser()
-      if (!user.user) return null
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.user) return null
       const { data, error } = await supabase
         .from('fiscal_setups')
         .select('*')
-        .eq('user_id', user.user.id)
+        .eq('user_id', session.user.id)
         .eq('year', year)
         .maybeSingle()
       if (error) throw error
@@ -34,13 +34,13 @@ export function useUpsertFiscalSetup() {
       goal_data?: GoalData
       custom_irpef_rate?: number | null
     }) => {
-      const { data: user } = await supabase.auth.getUser()
-      if (!user.user) throw new Error('Not authenticated')
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.user) throw new Error('Not authenticated')
 
       const { data, error } = await supabase
         .from('fiscal_setups')
         .upsert({
-          user_id: user.user.id,
+          user_id: session.user.id,
           year: setup.year,
           tax_regime: setup.tax_regime,
           financial_goal: setup.financial_goal,

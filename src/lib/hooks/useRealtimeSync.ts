@@ -7,12 +7,13 @@ export function useRealtimeSync() {
 
   useEffect(() => {
     let active = true
+    let channel: ReturnType<typeof supabase.channel> | null = null
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!active || !session?.user) return
       const uid = session.user.id
 
-      const channel = supabase
+      channel = supabase
         .channel(`netflow-${uid}`)
         .on('postgres_changes', { event: '*', schema: 'public', table: 'jobs', filter: `user_id=eq.${uid}` }, () => {
           queryClient.invalidateQueries({ queryKey: ['jobs'] })
@@ -33,14 +34,11 @@ export function useRealtimeSync() {
         .subscribe((_status: string, err?: Error) => {
           if (err) console.warn('[Realtime] Subscription error:', err.message)
         })
-
-      return () => {
-        supabase.removeChannel(channel)
-      }
     })
 
     return () => {
       active = false
+      if (channel) supabase.removeChannel(channel)
     }
   }, [queryClient])
 }

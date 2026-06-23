@@ -4,15 +4,17 @@ import { GlassCard } from '../../../shared/ui/GlassCard'
 import { Button } from '../../../shared/ui/Button'
 import { Input } from '../../../shared/ui/Input'
 import { Toast } from '../../../shared/ui/Toast'
+import { cn } from '../../../lib/utils'
 import {
-  LifeBuoy,
   ChevronDown,
   ChevronUp,
   Mail,
   Send,
   HelpCircle,
-  ShieldCheck,
-  Zap,
+  Bug,
+  Lightbulb,
+  MessageSquare,
+  Check,
 } from 'lucide-react'
 
 const faqs = [
@@ -34,7 +36,7 @@ const faqs = [
   },
   {
     question: 'I miei dati finanziari e personali sono al sicuro?',
-    answer: 'Assolutamente sì. La sicurezza dei tuoi dati è la nostra priorità. Tutte le informazioni vengono trasmesse tramite crittografia HTTPS sicura e memorizzate su database Supabase crittografati a riposo (AES-256). L\'accesso ai dati è protetto da policy di sicurezza rigorose (Row Level Security) per cui solo tu puoi accedere ai tuoi dati.',
+    answer: 'Assolutamente sì. La sicurezza dei tuoi dati è la nostra priorità. Tutte le informazioni vengono trasmesse tramite crittografia HTTPS sicura e memorizzate su database Supabase crittografati a riposo (AES-256). L\'accesso dei dati è protetto da policy di sicurezza rigorose (Row Level Security) per cui solo tu puoi accedere ai tuoi dati.',
   },
   {
     question: 'Come gestisco le spese e le uscite professionali?',
@@ -42,9 +44,16 @@ const faqs = [
   },
 ]
 
+const requestOptions = [
+  { value: 'bug', label: 'Segnala un Bug / Problema', icon: Bug, colorClass: 'text-expense bg-expense/10' },
+  { value: 'feature', label: 'Consiglia una Nuova Feature', icon: Lightbulb, colorClass: 'text-brand bg-brand/10' },
+  { value: 'other', label: 'Altro / Domanda generica', icon: MessageSquare, colorClass: 'text-text-secondary bg-text-secondary/10' },
+]
+
 export function HelpPage() {
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null)
   const [requestType, setRequestType] = useState('bug')
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [subject, setSubject] = useState('')
   const [description, setDescription] = useState('')
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
@@ -57,7 +66,12 @@ export function HelpPage() {
     }
 
     const email = 'giorgiocalleriall@gmail.com'
-    const typeLabel = requestType === 'bug' ? 'Segnalazione Bug' : 'Suggerimento Feature'
+    const typeLabel =
+      requestType === 'bug'
+        ? 'Segnalazione Bug'
+        : requestType === 'feature'
+        ? 'Suggerimento Feature'
+        : 'Altro / Domanda generica'
     const mailtoSubject = `[NetFlow Supporto] ${typeLabel}: ${subject.trim()}`
     const mailtoBody = `Tipo Richiesta: ${typeLabel}\n\nDescrizione Dettagliata:\n${description.trim()}\n\n---\nInviato da NetFlow contabilità`
 
@@ -79,11 +93,12 @@ export function HelpPage() {
     show: { opacity: 1, y: 0 },
   }
 
+  const selectedOption = requestOptions.find((opt) => opt.value === requestType) || requestOptions[0]
+
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl md:text-3xl font-bold flex items-center gap-2">
-          <LifeBuoy className="h-7 w-7 text-brand animate-pulse" />
+        <h2 className="text-2xl md:text-3xl font-bold">
           Centro Aiuto & FAQ
         </h2>
         <p className="text-xs md:text-sm text-text-secondary">
@@ -91,10 +106,10 @@ export function HelpPage() {
         </p>
       </div>
 
-      <motion.div variants={containerAnim} initial="hidden" animate="show" className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <motion.div variants={containerAnim} initial="hidden" animate="show" className="grid grid-cols-1 gap-6 lg:grid-cols-2 items-stretch">
         {/* LEFT COLUMN: FAQ Accordions */}
-        <motion.div variants={itemAnim} className="space-y-4">
-          <GlassCard className="p-4 md:p-6 space-y-4">
+        <motion.div variants={itemAnim} className="flex flex-col h-full">
+          <GlassCard className="p-4 md:p-6 space-y-4 flex-1 h-full">
             <div className="flex items-center gap-3">
               <HelpCircle className="h-5 w-5 text-brand" />
               <h3 className="text-base md:text-lg font-semibold">Domande Frequenti (FAQ)</h3>
@@ -138,24 +153,11 @@ export function HelpPage() {
               })}
             </div>
           </GlassCard>
-
-          <div className="grid grid-cols-2 gap-4">
-            <GlassCard className="p-4 flex flex-col items-center text-center gap-2">
-              <ShieldCheck className="h-7 w-7 text-success" />
-              <h4 className="text-xs md:text-sm font-bold text-text-primary">GDPR compliant</h4>
-              <p className="text-[10px] md:text-xs text-text-secondary">Dati personali crittografati al sicuro</p>
-            </GlassCard>
-            <GlassCard className="p-4 flex flex-col items-center text-center gap-2">
-              <Zap className="h-7 w-7 text-brand" />
-              <h4 className="text-xs md:text-sm font-bold text-text-primary">Sempre Online/Offline</h4>
-              <p className="text-[10px] md:text-xs text-text-secondary">Funziona anche senza connessione internet</p>
-            </GlassCard>
-          </div>
         </motion.div>
 
         {/* RIGHT COLUMN: Contact & Suggestion Form */}
-        <motion.div variants={itemAnim}>
-          <GlassCard className="p-4 md:p-6 space-y-4">
+        <motion.div variants={itemAnim} className="flex flex-col h-full">
+          <GlassCard className="p-4 md:p-6 space-y-4 flex-1 h-full">
             <div className="flex items-center gap-3">
               <Mail className="h-5 w-5 text-brand" />
               <h3 className="text-base md:text-lg font-semibold">Contatta il Creatore</h3>
@@ -167,15 +169,64 @@ export function HelpPage() {
             <form onSubmit={handleSubmit} className="space-y-4 pt-2">
               <div>
                 <label className="block text-sm font-semibold text-text-primary mb-1.5">Tipo di richiesta</label>
-                <select
-                  value={requestType}
-                  onChange={(e) => setRequestType(e.target.value)}
-                  className="w-full rounded-input border border-border bg-surface px-4 py-3 text-text-primary focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all"
-                >
-                  <option value="bug">🐛 Segnala un Bug / Problema</option>
-                  <option value="feature">💡 Consiglia una Nuova Feature</option>
-                  <option value="other">💬 Altro / Domanda generica</option>
-                </select>
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    className={cn(
+                      'w-full rounded-input border border-border px-4 py-2.5 min-h-[48px] bg-surface text-left flex items-center justify-between transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent',
+                      isDropdownOpen && 'border-brand/50 ring-2 ring-brand/30'
+                    )}
+                  >
+                    <span className="text-text-primary flex items-center gap-2.5 text-sm">
+                      {selectedOption && (
+                        <>
+                          <span className={cn("p-1.5 rounded-lg shrink-0", selectedOption.colorClass)}>
+                            <selectedOption.icon className="h-4 w-4" />
+                          </span>
+                          {selectedOption.label}
+                        </>
+                      )}
+                    </span>
+                    <ChevronDown className={cn("h-4 w-4 text-text-secondary transition-transform duration-200", isDropdownOpen && "rotate-180")} />
+                  </button>
+
+                  {isDropdownOpen && (
+                    <>
+                      <div className="fixed inset-0 z-10" onClick={() => setIsDropdownOpen(false)} />
+                      <div className="absolute z-20 mt-1.5 w-full overflow-hidden rounded-xl border border-border bg-surface shadow-2xl animate-in fade-in slide-in-from-top-1 duration-150 p-1">
+                        {requestOptions.map((opt) => {
+                          const Icon = opt.icon
+                          const isSelected = opt.value === requestType
+                          return (
+                            <button
+                              key={opt.value}
+                              type="button"
+                              onClick={() => {
+                                setRequestType(opt.value)
+                                setIsDropdownOpen(false)
+                              }}
+                              className={cn(
+                                "flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-sm transition-colors",
+                                isSelected
+                                  ? "bg-brand/10 text-brand font-medium"
+                                  : "text-text-primary hover:bg-text-secondary/10"
+                              )}
+                            >
+                              <div className="flex items-center gap-2.5">
+                                <span className={cn("p-1.5 rounded-lg shrink-0", opt.colorClass)}>
+                                  <Icon className="h-4 w-4" />
+                                </span>
+                                <span>{opt.label}</span>
+                              </div>
+                              {isSelected && <Check className="h-4 w-4 text-brand shrink-0" />}
+                            </button>
+                          )
+                        })}
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
 
               <Input

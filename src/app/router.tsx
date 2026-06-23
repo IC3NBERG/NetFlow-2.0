@@ -4,6 +4,7 @@ import { MainLayout } from '../shared/layouts/MainLayout'
 import { useAuth } from './providers/AuthProvider'
 import { PageLoader } from '../shared/ui/PageLoader'
 import { lazyPage } from './protectedRouteConfig'
+import { useCustomizationStore } from '../lib/stores/customization'
 import { LoginPage } from '../features/auth/pages/LoginPage'
 import { RegisterPage as SignUpPage } from '../features/auth/pages/RegisterPage'
 import { ForgotPasswordPage } from '../features/auth/pages/ForgotPasswordPage'
@@ -16,6 +17,11 @@ function needsOnboarding(user: { full_name: string | null; tax_regime: string | 
   return !user.full_name || user.full_name.length < 2
 }
 
+function useHomeRoute(): string {
+  const sidebarOrder = useCustomizationStore((s) => s.sidebarOrder)
+  return sidebarOrder[0] ?? '/dashboard'
+}
+
 function AuthGate({ children }: { children: ReactNode }) {
   const { user, isLoading } = useAuth()
   if (isLoading) return <PageLoader />
@@ -26,21 +32,28 @@ function AuthGate({ children }: { children: ReactNode }) {
 
 function OnboardingGuard({ children }: { children: ReactNode }) {
   const { user, isLoading } = useAuth()
+  const homeRoute = useHomeRoute()
   if (isLoading) return <PageLoader />
   if (!user) return <Navigate to="/login" replace />
-  if (!needsOnboarding(user)) return <Navigate to="/dashboard" replace />
+  if (!needsOnboarding(user)) return <Navigate to={homeRoute} replace />
   return children
 }
 
 function PublicRoute({ children }: { children: ReactNode }) {
   const { user, isLoading, clearError } = useAuth()
+  const homeRoute = useHomeRoute()
   useEffect(() => { clearError() }, [clearError])
   if (isLoading) return <PageLoader />
   if (user) {
     if (needsOnboarding(user)) return <Navigate to="/onboarding" replace />
-    return <Navigate to="/dashboard" replace />
+    return <Navigate to={homeRoute} replace />
   }
   return children
+}
+
+function HomeRedirect() {
+  const homeRoute = useHomeRoute()
+  return <Navigate to={homeRoute} replace />
 }
 
 export function AppRouter() {
@@ -53,7 +66,7 @@ export function AppRouter() {
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/onboarding" element={<OnboardingGuard><OnboardingPage /></OnboardingGuard>} />
         <Route path="/shared/:token" element={<SharedViewPage />} />
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/" element={<HomeRedirect />} />
 
         <Route path="/dashboard" element={<AuthGate><Suspense fallback={<PageLoader />}><lazyPage.DashboardPage /></Suspense></AuthGate>} />
         <Route path="/jobs" element={<AuthGate><Suspense fallback={<PageLoader />}><lazyPage.JobsPage /></Suspense></AuthGate>} />

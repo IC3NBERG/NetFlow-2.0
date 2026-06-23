@@ -17,13 +17,13 @@ export function useExpenses() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['expenses', year],
     queryFn: async () => {
-      const { data: user } = await supabase.auth.getUser()
-      if (!user.user) throw new Error('Not authenticated')
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.user) throw new Error('Not authenticated')
 
       const { data, error } = await supabase
         .from('expenses')
         .select('*')
-        .eq('user_id', user.user.id)
+        .eq('user_id', session.user.id)
         .gte('date', range.gte)
         .lte('date', range.lte)
         .order('date', { ascending: false })
@@ -35,9 +35,9 @@ export function useExpenses() {
 
   const createExpense = useMutation({
     mutationFn: async (expense: InsertExpense) => {
-      const { data: user } = await supabase.auth.getUser()
-      if (!user.user) throw new Error('Not authenticated')
-      const payload = { ...expense, user_id: user.user.id }
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.user) throw new Error('Not authenticated')
+      const payload = { ...expense, user_id: session.user.id }
       return executeWithSync(
         { table: 'expenses', operation: 'insert', payload },
         async () => {
