@@ -73,6 +73,7 @@ export function useUpdateQuoteStatus() {
 
 export function useConvertQuoteToJob() {
   const queryClient = useQueryClient()
+  const { user } = useAuth()
   return useMutation({
     mutationFn: async ({
       quoteId,
@@ -86,10 +87,12 @@ export function useConvertQuoteToJob() {
         status: 'completed_pending'
       }
     }) => {
+      if (!user) throw new Error('Not authenticated')
       const { data: job, error: jobError } = await supabase
         .from('jobs')
         .insert({
           ...jobData,
+          user_id: user.id,
           net_amount: jobData.amount_card,
           start_date: new Date().toISOString().split('T')[0],
         })
