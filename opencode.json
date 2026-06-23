@@ -1,0 +1,12 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": [
+    ".spec/rules.md"
+  ],
+  "references": {
+    "spec": {
+      "path": ".spec",
+      "description": "Tutte le specifiche del progetto — SCHEMA, UI_UX_SPEC, ARCHITECTURE, PRD, COMMANDS, PROCESS_AND_AGENTS, CHANGELOG — da consultare e aggiornare obbligatoriamente a ogni modifica."
+    }
+  }
+}

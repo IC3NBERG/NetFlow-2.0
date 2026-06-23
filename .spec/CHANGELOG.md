@@ -8,7 +8,9 @@
 ---
 
 ## [v0.33.0] - 2026-06-22
-### Stato: Condivisione funzionante — SharedViewPage + SCHEMA.md aggiornato
+### Stato: Condivisione funzionante + Regole automatiche AI — SharedViewPage + SCHEMA.md aggiornato
+- **Regole AI:** Creato `opencode.json` con `instructions` → `.spec/rules.md`. Ogni sessione ora carica automaticamente le regole: aggiornare CHANGELOG.md a ogni modifica, rispettare tutti i file `.spec/`, verificare TSC/build/test prima di concludere.
+- **References:** `.spec/` aggiunto come reference `@spec` per accesso rapido ai file di specifica.
 - **Migrazione DB #016:** Nuovo RPC `get_shared_data(token)` SECURITY DEFINER — valida token/scadenza, restituisce profilo + lavori + fatture + clienti + uscite + preventivi dell'utente. GRANT EXECUTE ad anon per accesso pubblico.
 - **Condivisione commercialista (#10):** Creata `SharedViewPage` — pagina pubblica su `/shared/:token` con dashboard read-only (stats card, lista lavori/fatture/preventivi, griglia clienti/uscite). Gestione errori per token invalido o scaduto.
 - **Router:** Route `/shared/:token` aggiunta come rotta pubblica (nessun auth richiesto).
