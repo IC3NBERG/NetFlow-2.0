@@ -7,6 +7,11 @@
 
 ---
 
+## [v0.34.5] - 2026-06-23
+### Stato: Fix 403 preventivi/lavori/fatture — auth.uid() diretto su tutte le RLS
+- **[CRITICAL] Fix 403 preventivi, lavori, fatture — auth.uid() diretto:** Migrazione 021 (`20260623000005_fix_all_rls_authuid.sql`). Le policy RLS di `quotes`, `jobs` e `invoices` usavano ancora `(select auth.uid())` (subquery introdotta in migration 019), che in alcuni progetti Supabase restituisce NULL causando 403 su ogni operazione. Sostituito con `auth.uid()` diretto — stessa fix di migration 020 per `clients`. **File:** `supabase/migrations/20260623000005_fix_all_rls_authuid.sql`
+- **Build:** `npx tsc --noEmit` — 0 errori. `npm run build` — ok.
+
 ## [v0.34.4] - 2026-06-23
 ### Stato: Fix 403 creazione preventivi, 400 condivisione, query builder sicuro, fix 403 clienti
 - **[CRITICAL] Fix 403 clienti — auth.uid() diretto:** Migrazione 020 (`20260623000004_fix_clients_rls_authuid.sql`). Le policy RLS usavano `(select auth.uid())` come subquery (fix warning Supabase advisor introdotto in migrazione 005), che in alcuni progetti Supabase può restituire NULL. Sostituito con `auth.uid()` diretto — pattern originale della migrazione 001. **File:** `supabase/migrations/20260623000004_fix_clients_rls_authuid.sql`
