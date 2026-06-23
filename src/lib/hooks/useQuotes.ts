@@ -1,19 +1,22 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../supabase'
+import { executeWithSync } from '../syncExecute'
+import { OfflineQueuedError } from '../syncBridge'
 import { useAuth } from '../../app/providers/AuthProvider'
 import type { Quote } from '../../types/database'
 
 export function useQuotes(clientId?: string | null) {
   const { user } = useAuth()
-  let query = supabase
-    .from('quotes')
-    .select('*, clients!inner(name)')
-    .eq('user_id', user!.id)
-    .order('created_at', { ascending: false })
-  if (clientId) query = query.eq('client_id', clientId)
   return useQuery({
     queryKey: ['quotes', user?.id, clientId],
     queryFn: async () => {
+      if (!user) throw new Error('Not authenticated')
+      let query = supabase
+        .from('quotes')
+        .select('*, clients!inner(name)')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+      if (clientId) query = query.eq('client_id', clientId)
       const { data, error } = await query
       if (error) throw error
       return data as (Quote & { clients: { name: string } | null })[]
@@ -37,17 +40,22 @@ export function useCreateQuote() {
       valid_until?: string
       notes?: string
     }) => {
+      if (!user) throw new Error('Not authenticated')
       const quoteNumber = `P-${new Date().getFullYear()}-${Date.now().toString(36).toUpperCase()}`
-      const { data, error } = await supabase
-        .from('quotes')
-        .insert({ ...quote, user_id: user!.id, quote_number: quoteNumber })
-        .select()
-        .single()
-      if (error) throw error
-      return data as Quote
+      const payload = { ...quote, user_id: user.id, quote_number: quoteNumber }
+      return executeWithSync(
+        { table: 'quotes', operation: 'insert', payload },
+        async () => {
+          const { data, error } = await supabase.from('quotes').insert(payload).select().single()
+          if (error) throw error
+          return data as Quote
+        },
+      )
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['quotes'] })
+    onSettled: (_data, error) => {
+      if (!error || error instanceof OfflineQueuedError) {
+        queryClient.invalidateQueries({ queryKey: ['quotes'] })
+      }
     },
   })
 }

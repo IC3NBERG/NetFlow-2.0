@@ -1,5 +1,8 @@
--- Migration 016: Shared data RPC for accountant access via share token
-
+-- Migration 018: Fix get_shared_data — ORDER BY inside jsonb_agg
+-- Root cause: ORDER BY was placed OUTSIDE jsonb_agg aggregate function
+-- causing PostgreSQL error 42803:
+--   "column j.created_at must appear in the GROUP BY clause or be used in an aggregate function"
+-- Fix: move ORDER BY inside jsonb_agg(... ORDER BY col) syntax
 SET search_path = '';
 
 CREATE OR REPLACE FUNCTION public.get_shared_data(token text)
@@ -13,23 +16,19 @@ DECLARE
   uid uuid;
   result jsonb;
 BEGIN
-  -- Validate token and get share record
   SELECT * INTO share_record FROM public.shares WHERE shares.token = get_shared_data.token;
   IF share_record.id IS NULL THEN
     RAISE EXCEPTION 'Share token not found';
   END IF;
 
-  -- Check expiration
   IF share_record.expires_at IS NOT NULL AND share_record.expires_at < now() THEN
     RAISE EXCEPTION 'Share link expired';
   END IF;
 
   uid := share_record.user_id;
 
-  -- Update last_accessed
   UPDATE public.shares SET last_accessed = now() WHERE id = share_record.id;
 
-  -- Build result JSON
   SELECT jsonb_build_object(
     'profile', (SELECT row_to_json(p)::jsonb FROM public.profiles p WHERE p.id = uid),
     'jobs', (SELECT COALESCE(jsonb_agg(row_to_json(j)::jsonb ORDER BY j.created_at DESC), '[]'::jsonb) FROM public.jobs j WHERE j.user_id = uid),

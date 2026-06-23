@@ -7,6 +7,14 @@
 
 ---
 
+## [v0.34.4] - 2026-06-23
+### Stato: Fix 403 creazione preventivi, 400 condivisione, query builder sicuro
+- **[CRITICAL] Fix condivisione — get_shared_data 400:** Migrazione 018 (`20260623000002_fix_get_shared_data.sql`) corregge la funzione RPC `get_shared_data`. **Root cause:** `ORDER BY j.created_at DESC` era posto FUORI dall'aggregato `jsonb_agg`, causando l'errore PostgreSQL 42803 _"column j.created_at must appear in the GROUP BY clause or be used in an aggregate function"_. Fix: spostato `ORDER BY` DENTRO `jsonb_agg(... ORDER BY col)`. Tutte e 5 le subquery (jobs, clients, invoices, expenses, quotes) sono state corrette. Migrazione 016 (`20260622000005_shared_data_rpc.sql`) aggiornata come source of truth.
+- **[HIGH] Fix 403 preventivi + clienti — RLS reset:** Migrazione 019 (`20260623000003_ensure_rls_policies.sql`) droppa e ricrea tutte le policy RLS per `clients`, `quotes`, `jobs`, `invoices` con policy esplicite `FOR SELECT`/`FOR INSERT`/`FOR UPDATE`/`FOR DELETE` e target `TO authenticated`. La precedente policy unica `quotes_user_isolation` (senza `FOR` clause) è stata sostituita da 4 policy separate per operazione.
+- **[MEDIUM] Fix useCreateQuote:** Aggiunto `executeWithSync` wrapper, guard `if (!user) throw new Error('Not authenticated')`, e `onSettled` con check `OfflineQueuedError` — allineato a `useCreateClient`. **File:** `src/lib/hooks/useQuotes.ts`.
+- **[MEDIUM] Fix useQuotes crash su user null:** Spostata costruzione query Supabase dentro `queryFn` invece di farla durante il render — eliminato `user!` che causava TypeError se `user = null` al primo render. La query ora costruisce `.eq('user_id', user.id)` solo dopo il guard `if (!user)`. **File:** `src/lib/hooks/useQuotes.ts`.
+- **Build:** `npx tsc --noEmit` — 0 errori. `npm run build` — ok.
+
 ## [v0.34.3] - 2026-06-23
 ### Stato: Fix route warnings e 403 creazione clienti
 - **[FIX] Route warnings "Matched leaf route" definitivo:** Sostituito il pattern `<Route element={<ProtectedRoute />}>` layout-route (che causava i warning in React Router v7) con `AuthGate` wrapper esplicito su ogni rotta protetta in `src/app/router.tsx`. Ogni `<Route>` ha ora un `element` diretto (`<AuthGate><Suspense ...><Page /></Suspense></AuthGate>`) — non più layout route con Outlet condizionale. `MainLayout` in `src/shared/layouts/MainLayout.tsx` accetta `children` opzionali con fallback a `<Outlet />`.

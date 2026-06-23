@@ -47,7 +47,7 @@ export interface DashboardKPIs {
 
 export interface SyncQueueItem {
   id: string
-  table: 'jobs' | 'transactions' | 'invoices' | 'clients' | 'profiles' | 'user_settings' | 'expenses' | 'fiscal_setups' | 'invoice_jobs'
+  table: 'jobs' | 'transactions' | 'invoices' | 'clients' | 'profiles' | 'user_settings' | 'expenses' | 'fiscal_setups' | 'invoice_jobs' | 'quotes'
   operation: 'insert' | 'update' | 'delete'
   payload: Record<string, unknown>
   record_id?: string
