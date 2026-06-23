@@ -108,11 +108,6 @@ export function QuotesPage() {
           <EmptyState
             title="Nessun preventivo"
             description="Crea il tuo primo preventivo da inviare ai clienti"
-            action={
-              <Button onClick={() => setShowForm(true)}>
-                <Plus className="h-4 w-4" /> Crea Preventivo
-              </Button>
-            }
           />
         </GlassCard>
       ) : (

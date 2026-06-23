@@ -7,6 +7,10 @@
 
 ---
 
+## [v0.33.1] - 2026-06-23
+### Stato: Rimossi bordi divider — sidebar, header, bottom bar
+- **UI Fix:** Rimossi tutti i bordi divider (`border-r`, `border-b`, `border-t`) da `Sidebar`, `MainLayout` e `BottomBar`. Il sito ora usa solo sfondi semi-trasparenti e ombre per separare le sezioni, senza linee visibili in dark e light mode.
+
 ## [v0.33.0] - 2026-06-22
 ### Stato: Condivisione funzionante + Regole automatiche AI — SharedViewPage + SCHEMA.md aggiornato
 - **Regole AI:** Creato `opencode.json` con `instructions` → `.spec/rules.md`. Ogni sessione ora carica automaticamente le regole: aggiornare CHANGELOG.md a ogni modifica, rispettare tutti i file `.spec/`, verificare TSC/build/test prima di concludere.

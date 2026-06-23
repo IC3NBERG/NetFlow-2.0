@@ -16,7 +16,7 @@ const bottomNavItems = [
 
 export function BottomBar() {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 flex items-center justify-around bg-surface/80 backdrop-blur-xl px-2 py-2 md:hidden border-t border-border/30">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 flex items-center justify-around bg-surface/80 backdrop-blur-xl px-2 py-2 md:hidden">
       {bottomNavItems.map((item) => (
         <NavLink
           key={item.to}

@@ -36,7 +36,7 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="fixed left-0 top-0 z-40 hidden h-screen w-[280px] flex-col bg-surface/60 backdrop-blur-xl md:flex border-r border-border/30">
+    <aside className="fixed left-0 top-0 z-40 hidden h-screen w-[280px] flex-col bg-surface/60 backdrop-blur-xl md:flex">
       <div className="flex items-center gap-3 px-6 py-6">
         <Logo />
         <span className="text-xl font-bold">NetFlow</span>
@@ -62,7 +62,7 @@ export function Sidebar() {
         ))}
       </nav>
 
-      <div className="px-3 py-3 space-y-2 border-t border-border/30">
+      <div className="px-3 py-3 space-y-2">
         <NavLink
           to="/settings"
           className={({ isActive }) =>
