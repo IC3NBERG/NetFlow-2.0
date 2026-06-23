@@ -85,7 +85,6 @@ export function EmptyState({
     <div
       className={cn(
         'flex flex-col items-center justify-center p-8 text-center animate-in fade-in zoom-in-95 duration-500',
-        'bg-surface/60 backdrop-blur-xl rounded-2xl',
         className,
       )}
     >

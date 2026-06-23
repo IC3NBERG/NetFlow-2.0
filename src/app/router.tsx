@@ -8,6 +8,7 @@ import { ForgotPasswordPage } from '../features/auth/pages/ForgotPasswordPage'
 import { ResetPasswordPage } from '../features/auth/pages/ResetPasswordPage'
 import { OnboardingPage } from '../features/auth/pages/OnboardingPage'
 import { NotFoundPage } from '../features/not-found/pages/NotFoundPage'
+import { SharedViewPage } from '../features/shared/pages/SharedViewPage'
 
 const DashboardPage = lazy(() => import('../features/dashboard/pages/DashboardPage').then(m => ({ default: m.DashboardPage })))
 const JobsPage = lazy(() => import('../features/jobs/pages/JobsPage').then(m => ({ default: m.JobsPage })))
@@ -73,6 +74,7 @@ export function AppRouter() {
         <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordPage /></PublicRoute>} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/onboarding" element={<OnboardingGuard><OnboardingPage /></OnboardingGuard>} />
+        <Route path="/shared/:token" element={<SharedViewPage />} />
         <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
           <Route path="/dashboard" element={<Suspense fallback={<PageLoader />}><DashboardPage /></Suspense>} />
           <Route path="/jobs" element={<Suspense fallback={<PageLoader />}><JobsPage /></Suspense>} />
