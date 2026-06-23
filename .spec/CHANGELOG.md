@@ -7,6 +7,11 @@
 
 ---
 
+## [v0.34.6] - 2026-06-23
+### Stato: Fix 403 creazione clienti — audit_log RLS policies mancanti
+- **[CRITICAL] Fix 403 creazione clienti — audit_log RLS:** Migrazione 022 (`20260623000006_fix_audit_log_rls.sql`). La tabella `audit_log` aveva RLS attivo ma solo una policy `FOR SELECT`. Il trigger `audit_clients` (e `audit_jobs`, `audit_invoices`, `audit_expenses`, `audit_quotes`) tentava di inserire in `audit_log` ma veniva bloccato da RLS, causando 403 su ogni INSERT/UPDATE/DELETE delle tabelle tracciate. Aggiunte policy `INSERT`, `UPDATE`, `DELETE` con `auth.uid() = user_id`.
+- **Build:** `npx tsc --noEmit` — 0 errori.
+
 ## [v0.34.5] - 2026-06-23
 ### Stato: Fix 403 preventivi/lavori/fatture — auth.uid() diretto su tutte le RLS
 - **[CRITICAL] Fix 403 preventivi, lavori, fatture — auth.uid() diretto:** Migrazione 021 (`20260623000005_fix_all_rls_authuid.sql`). Le policy RLS di `quotes`, `jobs` e `invoices` usavano ancora `(select auth.uid())` (subquery introdotta in migration 019), che in alcuni progetti Supabase restituisce NULL causando 403 su ogni operazione. Sostituito con `auth.uid()` diretto — stessa fix di migration 020 per `clients`. **File:** `supabase/migrations/20260623000005_fix_all_rls_authuid.sql`

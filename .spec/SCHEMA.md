@@ -352,9 +352,23 @@ CREATE INDEX idx_audit_log_table ON audit_log(table_name);
 CREATE INDEX idx_audit_log_created ON audit_log(created_at);
 
 ALTER TABLE audit_log ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "audit_log_user_isolation" ON audit_log
-  FOR SELECT
-  USING ((select auth.uid()) = user_id);
+
+CREATE POLICY "audit_log_select" ON audit_log
+  FOR SELECT TO authenticated
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "audit_log_insert" ON audit_log
+  FOR INSERT TO authenticated
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "audit_log_update" ON audit_log
+  FOR UPDATE TO authenticated
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "audit_log_delete" ON audit_log
+  FOR DELETE TO authenticated
+  USING (auth.uid() = user_id);
 ```
 
 ### 2.12 shares
