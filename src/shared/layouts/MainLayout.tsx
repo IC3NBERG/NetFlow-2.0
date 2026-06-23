@@ -11,8 +11,9 @@ import { FiscalYearSelector } from '../../shared/ui/FiscalYearSelector'
 import { CommandPalette } from '../../shared/ui/CommandPalette'
 import { cn } from '../../lib/utils'
 import { Info, Search } from 'lucide-react'
+import type { ReactNode } from 'react'
 
-export function MainLayout() {
+export function MainLayout({ children }: { children?: ReactNode }) {
   const { isOnline, queueLength, isSyncing, syncStatus } = useSync()
   const navigate = useNavigate()
   const location = useLocation()
@@ -82,7 +83,7 @@ export function MainLayout() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ type: 'spring', stiffness: 320, damping: 28 }}
           >
-            <Outlet />
+            {children ?? <Outlet />}
           </motion.div>
         </main>
       </div>

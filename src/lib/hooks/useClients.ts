@@ -2,33 +2,35 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../supabase'
 import { executeWithSync } from '../syncExecute'
 import { OfflineQueuedError } from '../syncBridge'
+import { useAuth } from '../../app/providers/AuthProvider'
 import type { Client } from '../../types/database'
 
 export function useClients() {
+  const { user } = useAuth()
   return useQuery({
-    queryKey: ['clients'],
+    queryKey: ['clients', user?.id],
     queryFn: async () => {
-      const { data: user } = await supabase.auth.getUser()
-      if (!user.user) throw new Error('Not authenticated')
+      if (!user) throw new Error('Not authenticated')
       const { data, error } = await supabase
         .from('clients')
         .select('*')
-        .eq('user_id', user.user.id)
+        .eq('user_id', user.id)
         .order('name', { ascending: true })
       if (error) throw error
       return (data ?? []) as unknown as Client[]
     },
     staleTime: 1000 * 60 * 5,
+    enabled: !!user,
   })
 }
 
 export function useCreateClient() {
   const queryClient = useQueryClient()
+  const { user } = useAuth()
   return useMutation({
     mutationFn: async (client: Omit<Client, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
-      const { data: user } = await supabase.auth.getUser()
-      if (!user.user) throw new Error('Not authenticated')
-      const payload = { ...client, user_id: user.user.id }
+      if (!user) throw new Error('Not authenticated')
+      const payload = { ...client, user_id: user.id }
       return executeWithSync(
         { table: 'clients', operation: 'insert', payload },
         async () => {

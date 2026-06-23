@@ -7,10 +7,12 @@
 
 ---
 
-## [v0.34.2] - 2026-06-23
-### Stato: Fix PWA cache — aggiornamenti automatici senza cancellare cache
-- **[HIGH] PWA auto-update:** Sostituita la registrazione SW minima di `vite-plugin-pwa` con `workbox-window` in `src/lib/pwaRegistration.ts`. Quando viene rilevata una nuova versione, il Service Worker aggiornato prende subito il controllo e la pagina si ricarica automaticamente — l'utente non deve più svuotare la cache manualmente.
-- **[FIX] React Router warnings:** Passato `element` ai `<Route>` protetti in `router.tsx` e sostituita la ricerca manuale del componente in `MainLayout` con `<Outlet />` — eliminati i warning "Matched leaf route at location ... does not have an element or Component".
+## [v0.34.3] - 2026-06-23
+### Stato: Fix route warnings e 403 creazione clienti
+- **[FIX] Route warnings "Matched leaf route" definitivo:** Sostituito il pattern `<Route element={<ProtectedRoute />}>` layout-route (che causava i warning in React Router v7) con `AuthGate` wrapper esplicito su ogni rotta protetta in `src/app/router.tsx`. Ogni `<Route>` ha ora un `element` diretto (`<AuthGate><Suspense ...><Page /></Suspense></AuthGate>`) — non più layout route con Outlet condizionale. `MainLayout` in `src/shared/layouts/MainLayout.tsx` accetta `children` opzionali con fallback a `<Outlet />`.
+- **[FIX] 403 creazione clienti:** Sostituito `supabase.auth.getUser()` con `useAuth()` context in `src/lib/hooks/useClients.ts`. Le query/mutation ora usano il `user` dal React context invece di chiamare l'API Auth (che può restituire un token divergente dal JWT usato nella richiesta REST, causando mismatch RLS). Query key aggiornato a `['clients', user?.id]` con `enabled: !!user`.
+- **Root cause route warnings:** React Router v7 emette il warning "Matched leaf route at location ... does not have an element or Component" quando un layout route (`<Route element={<ConditionalComponent />}>`) con `children` generati via `.map()` viene renderizzato — il nodo foglia non ha un `element` esplicito assegnato.
+- **Root cause 403 clienti:** `supabase.auth.getUser()` fa una validazione JWT via rete che può forzare un refresh del token; la richiesta `insert()` successiva può usare un token diverso da quello validato, causando `auth.uid() != user_id` in RLS.
 - **Build:** `npx tsc --noEmit` — 0 errori. `npm run build` — ok.
 
 ## [v0.34.1] - 2026-06-23
