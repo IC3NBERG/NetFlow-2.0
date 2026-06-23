@@ -22,6 +22,7 @@ const AccountPage = lazy(() => import('../features/account/pages/AccountPage').t
 const LegalPage = lazy(() => import('../features/legal/pages/LegalPage').then(m => ({ default: m.LegalPage })))
 const QuotesPage = lazy(() => import('../features/quotes/pages/QuotesPage').then(m => ({ default: m.QuotesPage })))
 const CalendarPage = lazy(() => import('../features/calendar/pages/CalendarPage').then(m => ({ default: m.CalendarPage })))
+const ChangelogPage = lazy(() => import('../features/changelog/pages/ChangelogPage').then(m => ({ default: m.ChangelogPage })))
 
 function PageLoader() {
   return (
@@ -88,6 +89,7 @@ export function AppRouter() {
           <Route path="/guide" element={<Suspense fallback={<PageLoader />}><GuidePage /></Suspense>} />
           <Route path="/account" element={<Suspense fallback={<PageLoader />}><AccountPage /></Suspense>} />
           <Route path="/legal" element={<Suspense fallback={<PageLoader />}><LegalPage /></Suspense>} />
+          <Route path="/changelog" element={<Suspense fallback={<PageLoader />}><ChangelogPage /></Suspense>} />
         </Route>
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="*" element={<NotFoundPage />} />

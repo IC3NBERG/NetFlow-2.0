@@ -10,6 +10,7 @@ import {
   LogOut,
   FileSpreadsheet,
   CalendarDays,
+  History,
 } from 'lucide-react'
 import { cn } from '../../lib/utils'
 import { useAuth } from '../../app/providers/AuthProvider'
@@ -76,6 +77,20 @@ export function Sidebar() {
           >
             <Settings className="h-5 w-5" />
             Impostazioni
+        </NavLink>
+        <NavLink
+          to="/changelog"
+          className={({ isActive }) =>
+            cn(
+              'flex items-center gap-3 rounded-full px-4 py-3 text-sm font-medium transition-all duration-200',
+              isActive
+                ? 'bg-brand text-white'
+: 'text-text-secondary hover:bg-surface/80 hover:text-text-primary',
+              )
+            }
+          >
+            <History className="h-5 w-5" />
+            Changelog
         </NavLink>
         <button
           onClick={handleLogout}
