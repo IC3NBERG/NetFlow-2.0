@@ -97,9 +97,14 @@ export function QuotesPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-4xl font-bold">Preventivi</h1>
-        <Button onClick={() => setShowForm(true)}>
-          <Plus className="h-4 w-4" /> Nuovo Preventivo
+        <div>
+          <h2 className="text-2xl md:text-3xl font-bold">Preventivi</h2>
+          <p className="text-xs md:text-sm text-text-secondary">Gestisci i tuoi preventivi clienti</p>
+        </div>
+        <Button onClick={() => setShowForm(true)} className="text-xs md:text-sm px-3 md:px-4">
+          <Plus className="mr-1 md:mr-2 h-4 w-4" />
+          <span className="hidden sm:inline">Nuovo Preventivo</span>
+          <span className="sm:hidden">Nuovo</span>
         </Button>
       </div>
 

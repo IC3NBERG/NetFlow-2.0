@@ -7,6 +7,11 @@
 
 ---
 
+## [v0.33.2] - 2026-06-23
+### Stato: Fix UI — header Preventivi allineato a Clienti, bottone ridondante rimosso
+- **UI Fix:** Header pagina Preventivi aggiornato per copiare lo stile della pagina Clienti — titolo `<h2>` con sottotitolo descrittivo e bottone responsive.
+- **UI Fix:** Rimosso bottone ridondante "+ Crea Preventivo" dallo stato vuoto della pagina Preventivi — ora esiste solo il bottone nell'header.
+
 ## [v0.33.1] - 2026-06-23
 ### Stato: Rimossi bordi divider — sidebar, header, bottom bar
 - **UI Fix:** Rimossi tutti i bordi divider (`border-r`, `border-b`, `border-t`) da `Sidebar`, `MainLayout` e `BottomBar`. Il sito ora usa solo sfondi semi-trasparenti e ombre per separare le sezioni, senza linee visibili in dark e light mode.
