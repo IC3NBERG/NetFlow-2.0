@@ -96,7 +96,9 @@ export function ClientsPage() {
         setToast({ message: 'Salvato offline — verrà sincronizzato al ritorno della connessione', type: 'info' })
         resetForm()
       } else {
-        setToast({ message: 'Errore durante il salvataggio', type: 'error' })
+        const msg = err instanceof Error ? err.message : 'Errore durante il salvataggio'
+        console.error('[ClientsPage] Save error:', err)
+        setToast({ message: msg, type: 'error' })
       }
     }
   }

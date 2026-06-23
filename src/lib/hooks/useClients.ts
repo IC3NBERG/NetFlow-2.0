@@ -30,12 +30,20 @@ export function useCreateClient() {
   return useMutation({
     mutationFn: async (client: Omit<Client, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
       if (!user) throw new Error('Not authenticated')
+      const { data: sessionData } = await supabase.auth.getSession()
+      if (!sessionData.session) {
+        console.error('[useCreateClient] No active session — user may need to re-login')
+        throw new Error('Sessione scaduta. Effettua di nuovo il login.')
+      }
       const payload = { ...client, user_id: user.id }
       return executeWithSync(
         { table: 'clients', operation: 'insert', payload },
         async () => {
           const { data, error } = await supabase.from('clients').insert(payload).select().single()
-          if (error) throw error
+          if (error) {
+            console.error('[useCreateClient] Supabase error:', error)
+            throw error
+          }
           return data as unknown as Client
         },
       )
