@@ -98,6 +98,8 @@ export function JobFormModal({ open, onClose, onSubmit, initialData, isSubmittin
         start_date: initialData.start_date,
         pending_date: initialData.pending_date,
         end_date: initialData.end_date,
+        currency: initialData.currency ?? 'EUR',
+        attachment_urls: initialData.attachment_urls ?? [],
       })
     } else {
       reset({
@@ -113,6 +115,8 @@ export function JobFormModal({ open, onClose, onSubmit, initialData, isSubmittin
         start_date: new Date().toISOString().split('T')[0] ?? '',
         pending_date: null,
         end_date: null,
+        currency: 'EUR',
+        attachment_urls: [],
       })
     }
   }, [initialData, open, reset])

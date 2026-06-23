@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { GlassCard } from '../../../shared/ui/GlassCard'
+import { EmptyState } from '../../../shared/ui/EmptyState'
 import { formatCurrency } from '../../../lib/calculations'
 import { Checkbox } from '../../../shared/ui/Checkbox'
 import type { Job, Client } from '../../../types/database'
@@ -24,9 +25,10 @@ export function PendingJobsList({ jobs, clients, selectedIds, onToggle, onSelect
         )}
       </div>
       {jobs.length === 0 ? (
-        <GlassCard className="p-12 text-center">
-          <p className="text-text-secondary">Nessun lavoro in attesa di incasso</p>
-        </GlassCard>
+        <EmptyState
+          title="Nessun lavoro in attesa"
+          description="I lavori conclusi in attesa di pagamento appariranno qui"
+        />
       ) : (
         <div className="grid grid-cols-1 gap-2 md:gap-3 md:grid-cols-2 lg:grid-cols-3">
           {jobs.map((job) => {

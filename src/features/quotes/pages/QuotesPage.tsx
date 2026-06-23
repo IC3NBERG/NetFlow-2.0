@@ -101,20 +101,20 @@ export function QuotesPage() {
           <h2 className="text-2xl md:text-3xl font-bold">Preventivi</h2>
           <p className="text-xs md:text-sm text-text-secondary">Gestisci i tuoi preventivi clienti</p>
         </div>
-        <Button onClick={() => setShowForm(true)} className="text-xs md:text-sm px-3 md:px-4">
-          <Plus className="mr-1 md:mr-2 h-4 w-4" />
-          <span className="hidden sm:inline">Nuovo Preventivo</span>
-          <span className="sm:hidden">Nuovo</span>
-        </Button>
+        {!showForm && (
+          <Button onClick={() => setShowForm(true)} className="text-xs md:text-sm px-3 md:px-4">
+            <Plus className="mr-1 md:mr-2 h-4 w-4" />
+            <span className="hidden sm:inline">Nuovo Preventivo</span>
+            <span className="sm:hidden">Nuovo</span>
+          </Button>
+        )}
       </div>
 
       {(!quotes || quotes.length === 0) ? (
-        <GlassCard className="p-12">
-          <EmptyState
-            title="Nessun preventivo"
-            description="Crea il tuo primo preventivo da inviare ai clienti"
-          />
-        </GlassCard>
+        <EmptyState
+          title="Nessun preventivo"
+          description="Crea il tuo primo preventivo da inviare ai clienti"
+        />
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {quotes.map((quote, i) => {

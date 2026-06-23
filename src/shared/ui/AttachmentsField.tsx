@@ -4,11 +4,11 @@ import { Button } from './Button'
 import { useAttachmentUpload } from '../../lib/hooks/useAttachmentUpload'
 
 interface AttachmentsFieldProps {
-  urls: string[]
+  urls?: string[]
   onChange: (urls: string[]) => void
 }
 
-export function AttachmentsField({ urls, onChange }: AttachmentsFieldProps) {
+export function AttachmentsField({ urls = [], onChange }: AttachmentsFieldProps) {
   const { upload, uploading } = useAttachmentUpload()
   const [showLinkInput, setShowLinkInput] = useState(false)
   const [linkValue, setLinkValue] = useState('')

@@ -127,7 +127,7 @@ export function InvoicingPage() {
           <h2 className="text-2xl md:text-3xl font-bold">Fatturazione</h2>
           <p className="text-xs md:text-sm text-text-secondary">Lavori conclusi in attesa di incasso</p>
         </div>
-        {selectedJobs.length > 0 && (
+        {!isFormOpen && selectedJobs.length > 0 && (
           <Button onClick={() => setIsFormOpen(true)} className="text-xs md:text-sm px-3 md:px-4">
             <Plus className="mr-1 md:mr-2 h-4 w-4" />
             <span className="hidden sm:inline">Crea fattura ({selectedJobs.length})</span>

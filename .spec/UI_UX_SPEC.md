@@ -175,8 +175,8 @@
 | **Dashboard Grid** | `lg:grid-cols-3`, gap-6 | `grid-cols-2`, gap-4 | `grid-cols-1`, gap-4 |
 | **KPI Group (modulo)** | `lg:col-span-3`, griglia interna `lg:grid-cols-4` | `col-span-2`, griglia interna `grid-cols-2` | `col-span-1`, griglia interna `grid-cols-1` |
 | **KPI Card** | Padding `p-5`, valore in `text-2xl font-mono`, label `text-sm` | Padding `p-4`, valore in `text-xl font-mono`, label `text-xs` | Padding `p-3`, valore in `text-lg font-mono`, label `text-xs` |
-| **ProgressRings (modulo)** | `lg:col-span-1`, ring size 120px, segmenti in row | `col-span-1`, ring size 100px, segmenti in row con wrap | `col-span-1`, ring size 80px, segmenti in colonna o wrap |
-| **GoalTracker (modulo)** | `lg:col-span-2`, radial rings 80px in row, progress bar piena | `col-span-2` (o 1 se reordinato), rings 70px, progress bar compatta | `col-span-1`, rings 60px, progress bar compatta, metric view a tabs scorrevoli |
+| **ProgressRings (modulo)** | `lg:col-span-1`, ring size 120px, segmenti in row, sub-tabs (Tutto/Lordo/Netto/Cash) centrati | `col-span-1`, ring size 100px, segmenti in row con wrap, tabs centrati | `col-span-1`, ring size 80px, segmenti in colonna o wrap, tabs centrati |
+| **GoalTracker (modulo)** | `lg:col-span-2`, radial rings 80px in row, progress bar piena, tabs filtro (Tutto/Lordo/Netto/Cash) centrati | `col-span-2` (o 1 se reordinato), rings 70px, progress bar compatta, tabs centrati | `col-span-1`, rings 60px, progress bar compatta, tabs centrati, metric view a tabs scorrevoli |
 | **AreaChart (modulo)** | `lg:col-span-2`, altezza `h-72`, legenda visibile, tooltip glass | `col-span-2` (o 1), altezza `h-56`, legenda compatta, tooltip ridotto | `col-span-1`, altezza `h-48`, legenda nascosta (solo etichette assi), scroll orizzontale se necessario |
 | **BarChart (modulo)** | `lg:col-span-1`, altezza `h-64`, etichette mese complete | `col-span-1`, altezza `h-52`, etichette abbreviate (3 lettere) | `col-span-1`, altezza `h-44`, etichette mese singola lettera, scroll orizz. |
 | **Quick Register (modulo)** | `lg:col-span-1`, form compatto inline | `col-span-1`, form semplificato | `col-span-1`, form essenziale (solo importo + categoria) |
@@ -191,7 +191,7 @@
 | **JobCard — Badge stato** | `text-xs`, padding `px-3 py-1` | `text-xs`, padding `px-2 py-0.5` | `text-[10px]`, padding `px-2 py-0.5` |
 | **JobCard — Bottoni azione** | Icona + label testuale | Solo icona con tooltip | Solo icona (touch target min 44x44px) |
 | **JobCard — Descrizione** | 3 righe max, `text-sm` | 2 righe max, `text-sm` | 2 righe max, `text-xs` |
-| **Job Tab Filtri (pill)** | Row di pill button, `text-sm`, 4 voci visibili | Row scrollabile orizzontalmente, `text-sm` | Scroll orizzontale snap, `text-xs`, swipe-friendly |
+| **Job Tab Filtri (pill)** | Row di pill button centrata nella tabella, `text-sm`, 4 voci visibili | Row scrollabile orizzontalmente centrata, `text-sm` | Scroll orizzontale snap centrato, `text-xs`, swipe-friendly |
 | **Secondary Filter Bar** | Dropdown + pill in row | Dropdown + pill in row compatta | Accordion/sheet filtro richiudibile |
 | **JobFormModal (contenuto)** | Griglia 2 colonne per campi, `max-w-lg` | Griglia 1 colonna, `max-w-md` (90vw) | Griglia 1 colonna, `w-full` (95vw), padding `p-4` |
 | **ClientSelect** | Dropdown full-width con lista 6 items | Dropdown full-width | Bottom sheet nativo / modal ridotto |

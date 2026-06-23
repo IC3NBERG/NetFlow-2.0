@@ -62,23 +62,26 @@ export function JobsPage() {
           : payload.pending_date ? 'completed_pending' as const
           : 'active' as const
         await createJob.mutateAsync({ ...payload, status })
-        setToast({ message: 'Lavoro creato', type: 'success' })
+        let quoteToast = 'Lavoro creato'
         try {
           const grossAmount = data.amount_card + data.amount_cash
-          const netAmount = data.net_amount
-          const taxAmount = grossAmount - netAmount
+          const taxRate = 22
+          const taxAmount = grossAmount * taxRate / 100
+          const netAmount = grossAmount - taxAmount
           await createQuote.mutateAsync({
             client_id: data.client_id ?? undefined,
             title: data.title,
             description: data.description,
-            gross_amount: grossAmount,
-            tax_amount: Math.max(taxAmount, 0),
-            net_amount: netAmount,
-            tax_rate: grossAmount > 0 ? Math.round((Math.max(taxAmount, 0) / grossAmount) * 100) : 22,
+            gross_amount: Math.round(grossAmount * 100) / 100,
+            tax_amount: Math.round(taxAmount * 100) / 100,
+            net_amount: Math.round(netAmount * 100) / 100,
+            tax_rate: taxRate,
           })
+          quoteToast = 'Lavoro creato con preventivo'
         } catch {
           // quote creation is best-effort
         }
+        setToast({ message: quoteToast, type: 'success' })
       }
       closeForm()
     } catch (err) {

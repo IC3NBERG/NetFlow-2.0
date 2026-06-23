@@ -7,6 +7,32 @@
 
 ---
 
+## [v0.33.7] - 2026-06-23
+### Stato: Bug fix — crash AttachmentsField su nuovo lavoro
+- **Bug fix:** Aggiunti `attachment_urls` e `currency` mancanti nei `reset()` di `JobFormModal.tsx` — causavano `undefined` che rompeva `urls.length` in `AttachmentsField`.
+- **Bug fix:** Reso `urls` opzionale in `AttachmentsField` con fallback a `[]`.
+
+## [v0.33.6] - 2026-06-23
+### Stato: UI Fix — ProgressRings grandezza stabile nei tab
+- **UI Fix:** Aggiunto `min-h-[120px]` al container dei ring in `ProgressRings.tsx` per evitare che la card cambi altezza cambiando tab (Tutto/Lordo/Netto/Cash).
+
+## [v0.33.5] - 2026-06-23
+### Stato: UI Fix — Fatturazione allineata a Clienti + auto-preventivo corretto
+- **UI Fix:** Rimosso wrapper `GlassCard` dallo stato vuoto di `PendingJobsList` — ora usa `EmptyState` come Clienti/Preventivi.
+- **UI Fix:** Bottone "Crea fattura" nascosto quando il form è aperto (coerente con Clienti).
+- **Fix auto-preventivo:** Calcolo IVA corretto nella creazione automatica del preventivo alla creazione di un lavoro. Ora usa aliquota IVA 22% standard invece del calcolo errato lordo-netto fiscale.
+- **UX:** Toast "Lavoro creato con preventivo" quando il preventivo viene generato automaticamente.
+
+## [v0.33.4] - 2026-06-23
+### Stato: UI Fix — pagina Preventivi allineata a Clienti
+- **UI Fix:** Rimosso wrapper `GlassCard` dallo stato vuoto della pagina Preventivi — ora identico a Clienti.
+- **UI Fix:** Bottone "Nuovo Preventivo" nascosto quando il form è aperto (coerente con Clienti).
+
+## [v0.33.3] - 2026-06-23
+### Stato: UI Fix — tabs filtro Stato Attività centrate
+- **UI Fix:** Centrate le tabs filtro (Tutto/Lordo/Netto/Cash) nella card "Stato Attività" della dashboard. Aggiunto `justify-center` al container delle tabs in `ProgressRings.tsx`.
+- **Spec:** Aggiornata `UI_UX_SPEC.md` con indicazione esplicita tabs centrati per ProgressRings, GoalTracker e Job Tab Filtri.
+
 ## [v0.33.2] - 2026-06-23
 ### Stato: Fix UI — header Preventivi allineato a Clienti, bottone ridondante rimosso
 - **UI Fix:** Header pagina Preventivi aggiornato per copiare lo stile della pagina Clienti — titolo `<h2>` con sottotitolo descrittivo e bottone responsive.

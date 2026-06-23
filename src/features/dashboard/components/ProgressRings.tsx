@@ -104,7 +104,7 @@ export function ProgressRings({
       </div>
 
       <div className="flex-1 flex flex-col pt-2.5 min-h-0">
-        <div className="flex gap-1 mb-2.5">
+        <div className="flex gap-1 mb-2.5 justify-center">
           {metricViews.map((v) => (
             <button
               key={v.key}
@@ -121,7 +121,7 @@ export function ProgressRings({
           ))}
         </div>
 
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex-1 flex items-center justify-center min-h-[120px]">
           {metricView === 'all' ? (
             <div className="flex gap-4 justify-center">
               {filteredSegments.map((seg) => {
