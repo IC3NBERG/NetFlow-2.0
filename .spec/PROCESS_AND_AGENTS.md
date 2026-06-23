@@ -84,20 +84,27 @@ Ogni volta che un agente completa un task di codifica, deve obbligatoriamente:
 
 ### 3.5 Priorità di Implementazione
 
-| Priorità | Feature | Dipendenze |
-|----------|---------|------------|
-| P0 | Auth (login/register/OAuth) | Supabase project setup |
-| P0 | Onboarding wizard | Auth completato |
-| P0 | Schema DB + migrazioni | Nessuna |
-| P1 | Dashboard (KPI + grafici) | DB popolato |
-| P1 | Lavori CRUD (generali) | Schema jobs + clients |
-| P1 | Lavori con pagamento misto | Jobs CRUD |
-| P2 | Fatturazione (stato pending -> fattura) | Lavori completati |
-| P2 | Registro (storico + statistiche) | Fatturazione completata |
-| P2 | Impostazioni (backup, sync, tema) | Auth + profilo |
-| P3 | Guida Fiscale | Regime fiscale da profilo |
-| P3 | PWA (offline, installabile) | App completa |
-| P3 | Sync cross-device | Supabase Realtime |
+| Priorità | Feature | Stato |
+|----------|---------|-------|
+| ✅ P0 | Auth (email/password) | Fatto |
+| ✅ P0 | Onboarding wizard | Fatto |
+| ✅ P0 | Schema DB + migrazioni | Fatto |
+| ✅ P1 | Dashboard (KPI + ProgressRings + grafici) | Fatto |
+| ✅ P1 | Lavori CRUD con pagamento misto | Fatto |
+| ✅ P1 | Clienti (rubrica) | Fatto |
+| ✅ P2 | Preventivi (quotes) con auto-generazione | Fatto |
+| ✅ P2 | Fatturazione (raggruppa lavori) | Fatto |
+| ✅ P2 | Registro (ledger con statistiche) | Fatto |
+| ✅ P2 | Uscite (expenses) | Fatto |
+| ✅ P2 | Impostazioni (backup, sync, tema, audit) | Fatto |
+| ✅ P3 | Guida Fiscale | Fatto |
+| ✅ P3 | PWA (offline, installabile) | Fatto |
+| ✅ P3 | Sync cross-device (Realtime) | Fatto |
+| ✅ P3 | Calendario eventi personalizzati | Fatto |
+| ✅ P3 | Tag per lavori/spese | Fatto |
+| ⬜ | Condivisione pubblica commercialista | Fatto |
+| ⬜ | Google OAuth | In attesa |
+| ⬜ | Fattura PDF export | Da fare |
 
 ---
 

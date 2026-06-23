@@ -18,9 +18,16 @@ Cose da fare, rimandate a dopo.
   - Notifiche
 
 ## Deploy
-- Caricare `dist/` su Cloudflare Pages o Vercel
-- Testare PWA offline con SW reale
+- Hosting attivo su Cloudflare Pages (auto-deploy da GitHub main)
+- Build: `npm run build` → `dist/`
+- PWA: Service Worker, manifest, caching funzionanti in produzione
+
+## SMTP
+- Da configurare su Supabase (Gmail / SendGrid / Mailtrap)
+- Necessario per:
+  - Email di conferma registrazione
+  - Email di reset password
 
 ## Test con utenti reali
 - Login email/password
-- Flusso completo onboarding → lavori → fatture → registro
+- Flusso completo onboarding → lavori → fatture → preventivi → registro

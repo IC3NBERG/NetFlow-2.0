@@ -49,22 +49,34 @@ src/
 │   │   └── SyncProvider.tsx
 │   └── router.tsx          # React Router config
 ├── features/               # Feature modules
+│   ├── account/            # Profilo, logo upload, template fatture
 │   ├── auth/               # Login, register, onboarding
-│   ├── dashboard/          # KPI, goal tracker, charts
-│   ├── jobs/               # Job CRUD, sottoviste (general/card/cash/mixed)
-│   ├── invoicing/          # Fatture, parcelle, stato pending
-│   ├── register/           # Archivio storico, statistiche
-│   ├── settings/           # Impostazioni, backup, sync
-│   ├── account/            # Profilo, template fatture
+│   ├── calendar/           # Eventi personalizzati (scadenze, promemoria)
+│   ├── clients/            # Rubrica clienti con CRUD
+│   ├── dashboard/          # KPI, stato attività (ProgressRings), charts
+│   ├── expenses/           # Uscite con allegati
 │   ├── guide/              # Guida fiscale informativa
-│   └── legal/              # Privacy, cookie policy, TOS
+│   ├── invoicing/          # Fatture/parcelle, raggruppa lavori da incassare
+│   ├── jobs/               # Job CRUD, tabs (generali/carta/cash/misti), filtri stato
+│   ├── legal/              # Privacy, cookie policy, TOS
+│   ├── not-found/          # Pagina 404
+│   ├── quotes/             # Preventivi con conversione 1-click in lavoro
+│   ├── register/           # Registro contabile, storico, statistiche
+│   ├── settings/           # Impostazioni, backup, sync, tema, audit log
+│   ├── shared/             # Pagina pubblica condivisa per commercialista
+│   └── tags/               # Tag per lavori e spese
 ├── shared/                 # Componenti riutilizzabili
-│   ├── ui/                 # Atoms: Button, GlassCard, Input, Modal, RadialProgress, Toast
+│   ├── ui/                 # Atoms: Button, GlassCard, Input, Modal, EmptyState, Toast, AttachmentsField, ecc.
 │   ├── layouts/            # Sidebar, BottomBar, MainLayout
 │   └── charts/             # LineChart, BarChart, AreaChart
 ├── lib/                    # Utility, hooks, API client
+│   ├── hooks/              # useJobs, useQuotes, useClients, useInvoices, ecc.
+│   ├── stores/             # Zustand stores (fiscalYear, jobsUI, ecc.)
 │   ├── supabase.ts         # Client Supabase
 │   ├── calculations.ts     # Funzioni metriche finanziarie
+│   ├── tax.ts              # Calcoli lordo/netto, IRPEF
+│   ├── syncBridge.ts       # Offline queue management
+│   ├── syncExecute.ts      # Operazioni CRUD con fallback offline
 │   └── utils.ts            # Helper generici
 └── types/                  # TypeScript types globali
     ├── database.ts         # Tipi allineati allo schema DB

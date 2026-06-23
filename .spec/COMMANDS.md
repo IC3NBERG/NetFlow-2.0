@@ -17,7 +17,8 @@ npm run build && npm run preview   # Build produzione + preview PWA
 ## 3. Test & Qualità
 ```bash
 npm run lint          # Version check + ESLint (blocca se versioni disallineate)
-npx tsc               # Controllo dei tipi (obbligatorio per dati finanziari)
+npx tsc --noEmit      # Controllo dei tipi (obbligatorio per dati finanziari)
+npm run test          # Test unitari (Vitest)
 npm run test:e2e      # Test E2E con Playwright (headless)
 npm run test:e2e:ui   # Test E2E con Playwright UI mode
 ```

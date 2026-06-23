@@ -50,10 +50,13 @@ cash_settled    = SUM(amount_cash) WHERE status = completed_settled
 balance         = net_settled - total_expenses
 ```
 
-### 3.5 Goal Tracker "A Petali"
-- L'utente imposta un obiettivo economico, la metrica (netto/lordo/incassato/cash) e segmenti personalizzati.
-- La dashboard mostra un grafico radiale segmentato SVG (es. Netto, Lordo, Cash) dove ogni segmento si riempie animandosi al progresso.
-- Dati di configurazione salvati in `profiles.goal_data` (JSONB).
+### 3.5 ProgressRings (Stato Attività)
+- La dashboard mostra una card "Stato Attività" unificata con:
+  - Anello di carico lavoro (workload) con breakdown in 3 box: Attivi / In attesa / Incassati
+  - Sub-tabs filtro (Tutto/Lordo/Netto/Cash) con anelli obiettivo e barra di progresso
+  - Anelli sempre 70px in tutti i tab per evitare resize
+- L'utente imposta un obiettivo economico e la metrica (netto/lordo/incassato/cash) tramite onboarding/settings
+- Configurazione salvata in `fiscal_setups.goal_data` e `fiscal_setups.goal_metric`
 
 ---
 
@@ -61,28 +64,61 @@ balance         = net_settled - total_expenses
 
 ### 4.1 Dashboard (Griglia Modulare Glassmorphism)
 - **KPI Cards:** Ordine in attesa, incassati, netti in attesa, netti incassati, cash in attesa, cash incassati, uscite, saldo — ogni KPI in una GlassCard.
-- **Goal Tracker "A Petali":** Grafico radiale segmentato SVG. Ogni segmento rappresenta una categoria (Netto, Lordo, Cash). Opacità/riempimento indica il progresso verso il target. Animato con Framer Motion.
+- **ProgressRings (Stato Attività):** Card unificata con anello carico lavoro, breakdown stato, sub-tabs (Tutto/Lordo/Netto/Cash), anelli obiettivo e barra progresso.
 - **Grafici:** Area Chart sovrapposto (entrate/uscite con gradienti neon) + Bar Chart (confronto card/cash).
-- **Progress Rings:** Anelli percentuali per carico di lavoro e "carica finanziaria".
-- **Layout modulare:** Griglia a 3 colonne (desktop) / 2 (tablet) / 1 (mobile). L'utente riordina i moduli; la configurazione è salvata in `profiles.dashboard_layout` (JSONB).
+- **Layout modulare:** Griglia a 5 colonne (desktop) / 2 (tablet) / 1 (mobile). L'utente riordina i moduli; la configurazione è salvata in `profiles.dashboard_layout` (JSONB).
 
-### 4.2 Lavori (3 sottoviste)
-1. **Generali:** Tutti i lavori in tabella unificata. Filtri per stato, data, metodo.
-2. **Carta:** Solo transazioni card. Con possibilità di fatturazione.
+### 4.2 Lavori (4 sottoviste + filtri)
+1. **Generali:** Tutti i lavori. Filtri per stato (Tutti/In corso/Da incassare/Incassati).
+2. **Carta:** Solo transazioni card.
 3. **Cash:** Solo transazioni cash. Toggle per inclusione in fattura.
 4. **Misti:** Lavori con ripartizione card+cash. L'utente decide se la parte cash appare in fattura.
+- Ogni lavoro ha 3 date: inizio, attesa pagamento, fine — impostate automaticamente al cambio stato.
+- Alla creazione di un lavoro viene generato automaticamente un preventivo (bozza) con stessi importi, cliente e aliquota.
 
-### 4.3 Fatturazione
-- Lavori in stato `completed_pending` appaiono qui.
-- Generazione parcelle e fatture (PDF).
-- Una volta marcato `completed_settled`, il lavoro finisce nel Registro.
+### 4.3 Clienti (Rubrica)
+- CRUD completo con nome, email, telefono, partita IVA, CF, indirizzo, note.
+- Colore personalizzato per avatar e identificazione visiva.
+- Stato vuoto con EmptyState.
 
-### 4.4 Registro
-- Archivio storico di tutti i lavori `completed_settled`.
-- Grafici di progressione, statistiche sul percorso lavorativo.
-- Ricerca e filtri avanzati.
+### 4.4 Preventivi (Quotes)
+- CRUD completo con cliente, titolo, importo lordo, IVA, netto, validità, note.
+- Stati: bozza, inviato, accettato, rifiutato, convertito.
+- Conversione 1-click in lavoro (stato `completed_pending`).
+- Auto-generazione alla creazione di un lavoro.
 
-### 4.5 Guida Fiscale
+### 4.5 Fatturazione
+- Lavori in stato `completed_pending` appaiono qui con checkbox di selezione.
+- Generazione fatture e parcelle raggruppando più lavori.
+- Una volta marcata pagata, i lavori passano a `completed_settled`.
+- Transazione registrata automaticamente via trigger DB.
+
+### 4.6 Uscite (Expenses)
+- Registrazione spese con titolo, importo, categoria, data.
+- Allegati e supporto multi-valuta.
+- Filtrabili per data e categoria.
+
+### 4.7 Calendario
+- Eventi personalizzati (scadenze, promemoria) con titolo, descrizione, data, colore.
+- Gestiti tramite tabella `custom_events` con RLS.
+
+### 4.8 Registro (Ledger)
+- Archivio storico di tutti i lavori e transazioni.
+- Tabella con colonne: Data, Cliente, Lavoro, Metodo, Importo, Stato, Azioni.
+- Statistiche in 5 KPI: Totale lavori, Totale incassato, Media per lavoro, in attesa, media tempi.
+- Filtri per data, metodo, stato. Paginazione.
+
+### 4.9 Tag
+- CRUD tag con nome e colore.
+- Associabili a lavori (job_tags) e spese (expense_tags).
+- Filtraggio per tag.
+
+### 4.10 Condivisione (Shared View)
+- Pagina pubblica `/shared/:token` read-only per commercialista.
+- Token temporaneo con scadenza configurabile.
+- Mostra dashboard, lavori, fatture, preventivi, clienti, uscite.
+
+### 4.11 Guida Fiscale
 - Sezione informativa basata sul regime fiscale scelto.
 - Spiega aliquote, scadenze, adempimenti.
 
