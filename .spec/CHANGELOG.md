@@ -7,6 +7,14 @@
 
 ---
 
+## [v0.35.1] - 2026-06-23
+### Stato: Miglioramenti grafici ClientSelect e piccoli fix UI
+- **[PATCH] ClientSelect styling:** Migliorato il componente di selezione cliente con stile glassmorphism avanzato, bordi sfumati/attivi, transizioni sull'icona e evidenziazione coerente dell'elemento selezionato.
+- **[PATCH] JobFormModal:** Cambiata l'etichetta del campo "Data attesa pag." in "Scadenza pag." e migliorata la spaziatura del grid a 3 colonne delle tempistiche.
+- **[PATCH] QuotesPage layout:** Gestito correttamente il fallback per il nome cliente vuoto (`\u00A0`) nella card per prevenire shift di layout durante il caricamento o in assenza di dati.
+- **File modificati:** `src/features/jobs/components/ClientSelect.tsx`, `src/features/jobs/components/JobFormModal.tsx`, `src/features/quotes/pages/QuotesPage.tsx`
+- **Build:** `npx tsc --noEmit` — 0 errori.
+
 ## [v0.35.0] - 2026-06-23
 ### Stato: Preventivi con calcolo fiscale — netto/lordo, cash/carta/misto, regime fiscale
 - **[MAJOR] Preventivi con modello fiscale completo:** Il form preventivo ora usa lo stesso calcolo fiscale dei lavori — `netToGross`/`grossToNet`/`computeJobNetAmount` in base al regime fiscale (`tax.ts`). Aggiunti campi: `payment_method`, `amount_card`, `amount_cash`, `include_cash_in_invoice`. Il netto e il lordo sono bidirezionali (modificando uno si aggiorna l'altro). Preimpostato in base al regime fiscale dell'utente (`useFiscalSetup`).

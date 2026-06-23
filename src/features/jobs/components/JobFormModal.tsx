@@ -246,7 +246,7 @@ export function JobFormModal({ open, onClose, onSubmit, initialData, isSubmittin
       </FormSection>
 
       <FormSection title="Tempistiche">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Input
             label="Data inizio *"
             type="date"
@@ -254,7 +254,7 @@ export function JobFormModal({ open, onClose, onSubmit, initialData, isSubmittin
             {...register('start_date')}
           />
           <Input
-            label="Data attesa pag."
+            label="Scadenza pag."
             type="date"
             {...register('pending_date')}
           />

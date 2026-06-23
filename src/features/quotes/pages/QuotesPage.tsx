@@ -267,9 +267,7 @@ export function QuotesPage() {
                     <div>
                       <p className="text-xs text-text-secondary">{quote.quote_number}</p>
                       <h3 className="text-lg font-medium mt-1">{quote.title}</h3>
-                      {quote.clients?.name && (
-                        <p className="text-sm text-text-secondary mt-1">{quote.clients.name}</p>
-                      )}
+                      <p className="text-sm text-text-secondary mt-1">{quote.clients?.name || '\u00A0'}</p>
                     </div>
                     <Badge variant={statusBadge[quote.status]}>{statusLabels[quote.status]}</Badge>
                   </div>
