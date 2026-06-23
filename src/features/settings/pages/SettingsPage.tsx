@@ -6,7 +6,7 @@ import { Button } from '../../../shared/ui/Button'
 import { Input } from '../../../shared/ui/Input'
 import { Toast } from '../../../shared/ui/Toast'
 import { useAuth } from '../../../app/providers/AuthProvider'
-import { useTheme } from '../../../app/providers/ThemeProvider'
+
 import { useSync } from '../../../app/providers/SyncProvider'
 import { useUserSettings, useUpdateUserSettings } from '../../../lib/hooks/useUserSettings'
 import { useUpdateProfile } from '../../../lib/hooks/useProfile'
@@ -15,15 +15,14 @@ import { useFiscalSetup, useUpsertFiscalSetup } from '../../../lib/hooks/useFisc
 import { setSyncEnabled } from '../../../lib/syncBridge'
 import { useFiscalYearStore } from '../../../lib/stores/fiscalYear'
 import { supabase } from '../../../lib/supabase'
-import { TagsManager } from '../../tags/TagsManager'
 import { SharesManager } from '../components/SharesManager'
 import { AuditLogViewer } from '../components/AuditLogViewer'
 import {
-  User, Moon, Sun, Monitor, RefreshCw, Download, Upload, Bell, Database,
-  FileText, Shield, Save, AlertTriangle, Calendar, Tag, Share2, History,
+  User, Moon, RefreshCw, Download, Upload, Bell, Database,
+  FileText, Shield, Save, AlertTriangle, Calendar, Share2, History,
   Trash2,
 } from 'lucide-react'
-import { type Theme, type TaxRegime, type GoalMetric } from '../../../types/database'
+import { type TaxRegime, type GoalMetric } from '../../../types/database'
 import { exportToCSV, exportToJSON } from '../../../lib/export'
 import { backupFileSchema } from '../../../lib/validations'
 import { hardResetPwa } from '../../../lib/pwaReset'
@@ -32,11 +31,7 @@ import { cn } from '../../../lib/utils'
 type ToastState = { message: string; type: 'success' | 'error' | 'info' } | null
 type SettingsTab = 'profile' | 'preferences' | 'invoices' | 'backup' | 'legal' | 'sharing' | 'audit'
 
-const themes: { value: Theme; label: string; icon: typeof Sun }[] = [
-  { value: 'system', label: 'Sistema', icon: Monitor },
-  { value: 'light', label: 'Chiaro', icon: Sun },
-  { value: 'dark', label: 'Scuro', icon: Moon },
-]
+
 
 const tabs: { id: SettingsTab; label: string; icon: typeof User }[] = [
   { id: 'profile', label: 'Profilo', icon: User },
@@ -51,7 +46,7 @@ const tabs: { id: SettingsTab; label: string; icon: typeof User }[] = [
 export function SettingsPage() {
   const queryClient = useQueryClient()
   const { user, refreshProfile } = useAuth()
-  const { theme, setTheme } = useTheme()
+
   const { isOnline, queueLength, forceSync, isSyncing } = useSync()
   const { data: settings, isLoading: settingsLoading } = useUserSettings()
   const { data: jobs = [] } = useJobs()
@@ -427,48 +422,13 @@ export function SettingsPage() {
             </GlassCard>
           </motion.div>
 
-          <motion.div variants={itemAnim}>
-            <GlassCard className="p-4 md:p-6 space-y-3 md:space-y-4">
-              <div className="flex items-center gap-3">
-                <Tag className="h-4 md:h-5 w-4 md:w-5 text-brand" />
-                <h3 className="text-base md:text-lg font-semibold">Tag</h3>
-              </div>
-              <p className="text-xs md:text-sm text-text-secondary">Gestisci i tag per organizzare lavori e spese</p>
-              <TagsManager />
-            </GlassCard>
-          </motion.div>
+
         </motion.div>
       )}
 
       {activeTab === 'preferences' && (
         <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
-          <motion.div variants={itemAnim}>
-            <GlassCard className="p-4 md:p-6 space-y-3 md:space-y-4">
-              <div className="flex items-center gap-3">
-                <Moon className="h-4 md:h-5 w-4 md:w-5 text-brand" />
-                <h3 className="text-base md:text-lg font-semibold">Tema</h3>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                {themes.map((t) => {
-                  const Icon = t.icon
-                  return (
-                    <button
-                      key={t.value}
-                      onClick={() => setTheme(t.value)}
-                      className={`flex items-center justify-center gap-2 rounded-card border px-4 md:px-5 py-2.5 md:py-3 text-xs md:text-sm font-medium transition-all ${
-                        theme === t.value
-                          ? 'border-brand bg-brand/10 text-brand'
-                          : 'border-border bg-surface text-text-secondary hover:border-brand/50'
-                      }`}
-                    >
-                      <Icon className="h-3.5 md:h-4 w-3.5 md:w-4" />
-                      {t.label}
-                    </button>
-                  )
-                })}
-              </div>
-            </GlassCard>
-          </motion.div>
+
 
           <motion.div variants={itemAnim}>
             <GlassCard className="p-4 md:p-6 space-y-3 md:space-y-4">
@@ -653,7 +613,7 @@ export function SettingsPage() {
               </p>
               <Button variant="secondary" onClick={async () => {
                 if (!user) return
-                const tables = ['jobs', 'invoices', 'clients', 'expenses', 'quotes', 'tags']
+                const tables = ['jobs', 'invoices', 'clients', 'expenses', 'quotes']
                 const allData: Record<string, unknown[]> = {}
                 for (const table of tables) {
                   const { data } = await supabase.from(table as 'jobs').select('*').eq('user_id', user.id)
@@ -677,7 +637,7 @@ export function SettingsPage() {
                 <h3 className="text-base md:text-lg font-semibold">Pulisci account</h3>
               </div>
               <p className="text-sm text-text-secondary">
-                Cancella tutti i dati (lavori, fatture, clienti, spese, preventivi, tag, audit log, condivisioni, eventi del calendario).
+                Cancella tutti i dati (lavori, fatture, clienti, spese, preventivi, audit log, condivisioni, eventi del calendario).
                 Il profilo e le impostazioni rimangono intatti.
               </p>
               <Button variant="danger" onClick={async () => {

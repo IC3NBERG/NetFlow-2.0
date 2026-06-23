@@ -10,10 +10,13 @@ import {
   LogOut,
   FileSpreadsheet,
   CalendarDays,
+  Sliders,
+  LifeBuoy,
 } from 'lucide-react'
 import { cn } from '../../lib/utils'
 import { useAuth } from '../../app/providers/AuthProvider'
 import { Logo } from '../ui/Logo'
+import { useCustomizationStore } from '../../lib/stores/customization'
 
 const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -29,6 +32,15 @@ const navItems = [
 export function Sidebar() {
   const { signOut } = useAuth()
   const navigate = useNavigate()
+  const sidebarOrder = useCustomizationStore((s) => s.sidebarOrder)
+
+  const orderedNavItems = [...navItems].sort((a, b) => {
+    const idxA = sidebarOrder.indexOf(a.to)
+    const idxB = sidebarOrder.indexOf(b.to)
+    if (idxA === -1) return 1
+    if (idxB === -1) return -1
+    return idxA - idxB
+  })
 
   async function handleLogout() {
     await signOut()
@@ -43,7 +55,7 @@ export function Sidebar() {
       </div>
 
       <nav className="flex-1 space-y-1 px-3 py-4">
-        {navItems.map((item) => (
+        {orderedNavItems.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
@@ -64,18 +76,46 @@ export function Sidebar() {
 
       <div className="px-3 py-3 space-y-2">
         <NavLink
+          to="/customization"
+          className={({ isActive }) =>
+            cn(
+              'flex items-center gap-3 rounded-full px-4 py-3 text-sm font-medium transition-all duration-200',
+              isActive
+                ? 'bg-brand text-white'
+                : 'text-text-secondary hover:bg-surface/80 hover:text-text-primary',
+            )
+          }
+        >
+          <Sliders className="h-5 w-5" />
+          Personalizza
+        </NavLink>
+        <NavLink
           to="/settings"
           className={({ isActive }) =>
             cn(
               'flex items-center gap-3 rounded-full px-4 py-3 text-sm font-medium transition-all duration-200',
               isActive
                 ? 'bg-brand text-white'
-: 'text-text-secondary hover:bg-surface/80 hover:text-text-primary',
-              )
-            }
-          >
-            <Settings className="h-5 w-5" />
-            Impostazioni
+                : 'text-text-secondary hover:bg-surface/80 hover:text-text-primary',
+            )
+          }
+        >
+          <Settings className="h-5 w-5" />
+          Impostazioni
+        </NavLink>
+        <NavLink
+          to="/help"
+          className={({ isActive }) =>
+            cn(
+              'flex items-center gap-3 rounded-full px-4 py-3 text-sm font-medium transition-all duration-200',
+              isActive
+                ? 'bg-brand text-white'
+                : 'text-text-secondary hover:bg-surface/80 hover:text-text-primary',
+            )
+          }
+        >
+          <LifeBuoy className="h-5 w-5" />
+          Aiuto
         </NavLink>
         <button
           onClick={handleLogout}

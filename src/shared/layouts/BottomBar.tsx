@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, Briefcase, FileText, Archive, Receipt, Users, Settings, FileSpreadsheet, CalendarDays } from 'lucide-react'
+import { LayoutDashboard, Briefcase, FileText, Archive, Receipt, Users, Settings, FileSpreadsheet, CalendarDays, LifeBuoy } from 'lucide-react'
 import { cn } from '../../lib/utils'
+import { useCustomizationStore } from '../../lib/stores/customization'
 
 const bottomNavItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -12,12 +13,34 @@ const bottomNavItems = [
   { to: '/calendar', icon: CalendarDays, label: 'Calendario' },
   { to: '/ledger', icon: Archive, label: 'Registro' },
   { to: '/settings', icon: Settings, label: 'Impostazioni' },
+  { to: '/help', icon: LifeBuoy, label: 'Aiuto' },
 ]
 
 export function BottomBar() {
+  const sidebarOrder = useCustomizationStore((s) => s.sidebarOrder)
+
+  const orderedBottomNavItems = [...bottomNavItems]
+    .filter((item) => item.to !== '/settings' && item.to !== '/help')
+    .sort((a, b) => {
+      const idxA = sidebarOrder.indexOf(a.to)
+      const idxB = sidebarOrder.indexOf(b.to)
+      if (idxA === -1) return 1
+      if (idxB === -1) return -1
+      return idxA - idxB
+    })
+
+  const settingsItem = bottomNavItems.find((item) => item.to === '/settings')
+  if (settingsItem) {
+    orderedBottomNavItems.push(settingsItem)
+  }
+  const helpItem = bottomNavItems.find((item) => item.to === '/help')
+  if (helpItem) {
+    orderedBottomNavItems.push(helpItem)
+  }
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 flex items-center justify-around bg-surface/80 backdrop-blur-xl px-2 py-2 md:hidden">
-      {bottomNavItems.map((item) => (
+      {orderedBottomNavItems.map((item) => (
         <NavLink
           key={item.to}
           to={item.to}

@@ -21,7 +21,7 @@ export function InvoiceQRCode({ invoiceNumber, grossAmount, iban }: InvoiceQRCod
     QRCodeLib.toCanvas(canvasRef.current!, paymentData, {
       width: 180,
       margin: 2,
-      color: { dark: '#ffffff', light: 'transparent' },
+      color: { dark: '#1a1a2e', light: '#ffffff' },
     }, () => {
       if (canvasRef.current) {
         setDataUrl(canvasRef.current.toDataURL('image/png'))

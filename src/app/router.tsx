@@ -64,6 +64,8 @@ export function AppRouter() {
         <Route path="/calendar" element={<AuthGate><Suspense fallback={<PageLoader />}><lazyPage.CalendarPage /></Suspense></AuthGate>} />
         <Route path="/expenses" element={<AuthGate><Suspense fallback={<PageLoader />}><lazyPage.ExpensesPage /></Suspense></AuthGate>} />
         <Route path="/settings" element={<AuthGate><Suspense fallback={<PageLoader />}><lazyPage.SettingsPage /></Suspense></AuthGate>} />
+        <Route path="/customization" element={<AuthGate><Suspense fallback={<PageLoader />}><lazyPage.CustomizationPage /></Suspense></AuthGate>} />
+        <Route path="/help" element={<AuthGate><Suspense fallback={<PageLoader />}><lazyPage.HelpPage /></Suspense></AuthGate>} />
         <Route path="/guide" element={<AuthGate><Suspense fallback={<PageLoader />}><lazyPage.GuidePage /></Suspense></AuthGate>} />
         <Route path="/account" element={<AuthGate><Suspense fallback={<PageLoader />}><lazyPage.AccountPage /></Suspense></AuthGate>} />
         <Route path="/legal" element={<AuthGate><Suspense fallback={<PageLoader />}><lazyPage.LegalPage /></Suspense></AuthGate>} />

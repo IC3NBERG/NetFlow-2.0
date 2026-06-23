@@ -7,6 +7,8 @@ const InvoicingPage = lazy(() => import('../features/invoicing/pages/InvoicingPa
 const RegisterPage = lazy(() => import('../features/register/pages/RegisterPage').then(m => ({ default: m.RegisterPage })))
 const ExpensesPage = lazy(() => import('../features/expenses/pages/ExpensesPage').then(m => ({ default: m.ExpensesPage })))
 const SettingsPage = lazy(() => import('../features/settings/pages/SettingsPage').then(m => ({ default: m.SettingsPage })))
+const CustomizationPage = lazy(() => import('../features/customization/pages/CustomizationPage').then(m => ({ default: m.CustomizationPage })))
+const HelpPage = lazy(() => import('../features/help/pages/HelpPage').then(m => ({ default: m.HelpPage })))
 const GuidePage = lazy(() => import('../features/guide/pages/GuidePage').then(m => ({ default: m.GuidePage })))
 const AccountPage = lazy(() => import('../features/account/pages/AccountPage').then(m => ({ default: m.AccountPage })))
 const LegalPage = lazy(() => import('../features/legal/pages/LegalPage').then(m => ({ default: m.LegalPage })))
@@ -21,6 +23,8 @@ export const lazyPage = {
   RegisterPage,
   ExpensesPage,
   SettingsPage,
+  CustomizationPage,
+  HelpPage,
   GuidePage,
   AccountPage,
   LegalPage,

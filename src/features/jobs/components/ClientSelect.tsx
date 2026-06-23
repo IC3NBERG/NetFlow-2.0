@@ -77,11 +77,12 @@ export function ClientSelect({ value, onChange, error }: ClientSelectProps) {
             type="button"
             onClick={() => setIsOpen(!isOpen)}
             className={cn(
-              'w-full rounded-input border px-4 py-3 bg-[rgba(26,26,46,0.6)] backdrop-blur-xl text-left flex items-center justify-between transition-all',
-              error ? 'border-expense' : 'border-white/10',
-              isOpen && 'ring-2 ring-brand border-brand',
-              !isOpen && 'hover:border-white/20',
-              'focus:outline-none focus:ring-2 focus:ring-brand',
+              'w-full rounded-input border px-4 py-3 min-h-[48px] bg-surface text-left flex items-center justify-between transition-all duration-200',
+              error
+                ? 'border-expense focus:ring-2 focus:ring-expense/50 focus:border-transparent'
+                : 'border-border focus:ring-2 focus:ring-brand/50 focus:border-transparent',
+              isOpen && 'border-brand/50 ring-2 ring-brand/30',
+              'hover:border-text-secondary/30 focus:outline-none',
             )}
           >
             <span className={selected ? 'text-text-primary flex items-center gap-2.5' : 'text-text-secondary/50'}>
@@ -97,10 +98,10 @@ export function ClientSelect({ value, onChange, error }: ClientSelectProps) {
           {isOpen && (
             <>
               <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
-              <div className="absolute z-20 mt-1 w-full overflow-hidden rounded-xl border border-white/10 bg-[rgba(26,26,46,0.95)] backdrop-blur-xl shadow-2xl">
-                <div className="max-h-48 overflow-y-auto p-1">
+              <div className="absolute z-20 mt-1.5 w-full overflow-hidden rounded-xl border border-border bg-surface shadow-2xl animate-in fade-in slide-in-from-top-1 duration-150">
+                <div className="max-h-56 overflow-y-auto p-1">
                   {clients.length === 0 && (
-                    <p className="p-3 text-sm text-text-secondary">Nessun cliente</p>
+                    <p className="p-3 text-sm text-text-secondary/70 text-center">Nessun cliente</p>
                   )}
                   {clients.map((client) => (
                     <button
@@ -110,29 +111,29 @@ export function ClientSelect({ value, onChange, error }: ClientSelectProps) {
                       className={cn(
                         "flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-sm transition-colors",
                         client.id === value
-                          ? "bg-white/10 text-text-primary"
-                          : "text-text-primary hover:bg-white/5"
+                          ? "bg-brand/10 text-brand font-medium"
+                          : "text-text-primary hover:bg-text-secondary/10"
                       )}
                     >
                       <div className="flex items-center gap-2.5">
                         <div
-                          className="h-3 w-3 shrink-0 rounded-full ring-2 ring-white/10"
+                          className="h-3 w-3 shrink-0 rounded-full ring-2 ring-surface"
                           style={{ backgroundColor: client.color ?? '#6C5CE7' }}
                         />
                         <div>
-                          <p className={cn("font-medium", client.id === value && "text-brand")}>{client.name}</p>
-                          {client.email && <p className="text-xs text-text-secondary">{client.email}</p>}
+                          <p className="font-medium">{client.name}</p>
+                          {client.email && <p className="text-xs text-text-secondary/70 mt-0.5">{client.email}</p>}
                         </div>
                       </div>
                       {client.id === value && <Check className="h-4 w-4 text-brand shrink-0" />}
                     </button>
                   ))}
                 </div>
-                <div className="border-t border-white/10 p-1">
+                <div className="border-t border-border p-1">
                   <button
                     type="button"
                     onClick={() => { setIsOpen(false); setShowCreate(true) }}
-                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-brand hover:bg-white/5 transition-colors"
+                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-brand hover:bg-brand/10 transition-colors"
                   >
                     <Plus className="h-4 w-4" />
                     Nuovo cliente
