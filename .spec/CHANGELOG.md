@@ -7,7 +7,23 @@
 
 ---
 
+## [v0.36.0] - 2026-06-23
+### Stato: Rimozione Tag, nuova pagina Personalizzazione, nuova pagina Aiuto/FAQ, fix UI
+- **[MINOR] Rimossa funzionalità Tag:** Eliminata completamente la feature dei tag dall'applicazione. Rimossi: `src/features/tags/TagsManager.tsx`, `src/lib/hooks/useTags.ts`, interfacce `Tag`/`JobTag`/`ExpenseTag` da `database.ts`. Rimosso blocco Tag dalla sezione Profilo in `SettingsPage.tsx`, rimossa voce `tags` dall'esportazione dati GDPR e dalla descrizione pulizia account.
+- **[MINOR] Nuova pagina Personalizzazione (`/customization`):** Aggiunta pagina dedicata alla personalizzazione dell'app con tre sezioni: riorganizzazione drag-and-drop della sidebar, sistema di personalizzazione dei colori/tema, selezione del tema (spostato da Impostazioni). Voce aggiunta in sidebar e bottom bar sopra Impostazioni.
+- **[MINOR] Nuova pagina Aiuto/FAQ (`/help`):** Aggiunta pagina Centro Aiuto con FAQ accordion espandibile (6 domande frequenti su calcoli fiscali, condivisione, PDF/fatture, offline, sicurezza dati, spese), form di contatto che apre il client email con `mailto:giorgiocalleriall@gmail.com` pre-compilato (tipo richiesta: bug/feature/altro), card GDPR e badge PWA offline. Voce aggiunta in sidebar e bottom bar sotto Impostazioni.
+- **[PATCH] Router:** Aggiunte route `/customization` e `/help` in `router.tsx` e `protectedRouteConfig.tsx`.
+- **[PATCH] Fix import inutilizzato HelpPage:** Rimosso `MessageSquare` da lucide-react (causava errore `TS6133` e bloccava la build).
+- **[PATCH] ClientSelect UI:** Migliorato stile glassmorphism del dropdown di selezione cliente nel form lavori — bordi sfumati, transizioni icona, evidenziazione elemento selezionato coerente.
+- **[FIX] Fix tema ThemeProvider:** Allineato il provider del tema alla nuova pagina Personalizzazione.
+- **[FIX] Sidebar e BottomBar:** Aggiornate con i nuovi link a Personalizzazione e Aiuto; rimossa voce changelog deprecata.
+- **[FIX] InvoiceDocument / InvoiceQRCode:** Aggiornamenti minori componenti fattura/QR code.
+- **File modificati:** `src/features/settings/pages/SettingsPage.tsx`, `src/features/help/pages/HelpPage.tsx` (new), `src/features/customization/pages/CustomizationPage.tsx` (new), `src/lib/stores/customization.ts` (new), `src/app/router.tsx`, `src/app/protectedRouteConfig.tsx`, `src/app/providers/ThemeProvider.tsx`, `src/shared/layouts/Sidebar.tsx`, `src/shared/layouts/BottomBar.tsx`, `src/shared/ui/InvoiceDocument.tsx`, `src/shared/ui/InvoiceQRCode.tsx`, `src/features/jobs/components/ClientSelect.tsx`, `src/types/database.ts`
+- **File eliminati:** `src/features/tags/TagsManager.tsx`, `src/lib/hooks/useTags.ts`
+- **Build:** `npm run build` — ✓ 0 errori TypeScript. PWA precache 58 entries.
+
 ## [v0.35.1] - 2026-06-23
+
 ### Stato: Miglioramenti grafici ClientSelect e piccoli fix UI
 - **[PATCH] ClientSelect styling:** Migliorato il componente di selezione cliente con stile glassmorphism avanzato, bordi sfumati/attivi, transizioni sull'icona e evidenziazione coerente dell'elemento selezionato.
 - **[PATCH] JobFormModal:** Cambiata l'etichetta del campo "Data attesa pag." in "Scadenza pag." e migliorata la spaziatura del grid a 3 colonne delle tempistiche.
