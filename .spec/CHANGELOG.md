@@ -7,6 +7,16 @@
 
 ---
 
+## [v0.33.0] - 2026-06-22
+### Stato: Condivisione funzionante — SharedViewPage + SCHEMA.md aggiornato
+- **Migrazione DB #016:** Nuovo RPC `get_shared_data(token)` SECURITY DEFINER — valida token/scadenza, restituisce profilo + lavori + fatture + clienti + uscite + preventivi dell'utente. GRANT EXECUTE ad anon per accesso pubblico.
+- **Condivisione commercialista (#10):** Creata `SharedViewPage` — pagina pubblica su `/shared/:token` con dashboard read-only (stats card, lista lavori/fatture/preventivi, griglia clienti/uscite). Gestione errori per token invalido o scaduto.
+- **Router:** Route `/shared/:token` aggiunta come rotta pubblica (nessun auth richiesto).
+- **Router:** Tool route `/tool/:toolId` rimossa (feature drop).
+- **SCHEMA.md:** Completato con tutte le tabelle mancanti — `tags`, `job_tags`, `expense_tags`, `quotes`, `audit_log`, `shares`, `custom_events`, `expenses`, `fiscal_setups`, storage bucket `attachments`, RPC `delete_user_account`/`clean_user_data`/`get_shared_data`. Nuove colonne: `attachment_urls`, `currency`, `color`, `exchange_rate`, `custom_irpef_rate`. Tipi TypeScript portati da 12 a 21 interfacce, enum `quote_status` aggiunto.
+- **UI Fix:** Rimosso `bg-surface/60 backdrop-blur-xl` duplicato da `EmptyState` — eliminato effetto bordo bianco quando annidato dentro `GlassCard`.
+- **Build verificata:** `npx tsc --noEmit` — 0 errori. `npm run build` — 52 precache entries.
+
 ## [v0.32.1] - 2026-06-22
 ### Stato: Security hardening — warning Supabase risolti
 - **Migrazione DB #015:** Fix warning Supabase lint:
