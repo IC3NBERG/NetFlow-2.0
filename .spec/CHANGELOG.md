@@ -7,6 +7,21 @@
 
 ---
 
+## [v0.34.0] - 2026-06-23
+### Stato: Riordine form creazione lavori, code-split, fix shares RLS, rimossa pagina Changelog
+- **[HIGH] Code-split InvoicingPage:** Aggiunti chunk `vendor-pdf` e `vendor-qrcode` in `vite.config.ts`. InvoicingPage passa da 1.5MB a 20.9KB. `@react-pdf/renderer` (1.46MB) ora è caricato in chunk separato e cached indipendentemente.
+- **[MEDIUM] Fix ESLint warning react-refresh:** Spostato componente `InvoiceDocument` in `src/shared/ui/InvoiceDocument.tsx`. `pdfInvoice.tsx` ora esporta solo `generateInvoicePdf` (funzione pura) — risolto warning "Fast refresh only works when a file only exports components".
+- **[HIGH] Fix condivisione — shares RLS:** Creata migration 017 (`20260623000001_fix_shares_rls.sql`) che aggiunge policy INSERT, UPDATE, DELETE mancanti sulla tabella `shares`. La migration 015 (fix_supabase_warnings) aveva sostituito la policy multi-operazione con una sola `FOR SELECT`, bloccando creazione/eliminazione link con 403.
+- **[MEDIUM] Realtime error handling:** Aggiunto callback `.subscribe((status, err) => ...)` in `useRealtimeSync.ts` per loggare errori di connessione WebSocket senza crash silenziosi.
+- **[DOC] SCHEMA.md:** Aggiornata sezione 2.12 `shares` con le 4 policy corrette (SELECT/INSERT/UPDATE/DELETE).
+- **[LOW] Rimossa pagina Changelog:** Rimossa tab `/changelog` da sidebar e router. Eliminato file `ChangelogPage.tsx`. La versione (`v{__APP_VERSION__}`) resta visibile nel footer della sidebar.
+- **[MEDIUM] Riordinato form creazione lavoro:** Nuovo ordine sezioni: Dati Principali → Tempistiche (date ordinate) → Tipo di Pagamento (solo metodo + toggle contanti, senza importi) → Dati Fiscali (netto+lordo) → Valuta (solo select, rimossi allegati). Per pagamento Carta: solo selezione metodo, importo gestito da Dati Fiscali. Per Contanti/Misto: split importi visibile solo per Misto, checkbox "Includi contanti in fattura" con testo `Solo 0 € sarà in fattura. Il contanti sarà tracciato internamente.`
+- **[FIX] Ricalcolo netto su toggle contanti:** Aggiunto `useEffect` che ricalcola `net_amount` tramite `computeJobNetAmount` quando l'utente attiva/disattiva "Includi contanti in fattura". Se spunta attiva → netto = lordo con deduzione fiscale. Se disattiva → netto = lordo (solo tracciamento interno, nessuna deduzione). Funziona per pagamenti Contanti e Misti.
+- **[FIX] LedgerStats colori neutri:** Tutti i valori numerici delle statistiche Registro (Lavori incassati, Totale lordo, carta, contanti, Media) ora usano `text-text-primary` al posto dei colori brand/azzurro/verde — coerente con il resto dell'app.
+- **[FIX] Transizioni pagina consistenti:** Risolto bug con `AnimatePresence` — `Outlet` re-renderizza con la nuova pagina durante l'exit, causando animazioni saltate/assenti. Rimpiazzato con **conditional rendering per pathname** dentro `AnimatePresence`: il componente uscente non è più nell'albero React, quindi Framer Motion congela il suo contenuto → la vecchia pagina resta visibile durante l'exit. Estratte route protette in `protectedRouteConfig.tsx`, spostato `ProtectedRoute` da wrapper a componente che restituisce `<MainLayout />`. Aggiunto `PageLoader.tsx` in shared. Riordinato router: redirect `/ → /dashboard` prima del layout route pathless.
+- **[REFACTOR] protectedRouteConfig + PageLoader:** Creata configurazione centralizzata delle route protette in `src/app/protectedRouteConfig.tsx` per evitare duplicazione route tra router e layout. Spostato `PageLoader` in `src/shared/ui/PageLoader.tsx`.
+- **Build verificata:** `npx tsc --noEmit` — 0 errori. `npm run build` — ok. `npm run lint` — 0 warnings, 0 errori. `npx vitest run` — 4/4 test passanti.
+
 ## [v0.33.7] - 2026-06-23
 ### Stato: Bug fix — crash AttachmentsField su nuovo lavoro
 - **Bug fix:** Aggiunti `attachment_urls` e `currency` mancanti nei `reset()` di `JobFormModal.tsx` — causavano `undefined` che rompeva `urls.length` in `AttachmentsField`.

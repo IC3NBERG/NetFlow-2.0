@@ -107,11 +107,20 @@ export function DashboardPage() {
   }
 
   return (
-        <div className="space-y-4">
-      <div>
+    <motion.div
+      initial={{ opacity: 0, scale: 0.97 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.35, ease: 'easeOut' }}
+      className="space-y-4"
+    >
+      <motion.div
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.05 }}
+      >
         <h2 className="text-2xl md:text-3xl font-bold">Dashboard</h2>
         <p className="text-xs md:text-sm text-text-secondary">Panoramica finanziaria</p>
-      </div>
+      </motion.div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-5">
         {layout.filter((m) => m.visible).map((mod, index) => (
@@ -135,7 +144,7 @@ export function DashboardPage() {
           </ModuleWrapper>
         )}
       </div>
-    </div>
+    </motion.div>
   )
 }
 

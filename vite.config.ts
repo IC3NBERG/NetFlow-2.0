@@ -17,6 +17,8 @@ export default defineConfig({
           'vendor-query': ['@tanstack/react-query'],
           'vendor-form': ['react-hook-form', '@hookform/resolvers', 'zod'],
           'vendor-supabase': ['@supabase/supabase-js'],
+          'vendor-pdf': ['@react-pdf/renderer'],
+          'vendor-qrcode': ['qrcode'],
         },
       },
     },

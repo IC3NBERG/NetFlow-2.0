@@ -72,9 +72,10 @@
 - **Header:** Semplificato, solo titolo e hamburger menu per drawer laterale.
 
 ### 2.4 Transizioni
-- **Cambio pagina:** `AnimatePresence` con slide orizzontale (direzione basata su navigazione avanti/indietro).
+- **Cambio pagina:** `AnimatePresence` con slide orizzontale (direzione basata su navigazione avanti/indietro). Fisica spring (`stiffness: 320, damping: 28`) per movimento fluido. Hook `useNavigationDirection` traccia stack path per determinare direzione.
 - **Sidebar:** `transition-all duration-300 ease-out`.
 - **Moduli Dashboard:** `initial={{ opacity: 0, scale: 0.9 }}` con Framer Motion per simulare caricamento OS futuristico.
+- **Dashboard ingresso pagina:** `fade + scale(0.97 → 1)` con titolo che scende dall'alto (`y: -8 → 0`, delay 0.05s).
 - **Cards:** `hover:scale-[1.02]` con `transition-transform duration-200`.
 
 ---

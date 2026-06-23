@@ -374,12 +374,27 @@ CREATE INDEX idx_shares_user ON shares(user_id);
 CREATE INDEX idx_shares_token ON shares(token);
 
 ALTER TABLE shares ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "shares_user_isolation" ON shares
+
+-- Combined SELECT: owner sees own shares; unauthenticated (anon) sees by token
+CREATE POLICY "shares_select" ON public.shares
+  FOR SELECT
+  USING (
+    (select auth.uid()) = user_id
+    OR (select auth.uid()) IS NULL
+  );
+
+CREATE POLICY "shares_insert" ON public.shares
+  FOR INSERT TO authenticated
+  WITH CHECK ((select auth.uid()) = user_id);
+
+CREATE POLICY "shares_update" ON public.shares
+  FOR UPDATE TO authenticated
   USING ((select auth.uid()) = user_id)
   WITH CHECK ((select auth.uid()) = user_id);
-CREATE POLICY "shares_token_access" ON shares
-  FOR SELECT
-  USING (true);
+
+CREATE POLICY "shares_delete" ON public.shares
+  FOR DELETE TO authenticated
+  USING ((select auth.uid()) = user_id);
 ```
 
 ### 2.13 custom_events

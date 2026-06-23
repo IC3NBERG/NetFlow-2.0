@@ -30,7 +30,9 @@ export function useRealtimeSync() {
         .on('postgres_changes', { event: '*', schema: 'public', table: 'clients', filter: `user_id=eq.${uid}` }, () => {
           queryClient.invalidateQueries({ queryKey: ['clients'] })
         })
-        .subscribe()
+        .subscribe((_status: string, err?: Error) => {
+          if (err) console.warn('[Realtime] Subscription error:', err.message)
+        })
 
       return () => {
         supabase.removeChannel(channel)

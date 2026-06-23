@@ -7,7 +7,6 @@ import { Input } from '../../../shared/ui/Input'
 import { FormSection } from '../../../shared/ui/FormSection'
 import { Button } from '../../../shared/ui/Button'
 import { ClientSelect } from './ClientSelect'
-import { AttachmentsField } from '../../../shared/ui/AttachmentsField'
 import { CurrencySelect } from '../../../shared/ui/CurrencySelect'
 import { useAuth } from '../../../app/providers/AuthProvider'
 import { useFiscalSetup } from '../../../lib/hooks/useFiscalSetup'
@@ -141,6 +140,17 @@ export function JobFormModal({ open, onClose, onSubmit, initialData, isSubmittin
     }
   }, [endDate, pendingDate, initialData, setValue])
 
+  const prevIncludeCash = useRef(includeCash)
+
+  useEffect(() => {
+    if (initialData) return
+    if (prevIncludeCash.current === includeCash) return
+    prevIncludeCash.current = includeCash
+    const net = computeJobNetAmount(amountCard, amountCash, paymentMethod, includeCash, taxRegime, customIrpef)
+    setValue('net_amount', net)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [includeCash])
+
   const updateSplit = useCallback((gross: number) => {
     const method = watch('payment_method')
     if (method === 'card') {
@@ -256,6 +266,78 @@ export function JobFormModal({ open, onClose, onSubmit, initialData, isSubmittin
         </div>
       </FormSection>
 
+
+
+      <FormSection title="Tipo di Pagamento">
+        <div>
+          <label className="block text-sm text-text-secondary mb-2">Metodo</label>
+          <div className="grid grid-cols-3 gap-2">
+            {(['card', 'cash', 'mixed'] as const).map((method) => (
+              <button
+                key={method}
+                type="button"
+                onClick={() => handlePaymentMethodChange(method)}
+                className={`rounded-full border py-3 text-sm font-medium transition-all ${
+                  paymentMethod === method
+                    ? 'border-brand bg-brand/10 text-brand'
+                    : 'border-border bg-surface text-text-secondary hover:border-brand/50'
+                }`}
+              >
+                {method === 'card' ? 'Carta' : method === 'cash' ? 'Contanti' : 'Misto'}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {(paymentMethod === 'cash' || paymentMethod === 'mixed') && (
+          <div className="mt-4">
+            {paymentMethod === 'mixed' && (
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                <div>
+                  <label className="block text-sm text-text-secondary mb-1">Carta (€)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={amountCard || ''}
+                    onChange={(e) => handleCardChange(parseFloat(e.target.value) || 0)}
+                    placeholder="0.00"
+                    className="w-full rounded-input border border-border bg-surface px-4 py-3 text-text-primary placeholder:text-text-secondary/50 focus:outline-none focus:ring-2 focus:ring-brand transition-all duration-200 font-mono tabular-nums"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-text-secondary mb-1">Contanti (€)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={amountCash || ''}
+                    onChange={(e) => handleCashChange(parseFloat(e.target.value) || 0)}
+                    placeholder="0.00"
+                    className="w-full rounded-input border border-border bg-surface px-4 py-3 text-text-primary placeholder:text-text-secondary/50 focus:outline-none focus:ring-2 focus:ring-brand transition-all duration-200 font-mono tabular-nums"
+                  />
+                </div>
+              </div>
+            )}
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={includeCash}
+                onChange={(e) => setValue('include_cash_in_invoice', e.target.checked)}
+                className="h-5 w-5 rounded-lg border-border bg-surface text-brand focus:ring-brand"
+              />
+              <div>
+                <p className="text-sm font-medium">Includi contanti in fattura</p>
+                <p className="text-xs text-text-secondary">
+                  {includeCash
+                    ? `Importo totale fatturabile: ${amountCard + amountCash} €`
+                    : `Solo 0 € sarà in fattura. Il contanti sarà tracciato internamente.`
+                  }
+                </p>
+              </div>
+            </label>
+          </div>
+        )}
+      </FormSection>
+
       <FormSection title="Dati Fiscali" description={`Regime fiscale: ${taxRegime === 'occasional' ? 'Prestazione Occasionale' : taxRegime === 'vat_flat' ? 'Forfettario' : 'Ordinario'}`}>
         <div className="grid grid-cols-2 gap-3">
           <div>
@@ -288,90 +370,8 @@ export function JobFormModal({ open, onClose, onSubmit, initialData, isSubmittin
         )}
       </FormSection>
 
-      <FormSection title="Pagamento">
-        <div>
-          <label className="block text-sm text-text-secondary mb-2">Metodo</label>
-          <div className="grid grid-cols-3 gap-2">
-            {(['card', 'cash', 'mixed'] as const).map((method) => (
-              <button
-                key={method}
-                type="button"
-                onClick={() => handlePaymentMethodChange(method)}
-                className={`rounded-full border py-3 text-sm font-medium transition-all ${
-                  paymentMethod === method
-                    ? 'border-brand bg-brand/10 text-brand'
-                    : 'border-border bg-surface text-text-secondary hover:border-brand/50'
-                }`}
-              >
-                {method === 'card' ? 'Carta' : method === 'cash' ? 'Contanti' : 'Misto'}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3 mt-4">
-          {(paymentMethod === 'card' || paymentMethod === 'mixed') && (
-            <div>
-              <label className="block text-sm text-text-secondary mb-1">Importo carta (€ lordo)</label>
-              <input
-                type="number"
-                step="0.01"
-                value={amountCard || ''}
-                onChange={(e) => handleCardChange(parseFloat(e.target.value) || 0)}
-                placeholder="0.00"
-                className="w-full rounded-input border border-border bg-surface px-4 py-3 text-text-primary placeholder:text-text-secondary/50 focus:outline-none focus:ring-2 focus:ring-brand transition-all duration-200 font-mono tabular-nums"
-              />
-            </div>
-          )}
-          {(paymentMethod === 'cash' || paymentMethod === 'mixed') && (
-            <div>
-              <label className="block text-sm text-text-secondary mb-1">Importo contanti (€ lordo)</label>
-              <input
-                type="number"
-                step="0.01"
-                value={amountCash || ''}
-                onChange={(e) => handleCashChange(parseFloat(e.target.value) || 0)}
-                placeholder="0.00"
-                className="w-full rounded-input border border-border bg-surface px-4 py-3 text-text-primary placeholder:text-text-secondary/50 focus:outline-none focus:ring-2 focus:ring-brand transition-all duration-200 font-mono tabular-nums"
-              />
-            </div>
-          )}
-        </div>
-
-        {(paymentMethod === 'cash' || paymentMethod === 'mixed') && (
-          <label className="flex items-center gap-3 cursor-pointer mt-4">
-            <input
-              type="checkbox"
-              checked={includeCash}
-              onChange={(e) => setValue('include_cash_in_invoice', e.target.checked)}
-              className="h-5 w-5 rounded-lg border-border bg-surface text-brand focus:ring-brand"
-            />
-            <div>
-              <p className="text-sm font-medium">Includi contanti in fattura</p>
-              <p className="text-xs text-text-secondary">
-                {includeCash
-                  ? `Importo totale fatturabile: ${amountCard + amountCash} €`
-                  : `Solo ${amountCard} € sarà in fattura. Il contanti sarà tracciato internamente.`
-                }
-              </p>
-            </div>
-          </label>
-        )}
-      </FormSection>
-
-      <FormSection title="Valuta e Allegati">
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="block text-sm text-text-secondary mb-1">Valuta</label>
-            <CurrencySelect value={watch('currency')} onChange={(v) => setValue('currency', v)} />
-          </div>
-        </div>
-        <div className="mt-3">
-          <AttachmentsField
-            urls={watch('attachment_urls')}
-            onChange={(urls) => setValue('attachment_urls', urls)}
-          />
-        </div>
+      <FormSection title="Valuta">
+        <CurrencySelect value={watch('currency')} onChange={(v) => setValue('currency', v)} />
       </FormSection>
 
       {initialData && (

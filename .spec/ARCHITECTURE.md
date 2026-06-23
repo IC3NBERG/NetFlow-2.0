@@ -47,7 +47,8 @@ src/
 │   │   ├── AuthProvider.tsx
 │   │   ├── ThemeProvider.tsx
 │   │   └── SyncProvider.tsx
-│   └── router.tsx          # React Router config
+│   ├── router.tsx          # React Router config (public routes + ProtectedRoute)
+│   └── protectedRouteConfig.tsx  # Route definitions con lazy-loaded pages
 ├── features/               # Feature modules
 │   ├── account/            # Profilo, logo upload, template fatture
 │   ├── auth/               # Login, register, onboarding
@@ -70,7 +71,7 @@ src/
 │   ├── layouts/            # Sidebar, BottomBar, MainLayout
 │   └── charts/             # LineChart, BarChart, AreaChart
 ├── lib/                    # Utility, hooks, API client
-│   ├── hooks/              # useJobs, useQuotes, useClients, useInvoices, ecc.
+│   ├── hooks/              # useJobs, useQuotes, useClients, useInvoices, useNavigationDirection, ecc.
 │   ├── stores/             # Zustand stores (fiscalYear, jobsUI, ecc.)
 │   ├── supabase.ts         # Client Supabase
 │   ├── calculations.ts     # Funzioni metriche finanziarie
@@ -150,7 +151,25 @@ Proprietà tecniche:
    }
    ```
 
-### 3.5 Dashboard Module Animation
+### 3.5 Page Transitions (Route Animation)
+Le transizioni tra pagine usano `AnimatePresence` con conditional rendering per pathname (non `Outlet`, che re-renderizza il contenuto durante l'exit):
+
+```tsx
+<AnimatePresence mode="wait" custom={navDirection}>
+  {protectedRouteConfig.find(r => r.path === location.pathname) && (
+    <motion.div key={path} custom={navDirection} variants={pageVariants} ...>
+      {matched.element}
+    </motion.div>
+  )}
+</AnimatePresence>
+```
+
+- **Hook `useNavigationDirection`** in `src/lib/hooks/useNavigationDirection.ts`: traccia uno stack dei path visitati per determinare se l'utente sta navigando avanti o indietro (browser back).
+- **Varianti spring**: `stiffness: 320, damping: 28` per slide fluida non lineare.
+- **Direzione**: navigazione avanti → slide da destra, indietro → slide da sinistra.
+- **Conditional rendering**: il componente uscente non è più nell'albero React quando il path cambia. AnimatePresence lo conserva internamente, congelando il contenuto. Nessuna re-renderizzazione della pagina sbagliata durante l'exit.
+
+### 3.6 Dashboard Module Animation
 Ogni modulo della dashboard usa Framer Motion per l'entrata:
 
 ```tsx

@@ -21,10 +21,10 @@ const itemAnim = {
 }
 
 const cards = [
-  { key: 'totalJobs', label: 'Lavori incassati', color: 'text-brand' },
-  { key: 'grossTotal', label: 'Totale lordo', color: 'text-[#00D2FF]' },
-  { key: 'cardTotal', label: 'di cui carta', color: 'text-brand' },
-  { key: 'cashTotal', label: 'di cui contanti', color: 'text-[#00B894]' },
+  { key: 'totalJobs', label: 'Lavori incassati', color: 'text-text-primary' },
+  { key: 'grossTotal', label: 'Totale lordo', color: 'text-text-primary' },
+  { key: 'cardTotal', label: 'di cui carta', color: 'text-text-primary' },
+  { key: 'cashTotal', label: 'di cui contanti', color: 'text-text-primary' },
   { key: 'avgPerJob', label: 'Media per lavoro', color: 'text-text-primary' },
 ] as const
 
