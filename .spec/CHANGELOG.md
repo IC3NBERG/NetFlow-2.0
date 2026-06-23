@@ -7,6 +7,12 @@
 
 ---
 
+## [v0.34.1] - 2026-06-23
+### Stato: Fix pagine vuote nelle transizioni — rimosso AnimatePresence, key-based motion.div
+- **[FIX] Pagine vuote su cambio rotta:** Rimosso `AnimatePresence mode="wait"` e conditional rendering che causava pagine bianche durante le transizioni. Sostituito con `motion.div key={location.pathname}` + spring entrance (`opacity: 0→1, x: 30→0`). Quando il `key` cambia, React smonta immediatamente la vecchia pagina (nessun exit) e monta la nuova con entrance animation — zero pagine vuote.
+- **[DOC] ARCHITECTURE.md, UI_UX_SPEC.md:** Aggiornate sezioni Page Transitions.
+- **Build:** `npx tsc --noEmit` — 0 errori. `npm run lint` — 0 warnings. `npm run build` — ok.
+
 ## [v0.34.0] - 2026-06-23
 ### Stato: Riordine form creazione lavori, code-split, fix shares RLS, rimossa pagina Changelog
 - **[HIGH] Code-split InvoicingPage:** Aggiunti chunk `vendor-pdf` e `vendor-qrcode` in `vite.config.ts`. InvoicingPage passa da 1.5MB a 20.9KB. `@react-pdf/renderer` (1.46MB) ora è caricato in chunk separato e cached indipendentemente.

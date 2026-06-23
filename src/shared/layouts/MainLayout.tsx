@@ -1,10 +1,9 @@
 import { useNavigate, useLocation } from 'react-router-dom'
-import { AnimatePresence, motion, type Variants } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { Sidebar } from './Sidebar'
 import { BottomBar } from './BottomBar'
 import { useSync } from '../../app/providers/SyncProvider'
 import { useRealtimeSync } from '../../lib/hooks/useRealtimeSync'
-import { useNavigationDirection, type NavDirection } from '../../lib/hooks/useNavigationDirection'
 import { protectedRouteConfig } from '../../app/protectedRouteConfig'
 import { NotFoundPage } from '../../features/not-found/pages/NotFoundPage'
 import { SyncBanner } from '../../shared/ui/SyncBanner'
@@ -15,28 +14,10 @@ import { CommandPalette } from '../../shared/ui/CommandPalette'
 import { cn } from '../../lib/utils'
 import { Info, Search } from 'lucide-react'
 
-const pageVariants: Variants = {
-  initial: (dir: NavDirection) => ({
-    x: dir === 'backward' ? '-20%' : '20%',
-    opacity: 0,
-  }),
-  animate: {
-    x: 0,
-    opacity: 1,
-    transition: { type: 'spring', stiffness: 320, damping: 28 },
-  },
-  exit: (dir: NavDirection) => ({
-    x: dir === 'backward' ? '20%' : '-20%',
-    opacity: 0,
-    transition: { type: 'spring', stiffness: 360, damping: 30 },
-  }),
-}
-
 export function MainLayout() {
   const { isOnline, queueLength, isSyncing, syncStatus } = useSync()
   const navigate = useNavigate()
   const location = useLocation()
-  const navDirection = useNavigationDirection()
   useRealtimeSync()
 
   return (
@@ -97,37 +78,20 @@ export function MainLayout() {
           </div>
         </header>
         <main className="p-4 md:p-6 lg:p-8">
-          <AnimatePresence mode="wait" custom={navDirection}>
-            {(() => {
-              const matched = protectedRouteConfig.find(r => r.path === location.pathname)
-              if (matched) {
-                return (
-                  <motion.div
-                    key={matched.path}
-                    custom={navDirection}
-                    variants={pageVariants}
-                    initial="initial"
-                    animate="animate"
-                    exit="exit"
-                  >
-                    {matched.element}
-                  </motion.div>
-                )
-              }
-              return (
-                <motion.div
-                  key="not-found"
-                  custom={navDirection}
-                  variants={pageVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                >
-                  <NotFoundPage />
-                </motion.div>
-              )
-            })()}
-          </AnimatePresence>
+          {(() => {
+            const matched = protectedRouteConfig.find(r => r.path === location.pathname)
+            const content = matched?.element ?? <NotFoundPage />
+            return (
+              <motion.div
+                key={location.pathname}
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+              >
+                {content}
+              </motion.div>
+            )
+          })()}
         </main>
       </div>
       <BottomBar />

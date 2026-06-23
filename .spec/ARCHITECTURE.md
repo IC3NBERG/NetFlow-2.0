@@ -152,22 +152,22 @@ Proprietà tecniche:
    ```
 
 ### 3.5 Page Transitions (Route Animation)
-Le transizioni tra pagine usano `AnimatePresence` con conditional rendering per pathname (non `Outlet`, che re-renderizza il contenuto durante l'exit):
+Le transizioni tra pagine usano `key`-based `motion.div` con spring entrance. Nessun `AnimatePresence` o exit animation (evita pagine vuote e freezing di contenuto):
 
 ```tsx
-<AnimatePresence mode="wait" custom={navDirection}>
-  {protectedRouteConfig.find(r => r.path === location.pathname) && (
-    <motion.div key={path} custom={navDirection} variants={pageVariants} ...>
-      {matched.element}
-    </motion.div>
-  )}
-</AnimatePresence>
+<motion.div
+  key={location.pathname}
+  initial={{ opacity: 0, x: 30 }}
+  animate={{ opacity: 1, x: 0 }}
+  transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+>
+  {matched.element}
+</motion.div>
 ```
 
-- **Hook `useNavigationDirection`** in `src/lib/hooks/useNavigationDirection.ts`: traccia uno stack dei path visitati per determinare se l'utente sta navigando avanti o indietro (browser back).
-- **Varianti spring**: `stiffness: 320, damping: 28` per slide fluida non lineare.
-- **Direzione**: navigazione avanti → slide da destra, indietro → slide da sinistra.
-- **Conditional rendering**: il componente uscente non è più nell'albero React quando il path cambia. AnimatePresence lo conserva internamente, congelando il contenuto. Nessuna re-renderizzazione della pagina sbagliata durante l'exit.
+- **Key change** → React smonta immediatamente la vecchia pagina (nessun exit) e monta la nuova con entrance spring.
+- **Spring physics**: `stiffness: 320, damping: 28` per slide fluida non lineare.
+- **Affidabilità**: nessun `AnimatePresence` o freezing di contenuto — quando il `key` cambia, React ricrea il nodo DOM da zero.
 
 ### 3.6 Dashboard Module Animation
 Ogni modulo della dashboard usa Framer Motion per l'entrata:
