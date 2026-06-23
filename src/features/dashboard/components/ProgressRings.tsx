@@ -210,7 +210,7 @@ function RingSVG({ percent, size, strokeWidth, color }: { percent: number; size:
         />
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
-        <span className="font-bold font-mono tracking-tight" style={{ color, fontSize: size * 0.26 }}>
+        <span className="font-bold font-mono tracking-tight text-text-primary" style={{ fontSize: size * 0.26 }}>
           {Math.round(percent)}%
         </span>
       </div>

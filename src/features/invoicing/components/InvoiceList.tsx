@@ -61,7 +61,8 @@ export function InvoiceList({ invoices, onMarkAsPaid, onMarkAsSent, relatedJobs 
       a.click()
       URL.revokeObjectURL(url)
       setToast({ message: 'PDF scaricato con successo', type: 'success' })
-    } catch {
+    } catch (err) {
+      console.error('PDF generation failed:', err)
       setToast({ message: 'Errore generazione PDF', type: 'error' })
     } finally {
       setDownloadingId(null)

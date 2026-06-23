@@ -54,19 +54,19 @@ export function DashboardPage() {
         <div className="grid grid-cols-3 gap-2 md:gap-3 mt-4">
           <div className="text-center">
             <p className="text-[10px] md:text-xs text-text-secondary">Entrate totali</p>
-            <p className="text-sm md:text-lg font-bold font-mono text-success">
+            <p className="text-sm md:text-lg font-bold font-mono text-text-primary">
               {formatCurrency(data.monthlySummary.reduce((s, m) => s + m.income, 0))}
             </p>
           </div>
           <div className="text-center">
             <p className="text-[10px] md:text-xs text-text-secondary">Uscite totali</p>
-            <p className="text-sm md:text-lg font-bold font-mono text-expense">
+            <p className="text-sm md:text-lg font-bold font-mono text-text-primary">
               {formatCurrency(data.monthlySummary.reduce((s, m) => s + m.expenses, 0))}
             </p>
           </div>
           <div className="text-center">
             <p className="text-[10px] md:text-xs text-text-secondary">Saldo netto</p>
-            <p className="text-sm md:text-lg font-bold font-mono text-brand">
+            <p className="text-sm md:text-lg font-bold font-mono text-text-primary">
               {formatCurrency(data.metrics.balance)}
             </p>
           </div>

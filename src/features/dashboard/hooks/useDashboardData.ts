@@ -13,27 +13,27 @@ export function useDashboardData() {
   return useQuery({
     queryKey: ['dashboard', year],
     queryFn: async () => {
-      const { data: user } = await supabase.auth.getUser()
-      if (!user.user) throw new Error('Not authenticated')
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.user) throw new Error('Not authenticated')
 
       const [jobsRes, profileRes, fiscalSetupRes, expensesRes] = await Promise.all([
         supabase
           .from('jobs')
           .select('*')
-          .eq('user_id', user.user.id)
+          .eq('user_id', session.user.id)
           .gte('start_date', range.gte)
           .lte('start_date', range.lte),
-        supabase.from('profiles').select('*').eq('id', user.user.id).single(),
+        supabase.from('profiles').select('*').eq('id', session.user.id).single(),
         supabase
           .from('fiscal_setups')
           .select('*')
-          .eq('user_id', user.user.id)
+          .eq('user_id', session.user.id)
           .eq('year', year)
           .maybeSingle(),
         supabase
           .from('expenses')
           .select('amount, date')
-          .eq('user_id', user.user.id)
+          .eq('user_id', session.user.id)
           .gte('date', range.gte)
           .lte('date', range.lte),
       ])

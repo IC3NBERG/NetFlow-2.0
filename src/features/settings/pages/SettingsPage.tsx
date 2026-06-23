@@ -231,9 +231,9 @@ export function SettingsPage() {
           throw new Error(`Validazione fallita: ${errors}`)
         }
 
-        const { data: userData } = await supabase.auth.getUser()
-        if (!userData.user) throw new Error('Utente non autenticato')
-        const userId = userData.user.id
+        const { data: { session } } = await supabase.auth.getSession()
+        if (!session?.user) throw new Error('Utente non autenticato')
+        const userId = session.user.id
 
         const hasInjection = result.data.some((item) => {
           const values = Object.values(item).filter(Boolean).map(String)

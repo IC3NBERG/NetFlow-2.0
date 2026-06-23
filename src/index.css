@@ -11,7 +11,7 @@
     --color-text-secondary: 99 110 114;
     --color-success: 0 184 148;
     --color-expense: 255 107 107;
-    --color-pending: 99 110 114;
+    --color-pending: 50 55 60;
     --color-border: 0 0 0 0.1;
   }
 
@@ -23,7 +23,7 @@
     --color-text-secondary: 203 213 225;
     --color-success: 0 184 148;
     --color-expense: 255 107 107;
-    --color-pending: 99 110 114;
+    --color-pending: 148 163 184;
     --color-border: 255 255 255 0.1;
   }
 

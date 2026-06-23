@@ -7,6 +7,17 @@
 
 ---
 
+## [v0.37.0] - 2026-06-23
+### Stato: Ottimizzazioni Supabase, Fix PDF e QR Code, Personalizzazioni Colori
+- **[PATCH] Ottimizzazione Auth Query:** Sostituiti tutti i richiami a `auth.getUser()` (che generavano continue chiamate di rete al server di autenticazione Supabase) con `auth.getSession()` (che sfrutta la sessione memorizzata in locale). Ottimizzati gli hook: `useInvoices`, `useExpenses`, `useLedgerData`, `useFiscalSetup`, `useUserSettings`, `useCreateInvoiceWithJobs`, `useDashboardData` e la pagina `SettingsPage.tsx`. Risparmiati oltre 10+ roundtrip di rete ad ogni avvio/aggiornamento dell'applicazione.
+- **[FIX] Fix Realtime Memory Leak:** Risolto un potenziale memory leak in `useRealtimeSync.ts` modificando la gestione del canale di cleanup. La disconnessione dei canali di sottoscrizione viene ora tracciata e invocata correttamente anche se il componente si smonta prima della risoluzione asincrona della sessione.
+- **[FIX] Generazione PDF:** Sostituiti i font `.woff2` remoti di `fontsource` con font `.ttf` stabili forniti tramite Google Fonts static CDN all'interno di `InvoiceDocument.tsx`, risolvendo il blocco asincrono del metodo `.toBlob()` di `@react-pdf/renderer` che impediva il download del documento nei browser moderni. Aggiunto logging degli errori in console.
+- **[FIX] QR Code Fatture:** Sostituita la libreria `QRCodeLib.toCanvas` con `QRCodeLib.toDataURL` in `InvoiceQRCode.tsx` per generare direttamente l'immagine Base64 in memoria, eliminando i problemi di render su canvas non ancora montato e visualizzando correttamente i QR code.
+- **[PATCH] Personalizzazione Colori Dashboard:** Ricolorati in nero gli elementi e i valori di *Entrate totali*, *Uscite totali* e *Saldo netto* nel pannello dell'Andamento Economico di `DashboardPage.tsx` per uniformarli al design richiesto.
+- **[PATCH] Contrasto Valori in Attesa:** Scurita la tonalità del grigio associato alla variabile `--color-pending` in `index.css` portandola da `99 110 114` a `50 55 60` in modalità chiara per migliorare la leggibilità e il contrasto dei valori a zero/in attesa sulla dashboard.
+- **File modificati:** `src/features/dashboard/components/ProgressRings.tsx`, `src/features/dashboard/hooks/useDashboardData.ts`, `src/features/dashboard/pages/DashboardPage.tsx`, `src/features/invoicing/components/InvoiceList.tsx`, `src/features/settings/pages/SettingsPage.tsx`, `src/index.css`, `src/lib/pwaRegistration.ts`, `src/shared/ui/InvoiceDocument.tsx`, `src/shared/ui/InvoiceQRCode.tsx`
+- **Build:** `npm run build` — ✓ Build completata con successo.
+
 ## [v0.36.0] - 2026-06-23
 ### Stato: Rimozione Tag, nuova pagina Personalizzazione, nuova pagina Aiuto/FAQ, fix UI
 - **[MINOR] Rimossa funzionalità Tag:** Eliminata completamente la feature dei tag dall'applicazione. Rimossi: `src/features/tags/TagsManager.tsx`, `src/lib/hooks/useTags.ts`, interfacce `Tag`/`JobTag`/`ExpenseTag` da `database.ts`. Rimosso blocco Tag dalla sezione Profilo in `SettingsPage.tsx`, rimossa voce `tags` dall'esportazione dati GDPR e dalla descrizione pulizia account.
