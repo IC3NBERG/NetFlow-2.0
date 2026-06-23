@@ -297,25 +297,29 @@ CREATE POLICY "expense_tags_user_isolation" ON expense_tags
 ### 2.10 quotes
 ```sql
 CREATE TABLE quotes (
-  id                uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id           uuid NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
-  client_id         uuid REFERENCES clients(id) ON DELETE SET NULL,
-  quote_number      text NOT NULL,
-  title             text NOT NULL,
-  description       text,
-  status            quote_status NOT NULL DEFAULT 'draft',
-  gross_amount      numeric(12,2) NOT NULL DEFAULT 0,
-  tax_amount        numeric(12,2) NOT NULL DEFAULT 0,
-  net_amount        numeric(12,2) NOT NULL DEFAULT 0,
-  tax_rate          numeric(5,2) NOT NULL DEFAULT 22,
-  valid_until       date,
-  issued_date       date NOT NULL DEFAULT CURRENT_DATE,
-  converted_job_id  uuid REFERENCES jobs(id) ON DELETE SET NULL,
-  notes             text,
-  currency          text NOT NULL DEFAULT 'EUR',
-  exchange_rate     numeric(10,4),
-  created_at        timestamptz DEFAULT now(),
-  updated_at        timestamptz DEFAULT now()
+  id                      uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id                 uuid NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  client_id               uuid REFERENCES clients(id) ON DELETE SET NULL,
+  quote_number            text NOT NULL,
+  title                   text NOT NULL,
+  description             text,
+  status                  quote_status NOT NULL DEFAULT 'draft',
+  payment_method          payment_method NOT NULL DEFAULT 'card',
+  amount_card             numeric(12,2) NOT NULL DEFAULT 0,
+  amount_cash             numeric(12,2) NOT NULL DEFAULT 0,
+  include_cash_in_invoice boolean NOT NULL DEFAULT false,
+  gross_amount            numeric(12,2) NOT NULL DEFAULT 0,
+  tax_amount              numeric(12,2) NOT NULL DEFAULT 0,
+  net_amount              numeric(12,2) NOT NULL DEFAULT 0,
+  tax_rate                numeric(5,2) NOT NULL DEFAULT 22,
+  valid_until             date,
+  issued_date             date NOT NULL DEFAULT CURRENT_DATE,
+  converted_job_id        uuid REFERENCES jobs(id) ON DELETE SET NULL,
+  notes                   text,
+  currency                text NOT NULL DEFAULT 'EUR',
+  exchange_rate           numeric(10,4),
+  created_at              timestamptz DEFAULT now(),
+  updated_at              timestamptz DEFAULT now()
 );
 
 CREATE INDEX idx_quotes_user ON quotes(user_id);
@@ -681,6 +685,10 @@ export interface Quote {
   title: string;
   description: string | null;
   status: QuoteStatus;
+  payment_method: PaymentMethod;
+  amount_card: number;
+  amount_cash: number;
+  include_cash_in_invoice: boolean;
   gross_amount: number;
   tax_amount: number;
   net_amount: number;

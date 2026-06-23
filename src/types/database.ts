@@ -167,6 +167,10 @@ export interface Quote {
   title: string
   description: string | null
   status: QuoteStatus
+  payment_method: PaymentMethod
+  amount_card: number
+  amount_cash: number
+  include_cash_in_invoice: boolean
   gross_amount: number
   tax_amount: number
   net_amount: number

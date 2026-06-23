@@ -7,6 +7,15 @@
 
 ---
 
+## [v0.35.0] - 2026-06-23
+### Stato: Preventivi con calcolo fiscale — netto/lordo, cash/carta/misto, regime fiscale
+- **[MAJOR] Preventivi con modello fiscale completo:** Il form preventivo ora usa lo stesso calcolo fiscale dei lavori — `netToGross`/`grossToNet`/`computeJobNetAmount` in base al regime fiscale (`tax.ts`). Aggiunti campi: `payment_method`, `amount_card`, `amount_cash`, `include_cash_in_invoice`. Il netto e il lordo sono bidirezionali (modificando uno si aggiorna l'altro). Preimpostato in base al regime fiscale dell'utente (`useFiscalSetup`).
+- **[HIGH] Nuova migration 023:** `20260623000007_add_payment_method_to_quotes.sql` — aggiunte colonne `payment_method`, `amount_card`, `amount_cash`, `include_cash_in_invoice` alla tabella `quotes`.
+- **[HIGH] Conversione preventivo → lavoro migliorata:** `useConvertQuoteToJob` ora passa tutti i dati di pagamento (`payment_method`, `amount_card`, `amount_cash`, `include_cash_in_invoice`, `net_amount`) al nuovo lavoro.
+- **[FIX] Auto-preventivo su creazione lavoro:** Aggiornato per usare i nuovi campi (`payment_method`, `amount_card`, `amount_cash`, `include_cash_in_invoice`, `net_amount`).
+- **File modificati:** `src/features/quotes/pages/QuotesPage.tsx`, `src/lib/hooks/useQuotes.ts`, `src/types/database.ts`, `src/features/jobs/pages/JobsPage.tsx`, `.spec/SCHEMA.md`
+- **Build:** `npx tsc --noEmit` — 0 errori.
+
 ## [v0.34.6] - 2026-06-23
 ### Stato: Fix 403 creazione clienti — audit_log RLS policies mancanti
 - **[CRITICAL] Fix 403 creazione clienti — audit_log RLS:** Migrazione 022 (`20260623000006_fix_audit_log_rls.sql`). La tabella `audit_log` aveva RLS attivo ma solo una policy `FOR SELECT`. Il trigger `audit_clients` (e `audit_jobs`, `audit_invoices`, `audit_expenses`, `audit_quotes`) tentava di inserire in `audit_log` ma veniva bloccato da RLS, causando 403 su ogni INSERT/UPDATE/DELETE delle tabelle tracciate. Aggiunte policy `INSERT`, `UPDATE`, `DELETE` con `auth.uid() = user_id`.

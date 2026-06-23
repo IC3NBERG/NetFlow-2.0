@@ -65,17 +65,18 @@ export function JobsPage() {
         let quoteToast = 'Lavoro creato'
         try {
           const grossAmount = data.amount_card + data.amount_cash
-          const taxRate = 22
-          const taxAmount = grossAmount * taxRate / 100
-          const netAmount = grossAmount - taxAmount
           await createQuote.mutateAsync({
             client_id: data.client_id ?? undefined,
             title: data.title,
             description: data.description,
+            payment_method: data.payment_method,
+            amount_card: data.amount_card,
+            amount_cash: data.amount_cash,
+            include_cash_in_invoice: data.include_cash_in_invoice,
             gross_amount: Math.round(grossAmount * 100) / 100,
-            tax_amount: Math.round(taxAmount * 100) / 100,
-            net_amount: Math.round(netAmount * 100) / 100,
-            tax_rate: taxRate,
+            tax_amount: 0,
+            net_amount: data.net_amount ?? 0,
+            tax_rate: 22,
           })
           quoteToast = 'Lavoro creato con preventivo'
         } catch {

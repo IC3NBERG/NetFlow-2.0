@@ -3,7 +3,7 @@ import { supabase } from '../supabase'
 import { executeWithSync } from '../syncExecute'
 import { OfflineQueuedError } from '../syncBridge'
 import { useAuth } from '../../app/providers/AuthProvider'
-import type { Quote } from '../../types/database'
+import type { Quote, PaymentMethod } from '../../types/database'
 
 export function useQuotes(clientId?: string | null) {
   const { user } = useAuth()
@@ -33,6 +33,10 @@ export function useCreateQuote() {
       client_id?: string
       title: string
       description?: string
+      payment_method: PaymentMethod
+      amount_card: number
+      amount_cash: number
+      include_cash_in_invoice: boolean
       gross_amount: number
       tax_amount: number
       net_amount: number
@@ -83,7 +87,11 @@ export function useConvertQuoteToJob() {
       jobData: {
         title: string
         client_id?: string
+        payment_method: PaymentMethod
         amount_card: number
+        amount_cash: number
+        include_cash_in_invoice: boolean
+        net_amount: number
         status: 'completed_pending'
       }
     }) => {
@@ -93,7 +101,6 @@ export function useConvertQuoteToJob() {
         .insert({
           ...jobData,
           user_id: user.id,
-          net_amount: jobData.amount_card,
           start_date: new Date().toISOString().split('T')[0],
         })
         .select()
