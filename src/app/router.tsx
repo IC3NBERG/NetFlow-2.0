@@ -9,6 +9,7 @@ import { LoginPage } from '../features/auth/pages/LoginPage'
 import { RegisterPage as SignUpPage } from '../features/auth/pages/RegisterPage'
 import { ForgotPasswordPage } from '../features/auth/pages/ForgotPasswordPage'
 import { ResetPasswordPage } from '../features/auth/pages/ResetPasswordPage'
+import { AuthCallbackPage } from '../features/auth/pages/AuthCallbackPage'
 import { OnboardingPage } from '../features/auth/pages/OnboardingPage'
 import { NotFoundPage } from '../features/not-found/pages/NotFoundPage'
 import { SharedViewPage } from '../features/shared/pages/SharedViewPage'
@@ -64,6 +65,7 @@ export function AppRouter() {
         <Route path="/register" element={<PublicRoute><SignUpPage /></PublicRoute>} />
         <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordPage /></PublicRoute>} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/auth/callback" element={<AuthCallbackPage />} />
         <Route path="/onboarding" element={<OnboardingGuard><OnboardingPage /></OnboardingGuard>} />
         <Route path="/shared/:token" element={<SharedViewPage />} />
         <Route path="/" element={<HomeRedirect />} />

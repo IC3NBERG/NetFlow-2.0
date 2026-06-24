@@ -38,6 +38,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const hasAuthCode = params.has('code')
+    const hasAuthHash = window.location.hash?.includes('access_token=')
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
         const remember = localStorage.getItem('netflow_remember_me')
@@ -47,7 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else {
           fetchProfile(session.user.id)
         }
-      } else {
+      } else if (!hasAuthCode && !hasAuthHash) {
         setIsLoading(false)
       }
     })
@@ -79,7 +83,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function signUp(email: string, password: string) {
     setError(null)
-    const { error: authError } = await supabase.auth.signUp({ email, password })
+    const { error: authError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+      },
+    })
     if (authError) {
       setError(authError.message)
       throw authError

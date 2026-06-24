@@ -7,6 +7,14 @@
 
 ---
 
+## [v0.37.1] - 2026-06-24
+### Stato: Fix 400 su /token dopo conferma email — PKCE flow e redirectTo
+- **[FIX] 400 su /token dopo conferma email:** Aggiunto `emailRedirectTo: \`${window.location.origin}/auth/callback\`` in `signUp()` (`AuthProvider.tsx:82`) — il PKCE verifier ora corrisponde all'origine corretta. Aggiunta nuova rotta `/auth/callback` con `AuthCallbackPage` per gestire esplicitamente il redirect post-conferma. Aggiornato `auth_config.json` — `uri_allow_list` include ora `http://localhost:5173` e `http://localhost:5173/auth/callback`. Fixata race condition in `AuthProvider` useEffect: se l'URL contiene un codice auth (`?code=` o `#access_token=`), `isLoading` rimane `true` finché `onAuthStateChange` non completa lo scambio PKCE.
+- **Root cause:** `signUp()` chiamava Supabase senza `redirectTo`, quindi il link di conferma usava `SITE_URL` (`netflow-v3.pages.dev`). In sviluppo locale il PKCE verifier era salvato su `localhost:5173` ma il redirect andava su produzione, causando il fallimento dello scambio del codice (400 su `/auth/v1/token`).
+- **[PATCH] AuthCallbackPage reindirizza a /login dopo conferma:** Dopo lo scambio PKCE, `signOut()` e redirect a `/login` invece di auto-login e onboarding. L'utente deve fare login esplicito dopo la conferma email.
+- **File modificati:** `src/app/providers/AuthProvider.tsx`, `src/app/router.tsx`, `src/features/auth/pages/AuthCallbackPage.tsx` (new), `auth_config.json`
+- **Build:** `npx tsc --noEmit` — 0 errori. `npm run build` — ✓
+
 ## [v0.37.0] - 2026-06-23
 ### Stato: Ottimizzazioni Supabase, Fix PDF e QR Code, Personalizzazioni Colori
 - **[PATCH] Ottimizzazione Auth Query:** Sostituiti tutti i richiami a `auth.getUser()` (che generavano continue chiamate di rete al server di autenticazione Supabase) con `auth.getSession()` (che sfrutta la sessione memorizzata in locale). Ottimizzati gli hook: `useInvoices`, `useExpenses`, `useLedgerData`, `useFiscalSetup`, `useUserSettings`, `useCreateInvoiceWithJobs`, `useDashboardData` e la pagina `SettingsPage.tsx`. Risparmiati oltre 10+ roundtrip di rete ad ogni avvio/aggiornamento dell'applicazione.
