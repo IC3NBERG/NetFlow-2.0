@@ -17,6 +17,9 @@
 - **[PATCH] Intersezione sidebar/header ridisegnata:** Sidebar come colonna verticale, header come transetto orizzontale. Aggiunto un arco di congiunzione SVG (`A 32 32`) posizionato all'angolo di intersezione — una linea curva brand che parte dalla colonna sidebar e si raccorda al transetto header, creando un collegamento architettonico tra le due superfici glass. Header reso un transetto pulito (rimosso `rounded-l-2xl`). Logo area sidebar ridotto da `py-6` a `py-4` per allineamento verticale con l'header.
 - **File modificati:** `src/shared/layouts/MainLayout.tsx`, `src/shared/layouts/Sidebar.tsx`, `.spec/UI_UX_SPEC.md`
 
+- **[PATCH] Verde success schiarito:** `--color-success` da `0 60 10` (`#003C0A`) a `0 156 19` (`#009C13`) — il verde era troppo scuro e poco leggibile. Allineato al valore nella UI_UX_SPEC.
+- **File modificati:** `src/index.css`, `src/lib/stores/customization.ts`
+
 ### Stato: Premium theme transition — cubic-bezier custom + micro-scale breath
 - **[MINOR] Premium theme morph:** Rimosso il catch-all `* { transition }` che appiattiva tutti gli elementi allo stesso ritmo. Sostituito con transizione selettiva sul solo `body` usando `cubic-bezier(0.16, 1, 0.3, 1)` — Material Design "emphasized deceleration": partenza rapida, decelerazione che si addolcisce verso la fine. Aggiunta animazione `theme-breath` (scale 0.998→1→1.002 in 0.5s) attivata dalla classe `.theme-changing` su `body` — dà un micro-respiro di profondità. Le componenti esistenti (GlassCard, bottoni) usano le proprie transizioni naturali, creando uno stagger organico.
 - **File modificati:** `src/app/providers/ThemeProvider.tsx`, `src/index.css`, `.spec/UI_UX_SPEC.md`

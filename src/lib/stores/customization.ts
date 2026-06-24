@@ -34,7 +34,7 @@ export const useCustomizationStore = create<CustomizationStore>((set) => {
   }
 
   const brandColor = localStorage.getItem('fintrack-color-brand') || '#6c5ce7'
-  const successColor = localStorage.getItem('fintrack-color-success') || '#003c0a'
+  const successColor = localStorage.getItem('fintrack-color-success') || '#009C13'
   const expenseColor = localStorage.getItem('fintrack-color-expense') || '#ff2d2d'
 
   const OLD_DEFAULTS: Record<string, string> = {
@@ -77,7 +77,7 @@ export const useCustomizationStore = create<CustomizationStore>((set) => {
       localStorage.removeItem('fintrack-color-expense')
       set({
         brandColor: '#6c5ce7',
-        successColor: '#003c0a',
+        successColor: '#009C13',
         expenseColor: '#ff2d2d',
       })
     },
