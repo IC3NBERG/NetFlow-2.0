@@ -11,7 +11,7 @@
 ### Stato: Fix 400 su /token dopo conferma email — PKCE flow e redirectTo
 - **[FIX] 400 su /token dopo conferma email:** Aggiunto `emailRedirectTo: \`${window.location.origin}/auth/callback\`` in `signUp()` (`AuthProvider.tsx:82`) — il PKCE verifier ora corrisponde all'origine corretta. Aggiunta nuova rotta `/auth/callback` con `AuthCallbackPage` per gestire esplicitamente il redirect post-conferma. Aggiornato `auth_config.json` — `uri_allow_list` include ora `http://localhost:5173` e `http://localhost:5173/auth/callback`. Fixata race condition in `AuthProvider` useEffect: se l'URL contiene un codice auth (`?code=` o `#access_token=`), `isLoading` rimane `true` finché `onAuthStateChange` non completa lo scambio PKCE.
 - **Root cause:** `signUp()` chiamava Supabase senza `redirectTo`, quindi il link di conferma usava `SITE_URL` (`netflow-v3.pages.dev`). In sviluppo locale il PKCE verifier era salvato su `localhost:5173` ma il redirect andava su produzione, causando il fallimento dello scambio del codice (400 su `/auth/v1/token`).
-- **[PATCH] AuthCallbackPage reindirizza a /login dopo conferma:** Dopo lo scambio PKCE, `signOut()` e redirect a `/login` invece di auto-login e onboarding. L'utente deve fare login esplicito dopo la conferma email.
+- **[PATCH] AuthCallbackPage mostra schermata di conferma:** Sostituito auto-redirect a `/login` con una schermata di conferma visiva ("Email confermata!") + bottone manuale "Vai al login". La nuova tab non esegue redirect automatici — l'utente la chiude e resta sulla tab originale.
 - **File modificati:** `src/app/providers/AuthProvider.tsx`, `src/app/router.tsx`, `src/features/auth/pages/AuthCallbackPage.tsx` (new), `auth_config.json`
 - **Build:** `npx tsc --noEmit` — 0 errori. `npm run build` — ✓
 
