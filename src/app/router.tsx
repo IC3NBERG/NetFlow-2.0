@@ -54,6 +54,16 @@ function PublicRoute({ children }: { children: ReactNode }) {
 
 function HomeRedirect() {
   const homeRoute = useHomeRoute()
+  const params = new URLSearchParams(window.location.search)
+  const hasAuthCode = params.has('code')
+  const hasAuthHash = window.location.hash?.includes('access_token=')
+
+  if (hasAuthCode || hasAuthHash) {
+    const search = window.location.search
+    const hash = window.location.hash
+    return <Navigate to={`/auth/callback${search}${hash}`} replace />
+  }
+
   return <Navigate to={homeRoute} replace />
 }
 
