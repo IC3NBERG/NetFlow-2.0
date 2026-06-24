@@ -1,10 +1,12 @@
+import { useState, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useSharedData } from '../../../lib/hooks/useSharedData'
 import { GlassCard } from '../../../shared/ui/GlassCard'
 import {
   AlertTriangle, Briefcase, Users, FileText, Receipt, FileSpreadsheet,
-  Clock, CheckCircle2, ExternalLink, Shield,
+  Clock, CheckCircle2, ExternalLink, Shield, Search,
+  ChevronDown, Eye, DollarSign,
 } from 'lucide-react'
 
 const statusColors: Record<string, string> = {
@@ -17,6 +19,12 @@ const statusColors: Record<string, string> = {
   accepted: 'text-success',
   rejected: 'text-expense',
   converted: 'text-brand',
+}
+
+const statusIcons: Record<string, typeof Clock> = {
+  active: Clock,
+  completed_pending: Clock,
+  completed_settled: CheckCircle2,
 }
 
 const statusLabels: Record<string, string> = {
@@ -37,223 +45,418 @@ function formatCurrency(amount: number, currency = 'EUR') {
 
 function formatDate(date: string | null) {
   if (!date) return '—'
-  return new Date(date).toLocaleDateString('it-IT')
+  return new Date(date).toLocaleDateString('it-IT', { day: '2-digit', month: 'short', year: 'numeric' })
+}
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.06 },
+  },
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 280, damping: 24 } },
+}
+
+interface StatCard {
+  label: string
+  value: number
+  icon: React.ComponentType<{ className?: string }>
+  color: string
+  bgColor: string
+}
+
+function StatCard({ stat }: { stat: StatCard }) {
+  const Icon = stat.icon
+  return (
+    <motion.div
+      variants={itemVariants}
+      className="relative overflow-hidden rounded-card bg-surface/60 backdrop-blur-3xl border border-white/[0.06] p-5 transition-all duration-300 hover:bg-surface/80 hover:scale-[1.02] hover:shadow-[0_8px_40px_rgba(108,92,231,0.08)]"
+    >
+      <div className={`absolute right-0 top-0 h-24 w-24 -translate-y-6 translate-x-6 rounded-full opacity-10 ${stat.bgColor}`} />
+      <div className="relative">
+        <div className={`mb-3 inline-flex rounded-full ${stat.bgColor} p-2.5`}>
+          <Icon className={`h-5 w-5 ${stat.color}`} />
+        </div>
+        <p className="text-3xl font-bold font-mono tabular-nums text-text-primary">{stat.value}</p>
+        <p className="mt-1 text-sm text-text-secondary">{stat.label}</p>
+      </div>
+    </motion.div>
+  )
+}
+
+function SectionHeader({ icon: Icon, label, color, count }: { icon: React.ComponentType<{ className?: string }>; label: string; color: string; count: number }) {
+  return (
+    <div className="mb-5 flex items-center justify-between">
+      <div className="flex items-center gap-3">
+        <div className={`rounded-full ${color.replace('text', 'bg')}/10 p-2`}>
+          <Icon className={`h-5 w-5 ${color}`} />
+        </div>
+        <h2 className="text-lg font-semibold text-text-primary">{label}</h2>
+        <span className="rounded-full bg-surface/80 px-2.5 py-0.5 text-xs font-medium text-text-secondary">{count}</span>
+      </div>
+    </div>
+  )
+}
+
+interface ListItemProps {
+  primary: string
+  secondary: string
+  status?: string
+  right?: React.ReactNode
+  onClick?: () => void
+}
+
+function ListItem({ primary, secondary, status, right, onClick }: ListItemProps) {
+  const StatusIcon = status ? statusIcons[status] : undefined
+  return (
+    <motion.div
+      variants={itemVariants}
+      onClick={onClick}
+      className={`flex items-center gap-4 rounded-xl bg-surface/60 backdrop-blur-xl border border-white/[0.04] px-4 py-3.5 transition-all duration-200 ${
+        onClick ? 'cursor-pointer hover:bg-surface/80 hover:border-white/[0.1]' : ''
+      }`}
+    >
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium text-text-primary truncate">{primary}</p>
+        <p className="mt-0.5 text-xs text-text-secondary">{secondary}</p>
+      </div>
+      {status && (
+        <span className={`flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium ${statusColors[status] || 'text-text-secondary'} ${(statusColors[status] || '').replace('text', 'bg')}/10`}>
+          {StatusIcon && <StatusIcon className="h-3 w-3" />}
+          {statusLabels[status] || status}
+        </span>
+      )}
+      {right}
+    </motion.div>
+  )
+}
+
+function LoadingScreen() {
+  return (
+    <div className="relative flex min-h-screen items-center justify-center bg-[#0F0F1A] overflow-hidden">
+      <div className="pointer-events-none fixed inset-0">
+        <div className="absolute -left-32 -top-32 h-[600px] w-[600px] rounded-full bg-[rgba(108,92,231,0.12)] blur-[120px] animate-pulse" />
+        <div className="absolute -bottom-32 -right-32 h-[500px] w-[500px] rounded-full bg-[rgba(0,210,255,0.06)] blur-[100px] animate-pulse" style={{ animationDelay: '1s' }} />
+      </div>
+      <div className="relative flex flex-col items-center gap-6">
+        <div className="relative">
+          <div className="h-14 w-14 animate-spin rounded-full border-2 border-brand/30 border-t-brand" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="h-2 w-2 rounded-full bg-brand blur-[2px]" />
+          </div>
+        </div>
+        <div className="text-center">
+          <p className="text-sm font-medium text-text-primary">Caricamento dati</p>
+          <p className="mt-1 text-xs text-text-secondary">Recupero informazioni condivise...</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ErrorScreen({ message }: { message: string }) {
+  return (
+    <div className="relative flex min-h-screen items-center justify-center bg-[#0F0F1A] p-4 overflow-hidden">
+      <div className="pointer-events-none fixed inset-0">
+        <div className="absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[rgba(227,36,0,0.06)] blur-[100px]" />
+      </div>
+      <GlassCard className="relative max-w-md w-full overflow-hidden">
+        <div className="absolute right-0 top-0 h-32 w-32 -translate-y-8 translate-x-8 rounded-full bg-expense/10 blur-2xl" />
+        <div className="relative space-y-6 p-10 text-center">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-expense/10">
+            <AlertTriangle className="h-8 w-8 text-expense" />
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-2xl font-bold text-text-primary">Accesso non disponibile</h1>
+            <p className="text-sm leading-relaxed text-text-secondary">{message}</p>
+          </div>
+          <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+          <p className="text-xs text-text-secondary">
+            Se pensi sia un errore, contatta il titolare del profilo NetFlow
+          </p>
+        </div>
+      </GlassCard>
+    </div>
+  )
 }
 
 export function SharedViewPage() {
   const { token } = useParams<{ token: string }>()
   const { data, isLoading, error } = useSharedData(token)
+  const [search, setSearch] = useState('')
+  const [expandedSection, setExpandedSection] = useState<string | null>(null)
+  const [showAll, setShowAll] = useState<Record<string, boolean>>({})
 
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="flex flex-col items-center gap-4">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand border-t-transparent" />
-          <p className="text-sm text-text-secondary">Caricamento dati...</p>
-        </div>
-      </div>
-    )
+  const toggleShowAll = (section: string) => {
+    setShowAll((prev) => ({ ...prev, [section]: !prev[section] }))
   }
 
-  if (error) {
-    const message = (error as Error)?.message || 'Link non valido o scaduto'
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background p-4">
-        <GlassCard className="max-w-md w-full p-12 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-expense/10">
-            <AlertTriangle className="h-8 w-8 text-expense" />
-          </div>
-          <h1 className="mb-2 text-2xl font-bold text-text-primary">Accesso negato</h1>
-          <p className="text-text-secondary">{message}</p>
-        </GlassCard>
-      </div>
-    )
+  const toggleExpand = (section: string) => {
+    setExpandedSection((prev) => (prev === section ? null : section))
   }
 
+  const filteredJobs = useMemo(() => {
+    if (!data?.jobs) return []
+    if (!search) return data.jobs
+    const q = search.toLowerCase()
+    return data.jobs.filter((j: any) => j.title?.toLowerCase().includes(q))
+  }, [data?.jobs, search])
+
+  const filteredInvoices = useMemo(() => {
+    if (!data?.invoices) return []
+    if (!search) return data.invoices
+    const q = search.toLowerCase()
+    return data.invoices.filter((i: any) => i.invoice_number?.toLowerCase().includes(q))
+  }, [data?.invoices, search])
+
+  const filteredQuotes = useMemo(() => {
+    if (!data?.quotes) return []
+    if (!search) return data.quotes
+    const q = search.toLowerCase()
+    return data.quotes.filter((q2: any) => q2.title?.toLowerCase().includes(q))
+  }, [data?.quotes, search])
+
+  const filteredClients = useMemo(() => {
+    if (!data?.clients) return []
+    if (!search) return data.clients
+    const q = search.toLowerCase()
+    return data.clients.filter((c: any) => c.name?.toLowerCase().includes(q) || c.email?.toLowerCase().includes(q))
+  }, [data?.clients, search])
+
+  const filteredExpenses = useMemo(() => {
+    if (!data?.expenses) return []
+    if (!search) return data.expenses
+    const q = search.toLowerCase()
+    return data.expenses.filter((e: any) => e.title?.toLowerCase().includes(q))
+  }, [data?.expenses, search])
+
+  if (isLoading) return <LoadingScreen />
+  if (error) return <ErrorScreen message={(error as Error)?.message || 'Link non valido o scaduto'} />
   if (!data) return null
 
-  const profile = data.profile
-  const businessName = (profile?.business_name as string) || (profile?.full_name as string) || 'Utente'
-  const shareInfo = data.share
+  const profile = data.profile as any
+  const businessName = profile?.business_name || profile?.full_name || 'Utente'
+  const shareInfo = data.share as any
+
+  const stats: StatCard[] = [
+    { label: 'Lavori', value: data.jobs.length, icon: Briefcase, color: 'text-brand', bgColor: 'bg-brand' },
+    { label: 'Clienti', value: data.clients.length, icon: Users, color: 'text-success', bgColor: 'bg-success' },
+    { label: 'Fatture', value: data.invoices.length, icon: FileText, color: 'text-pending', bgColor: 'bg-pending' },
+    { label: 'Uscite', value: data.expenses.length, icon: Receipt, color: 'text-expense', bgColor: 'bg-expense' },
+    { label: 'Preventivi', value: data.quotes.length, icon: FileSpreadsheet, color: 'text-warning', bgColor: 'bg-warning' },
+  ]
+
+  const sections = [
+    { key: 'jobs', label: 'Lavori', icon: Briefcase, color: 'text-brand', data: filteredJobs, render: (item: any) => ({
+      primary: item.title,
+      secondary: `${formatDate(item.start_date)} · ${formatCurrency(item.net_amount, item.currency)}`,
+      status: item.status,
+    })},
+    { key: 'invoices', label: 'Fatture', icon: FileText, color: 'text-pending', data: filteredInvoices, render: (item: any) => ({
+      primary: `${item.invoice_number}${item.type === 'parcella' ? ' (Parcella)' : ''}`,
+      secondary: `${formatDate(item.issued_date)} · ${formatCurrency(item.gross_amount, item.currency)}`,
+      status: item.status,
+    })},
+    { key: 'quotes', label: 'Preventivi', icon: FileSpreadsheet, color: 'text-warning', data: filteredQuotes, render: (item: any) => ({
+      primary: item.title,
+      secondary: `${formatDate(item.issued_date)} · ${formatCurrency(item.gross_amount, item.currency)}`,
+      status: item.status,
+    })},
+    { key: 'clients', label: 'Clienti', icon: Users, color: 'text-success', data: filteredClients, render: (item: any) => ({
+      primary: item.name,
+      secondary: [item.email, item.phone].filter(Boolean).join(' · ') || 'Nessun contatto',
+      status: undefined,
+    })},
+    { key: 'expenses', label: 'Uscite', icon: Receipt, color: 'text-expense', data: filteredExpenses, render: (item: any) => ({
+      primary: item.title,
+      secondary: `${formatDate(item.date)} · ${formatCurrency(item.amount, item.currency)}`,
+      status: undefined,
+    })},
+  ]
+
+  const totalIncome = data.jobs
+    .filter((j: any) => j.status === 'completed_settled')
+    .reduce((sum: number, j: any) => sum + (j.net_amount || 0), 0)
+  const totalPending = data.jobs
+    .filter((j: any) => j.status === 'completed_pending')
+    .reduce((sum: number, j: any) => sum + (j.net_amount || 0), 0)
+  const totalExpenses = data.expenses.reduce((sum: number, e: any) => sum + (e.amount || 0), 0)
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-10 border-b border-border/30 bg-surface/60 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-5xl items-center gap-3 px-6 py-4">
-          <Shield className="h-5 w-5 text-brand" />
-          <div className="flex-1">
-            <p className="text-sm font-medium">{businessName}</p>
-            <p className="text-xs text-text-secondary">
+    <div className="relative min-h-screen bg-[#0F0F1A] overflow-hidden">
+      {/* Ambient light orbs */}
+      <div className="pointer-events-none fixed inset-0">
+        <div className="absolute -left-48 -top-48 h-[700px] w-[700px] rounded-full bg-[rgba(108,92,231,0.1)] blur-[120px] animate-pulse" style={{ animationDuration: '8s' }} />
+        <div className="absolute -bottom-48 -right-48 h-[600px] w-[600px] rounded-full bg-[rgba(0,210,255,0.05)] blur-[100px] animate-pulse" style={{ animationDuration: '10s', animationDelay: '1s' }} />
+        <div className="absolute left-1/2 top-2/3 h-[400px] w-[400px] -translate-x-1/2 rounded-full bg-[rgba(108,92,231,0.03)] blur-[80px] animate-pulse" style={{ animationDuration: '6s', animationDelay: '2s' }} />
+      </div>
+
+      {/* Header */}
+      <header className="relative z-10 border-b border-white/[0.06] bg-[rgba(26,26,46,0.6)] backdrop-blur-xl">
+        <div className="mx-auto flex max-w-6xl items-center gap-4 px-6 py-4">
+          <div className="rounded-full bg-brand/10 p-2.5">
+            <Shield className="h-5 w-5 text-brand" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <h1 className="text-base font-semibold text-text-primary truncate">{businessName}</h1>
+              <span className="hidden sm:inline-flex items-center gap-1 rounded-full bg-success/10 px-2.5 py-0.5 text-[10px] font-medium text-success">
+                <CheckCircle2 className="h-3 w-3" /> Verificato
+              </span>
+            </div>
+            <p className="text-xs text-text-secondary flex items-center gap-1.5 mt-0.5">
+              <Eye className="h-3 w-3" />
               Accesso {shareInfo?.access_level === 'export' ? 'lettura + export' : 'sola lettura'}
+              {shareInfo?.view_count !== undefined && (
+                <> · Visite: {shareInfo.view_count}</>
+              )}
             </p>
           </div>
-          {shareInfo?.access_level === 'export' && (
-            <span className="flex items-center gap-1.5 rounded-full bg-brand/10 px-3 py-1 text-xs font-medium text-brand">
-              <ExternalLink className="h-3 w-3" /> Export
-            </span>
-          )}
+          <div className="flex items-center gap-2">
+            {shareInfo?.access_level === 'export' && (
+              <span className="hidden sm:flex items-center gap-1.5 rounded-full bg-brand/10 px-3 py-1.5 text-xs font-medium text-brand border border-brand/20">
+                <ExternalLink className="h-3 w-3" /> Export
+              </span>
+            )}
+          </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl space-y-8 px-6 py-8">
-        {/* Stats */}
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
-          {[
-            { label: 'Lavori', value: data.jobs.length, icon: Briefcase, color: 'text-brand' },
-            { label: 'Clienti', value: data.clients.length, icon: Users, color: 'text-success' },
-            { label: 'Fatture', value: data.invoices.length, icon: FileText, color: 'text-pending' },
-            { label: 'Uscite', value: data.expenses.length, icon: Receipt, color: 'text-expense' },
-            { label: 'Preventivi', value: data.quotes.length, icon: FileSpreadsheet, color: 'text-warning' },
-          ].map((stat) => (
-            <GlassCard key={stat.label} className="p-4 text-center">
-              <stat.icon className={`mx-auto mb-2 h-5 w-5 ${stat.color}`} />
-              <p className="text-2xl font-bold text-text-primary">{stat.value}</p>
-              <p className="text-xs text-text-secondary">{stat.label}</p>
+      <main className="relative z-10 mx-auto max-w-6xl px-6 py-8">
+        <motion.div variants={containerVariants} initial="hidden" animate="show" className="space-y-8">
+
+          {/* Financial overview KPIs */}
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
+            {stats.map((stat) => (
+              <StatCard key={stat.label} stat={stat} />
+            ))}
+          </div>
+
+          {/* Financial summary */}
+          <motion.div variants={itemVariants}>
+            <GlassCard className="relative overflow-hidden p-5">
+              <div className="absolute right-0 top-0 h-32 w-32 -translate-y-6 translate-x-6 rounded-full bg-brand/5 blur-3xl" />
+              <div className="relative">
+                <div className="mb-4 flex items-center gap-3">
+                  <div className="rounded-full bg-brand/10 p-2">
+                    <DollarSign className="h-5 w-5 text-brand" />
+                  </div>
+                  <h3 className="text-base font-semibold text-text-primary">Riepilogo Finanziario</h3>
+                </div>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                  <div className="rounded-xl bg-success/5 border border-success/10 p-4">
+                    <p className="text-xs text-text-secondary mb-1">Totale Incassato</p>
+                    <p className="text-xl font-bold font-mono tabular-nums text-success">{formatCurrency(totalIncome)}</p>
+                  </div>
+                  <div className="rounded-xl bg-pending/5 border border-pending/10 p-4">
+                    <p className="text-xs text-text-secondary mb-1">In Attesa</p>
+                    <p className="text-xl font-bold font-mono tabular-nums text-pending">{formatCurrency(totalPending)}</p>
+                  </div>
+                  <div className="rounded-xl bg-expense/5 border border-expense/10 p-4">
+                    <p className="text-xs text-text-secondary mb-1">Uscite Totali</p>
+                    <p className="text-xl font-bold font-mono tabular-nums text-expense">{formatCurrency(totalExpenses)}</p>
+                  </div>
+                </div>
+              </div>
             </GlassCard>
-          ))}
-        </div>
+          </motion.div>
 
-        {/* Jobs */}
-        <section>
-          <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold">
-            <Briefcase className="h-5 w-5 text-brand" /> Lavori
-          </h2>
-          <div className="space-y-2">
-            {data.jobs.length === 0 && <p className="text-sm text-text-secondary">Nessun lavoro</p>}
-            {data.jobs.slice(0, 10).map((job: Record<string, unknown>) => (
-              <motion.div
-                key={job.id as string}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-4 rounded-xl bg-surface/60 px-4 py-3"
-              >
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{job.title as string}</p>
-                  <p className="text-xs text-text-secondary">
-                    {formatDate(job.start_date as string)} · {formatCurrency(job.net_amount as number, job.currency as string)}
-                  </p>
-                </div>
-                <span className={`flex items-center gap-1 text-xs font-medium ${statusColors[job.status as string] || ''}`}>
-                  {job.status === 'active' && <Clock className="h-3 w-3" />}
-                  {job.status === 'completed_settled' && <CheckCircle2 className="h-3 w-3" />}
-                  {job.status === 'completed_pending' && <Clock className="h-3 w-3" />}
-                  {statusLabels[job.status as string] || (job.status as string)}
-                </span>
-              </motion.div>
-            ))}
-          </div>
-        </section>
-
-        {/* Invoices */}
-        <section>
-          <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold">
-            <FileText className="h-5 w-5 text-pending" /> Fatture
-          </h2>
-          <div className="space-y-2">
-            {data.invoices.length === 0 && <p className="text-sm text-text-secondary">Nessuna fattura</p>}
-            {data.invoices.slice(0, 10).map((inv: Record<string, unknown>) => (
-              <motion.div
-                key={inv.id as string}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-4 rounded-xl bg-surface/60 px-4 py-3"
-              >
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{inv.invoice_number as string}</p>
-                  <p className="text-xs text-text-secondary">
-                    {formatDate(inv.issued_date as string)} · {formatCurrency(inv.gross_amount as number, inv.currency as string)}
-                  </p>
-                </div>
-                <span className={`text-xs font-medium ${statusColors[inv.status as string] || ''}`}>
-                  {statusLabels[inv.status as string] || (inv.status as string)}
-                </span>
-              </motion.div>
-            ))}
-          </div>
-        </section>
-
-        {/* Quotes */}
-        <section>
-          <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold">
-            <FileSpreadsheet className="h-5 w-5 text-warning" /> Preventivi
-          </h2>
-          <div className="space-y-2">
-            {data.quotes.length === 0 && <p className="text-sm text-text-secondary">Nessun preventivo</p>}
-            {data.quotes.slice(0, 10).map((q: Record<string, unknown>) => (
-              <motion.div
-                key={q.id as string}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-4 rounded-xl bg-surface/60 px-4 py-3"
-              >
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{q.title as string}</p>
-                  <p className="text-xs text-text-secondary">
-                    {formatDate(q.issued_date as string)} · {formatCurrency(q.gross_amount as number, q.currency as string)}
-                  </p>
-                </div>
-                <span className={`text-xs font-medium ${statusColors[q.status as string] || ''}`}>
-                  {statusLabels[q.status as string] || (q.status as string)}
-                </span>
-              </motion.div>
-            ))}
-          </div>
-        </section>
-
-        {/* Clients & Expenses in 2-col grid */}
-        <div className="grid gap-8 md:grid-cols-2">
-          {/* Clients */}
-          <section>
-            <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold">
-              <Users className="h-5 w-5 text-success" /> Clienti
-            </h2>
-            <div className="space-y-2">
-              {data.clients.length === 0 && <p className="text-sm text-text-secondary">Nessun cliente</p>}
-              {data.clients.slice(0, 10).map((c: Record<string, unknown>) => (
-                <motion.div
-                  key={c.id as string}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center gap-4 rounded-xl bg-surface/60 px-4 py-3"
-                >
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{c.name as string}</p>
-                    {!!c.email && <p className="text-xs text-text-secondary truncate">{c.email as string}</p>}
-                  </div>
-                </motion.div>
-              ))}
+          {/* Search */}
+          <motion.div variants={itemVariants}>
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-text-secondary" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Cerca tra lavori, fatture, preventivi, clienti..."
+                className="w-full rounded-2xl border border-white/[0.08] bg-[rgba(26,26,46,0.6)] backdrop-blur-xl py-3.5 pl-11 pr-4 text-sm text-text-primary placeholder:text-text-secondary/50 focus:outline-none focus:ring-2 focus:ring-brand/50 transition-all"
+              />
             </div>
-          </section>
+          </motion.div>
 
-          {/* Expenses */}
-          <section>
-            <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold">
-              <Receipt className="h-5 w-5 text-expense" /> Uscite
-            </h2>
-            <div className="space-y-2">
-              {data.expenses.length === 0 && <p className="text-sm text-text-secondary">Nessuna uscita</p>}
-              {data.expenses.slice(0, 10).map((e: Record<string, unknown>) => (
-                <motion.div
-                  key={e.id as string}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center gap-4 rounded-xl bg-surface/60 px-4 py-3"
+          {/* Expandable sections */}
+          {sections.map((section) => {
+            const isExpanded = expandedSection === section.key
+            const showAllItems = showAll[section.key]
+            const displayData = showAllItems ? section.data : section.data.slice(0, 5)
+            const hasMore = section.data.length > 5
+            const SectionIcon = section.icon
+
+            if (section.data.length === 0) return null
+
+            return (
+              <motion.section key={section.key} variants={itemVariants}>
+                <div
+                  className="flex items-center justify-between cursor-pointer group"
+                  onClick={() => toggleExpand(section.key)}
                 >
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{e.title as string}</p>
-                    <p className="text-xs text-text-secondary">
-                      {formatDate(e.date as string)} · {formatCurrency(e.amount as number, e.currency as string)}
-                    </p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </section>
-        </div>
+                  <SectionHeader icon={SectionIcon} label={section.label} color={section.color} count={section.data.length} />
+                  <button className="rounded-full p-1.5 text-text-secondary hover:bg-surface/80 transition-colors">
+                    <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
+                  </button>
+                </div>
+                <AnimatePresence>
+                  {isExpanded && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="space-y-2 overflow-hidden"
+                    >
+                        {displayData.map((item: any) => {
+                          const rendered = section.render(item)
+                          return (
+                            <ListItem
+                              key={item.id}
+                              primary={rendered.primary}
+                              secondary={rendered.secondary}
+                              status={rendered.status}
+                            />
+                          )
+                        })}
+                      {hasMore && (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); toggleShowAll(section.key) }}
+                          className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-white/[0.08] py-3 text-xs font-medium text-text-secondary hover:text-text-primary hover:border-white/[0.15] transition-all"
+                        >
+                          {showAllItems ? 'Mostra meno' : `Mostra tutti (${section.data.length})`}
+                          <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showAllItems ? 'rotate-180' : ''}`} />
+                        </button>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.section>
+            )
+          })}
 
-        <p className="pb-8 text-center text-xs text-text-secondary">
-          Dati condivisi tramite NetFlow · {new Date().toLocaleDateString('it-IT')}
-        </p>
+          {/* Footer */}
+          <motion.div variants={itemVariants} className="pt-4">
+            <div className="h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent mb-6" />
+            <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
+              <div className="flex items-center gap-2">
+                <div className="rounded-full bg-brand/10 p-1.5">
+                  <Shield className="h-3.5 w-3.5 text-brand" />
+                </div>
+                <span className="text-xs text-text-secondary">
+                  Dati condivisi tramite <span className="font-medium text-text-primary">NetFlow</span>
+                </span>
+              </div>
+              <div className="flex items-center gap-4 text-[11px] text-text-secondary">
+                <span>Token: {(token || '').slice(0, 8)}...{(token || '').slice(-4)}</span>
+                <span>·</span>
+                <span>{new Date().toLocaleDateString('it-IT', { day: '2-digit', month: 'long', year: 'numeric' })}</span>
+              </div>
+            </div>
+          </motion.div>
+
+        </motion.div>
       </main>
     </div>
   )

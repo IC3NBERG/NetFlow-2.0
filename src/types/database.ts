@@ -40,6 +40,7 @@ export interface Profile {
   goal_metric: GoalMetric
   goal_data: GoalData | null
   dashboard_layout: DashboardModule[] | null
+  calendar_token: string | null
   created_at: string
   updated_at: string
 }
@@ -224,7 +225,49 @@ export interface Share {
   token: string
   access_level: 'view' | 'export'
   description: string | null
+  name: string | null
+  is_active: boolean
+  password_hash: string | null
+  max_views: number | null
+  view_count: number
+  sections: ShareSection[]
   expires_at: string | null
   last_accessed: string | null
   created_at: string
+}
+
+export type ShareSection = 'jobs' | 'clients' | 'invoices' | 'expenses' | 'quotes'
+
+export const SHARE_SECTIONS: { key: ShareSection; label: string; icon: string }[] = [
+  { key: 'jobs', label: 'Lavori', icon: 'Briefcase' },
+  { key: 'clients', label: 'Clienti', icon: 'Users' },
+  { key: 'invoices', label: 'Fatture', icon: 'FileText' },
+  { key: 'expenses', label: 'Uscite', icon: 'Receipt' },
+  { key: 'quotes', label: 'Preventivi', icon: 'FileSpreadsheet' },
+]
+
+export interface CustomEvent {
+  id: string
+  user_id: string
+  title: string
+  description: string | null
+  date: string
+  start_time: string | null
+  end_time: string | null
+  color: string
+  created_at: string
+}
+
+export type CalendarFeedProvider = 'ics' | 'google' | 'apple' | 'outlook'
+
+export interface CalendarFeed {
+  id: string
+  user_id: string
+  provider: CalendarFeedProvider
+  name: string
+  sync_url: string | null
+  last_synced_at: string | null
+  enabled: boolean
+  created_at: string
+  updated_at: string
 }

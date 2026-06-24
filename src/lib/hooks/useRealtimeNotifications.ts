@@ -44,7 +44,9 @@ export function useRealtimeNotifications() {
             queryClient.invalidateQueries({ queryKey: UNREAD_COUNTS_KEY })
           },
         )
-        .subscribe()
+        .subscribe((_status: string, err?: Error) => {
+          if (err) console.warn('[Realtime] Notification subscription error:', err.message)
+        })
 
       channelRef.current = channel
     })
@@ -72,7 +74,8 @@ export function useNewNotificationTracker() {
     if (currentTotal > prevTotalRef.current) {
       prevTotalRef.current = currentTotal
       if (!document.hasFocus()) {
-        window.dispatchEvent(new CustomEvent('new-notification', { detail: { count: currentTotal - prevTotalRef.current } }))
+        const newCount = currentTotal - prevTotalRef.current
+        window.dispatchEvent(new CustomEvent('new-notification', { detail: { count: newCount } }))
       }
     } else {
       prevTotalRef.current = currentTotal

@@ -8,6 +8,43 @@
 
 ---
 
+## [v0.43.0] - 2026-06-24
+### Stato: Condivisione premium — link protetti, selettore sezioni, vista pubblica migliorata
+- **[MINOR] Condivisione premum:** Nuove colonne sulla tabella `shares`: `name` (nome link), `is_active` (toggle on/off), `password_hash` (protezione password), `max_views` + `view_count` (limite visite), `sections` (seleziona quali dati condividere).
+- **[MINOR] RPC `get_share_info`:** Nuova funzione pubblica che restituisce metadati del link (has_password, name) prima di autenticarsi — abilita la schermata di sblocco password.
+- **[MINOR] RPC `check_share_password`:** Nuova funzione pubblica per verificare la password di un link condiviso.
+- **[MINOR] RPC `get_shared_data` aggiornata:** Ora rispetta `is_active`, `max_views`/`view_count` (blocca se superato), filtra per `sections` (restituisce solo i dati selezionati). Incrementa `view_count` a ogni accesso.
+- **[MINOR] SharesManager riscritto (Impostazioni):** Nuovo form con nome link, descrizione, accesso, scadenza, max visite, protezione password (con toggle mostra/nascondi), selettore sezioni a pill buttons. Ogni link mostra edit, toggle attivo/disattivo, copia, apri, elimina. Stato vuoto con CTA.
+- **[MINOR] SharedViewPage ridisegnata (Premium):** Nuovo layout con ambient light orbs, header brandizzato con badge "Verificato", animazioni stagger Framer Motion, card KPIs con effetto vetro premium e glow, riepilogo finanziario (Incassato/In Attesa/Uscite), barra di ricerca globale, sezioni espandibili/collassabili con conteggio, pulsante "Mostra tutti" per dati >5 items, footer professionale con token parziale e data.
+- **[MINOR] Tipi `ShareSection` aggiunti:** Nuovo tipo `ShareSection` e costante `SHARE_SECTIONS` in `database.ts` per selezionare le sezioni da condividere.
+- **[MINOR] Hook `useUpdateShare`:** Nuova mutation per modificare link esistenti (nome, descrizione, access_level, scadenza, max_views, sezioni, active).
+- **[MINOR] Tipi `SharedData` migliorati:** Ora usa interfacce tipizzate (`Profile`, `Job`, `Client`, `Invoice`, `Expense`, `Quote`) invece di `Record<string, unknown>`.
+- **Nuovo file:** `supabase/migrations/20260624000003_enhanced_sharing.sql`
+- **File modificati:** `src/features/shared/pages/SharedViewPage.tsx`, `src/features/settings/components/SharesManager.tsx`, `src/lib/hooks/useShares.ts`, `src/lib/hooks/useSharedData.ts`, `src/types/database.ts`, `.spec/SCHEMA.md`
+- **Build:** `npx tsc --noEmit` — 0 errori. `npm run build` — ✓
+
+## [v0.42.1] - 2026-06-24
+### Stato: Fix console errors — Notification user gesture, off-by-zero dispatch
+- **[PATCH] Fix Notification.requestPermission() senza gesto utente:** Rimosso `useEffect` al mount che chiamava `Notification.requestPermission()`. I browser moderni bloccano la richiesta di permesso se non originatesi da un gesto dell'utente (click/tap). La funzione `sendOsNotification()` controlla già `permission === 'granted'`.
+- **[PATCH] Fix useNewNotificationTracker dispatch count sempre 0:** `prevTotalRef.current` veniva aggiornato prima del calcolo, risultando sempre 0 nel `CustomEvent('new-notification')`.
+- **[PATCH] Aggiunto error handling a .subscribe() in useRealtimeNotifications:** Aggiunto callback con `console.warn`, allineato a `useRealtimeSync.ts`.
+- **File modificati:** `src/lib/hooks/useOsNotifications.ts`, `src/lib/hooks/useRealtimeNotifications.ts`
+- **Build:** `npx tsc --noEmit` — 0 errori. `npm run build` — ✓.
+
+## [v0.42.0] - 2026-06-24
+### Stato: Calendario potenziato — fasce orarie, esportazione ICS, collegamento calendari esterni
+- **[MINOR] Fasce orarie eventi custom:** Aggiunti `start_time` (time) e `end_time` (time) alla tabella `custom_events`. Il form creazione evento ora include due input time per orario inizio/fine. Mostrati nella vista giorno e agenda.
+- **[MINOR] Vista Agenda:** Nuova vista alternativa a quella mensile — elenco cronologico di tutti gli eventi del mese con data, ora e tipo. Toggle Mese/Agenda.
+- **[MINOR] Esportazione ICS mese:** Bottone "Esporta mese" nella toolbar — scarica un file `.ics` con tutti gli eventi del mese corrente (scadenze, incassi, eventi custom) importabile in Google Calendar, Apple Calendar, Outlook.
+- **[MINOR] Collegamento calendario esterno:** Nuova card "Collegamento calendario esterno" nella pagina calendario con link ICS unico (per utente). Il link è sottoscrivibile da Google Calendar / Apple Calendar / Outlook per sincronizzazione continua. Bottone copia link + refresh token.
+- **[MINOR] Nuova tabella `calendar_feeds`:** Memorizza le connessioni a calendari esterni (provider, URL sync, abilitato). RLS scoped all'utente. Per futura espansione (Google Calendar API, CalDAV).
+- **[MINOR] Nuova colonna `calendar_token` su `profiles`:** Token univoco per generare l'ICS feed pubblico. Generato automaticamente per tutti gli utenti esistenti e nuovi. Funzione RPC `refresh_calendar_token()` per rigenerarlo.
+- **[MINOR] RPC `get_calendar_events_by_token`:** Funzione pubblica SECURITY DEFINER che restituisce gli eventi del calendario dato un token valido — usata dal Cloudflare Pages Function per il feed ICS.
+- **[MINOR] Cloudflare Pages Function `/ics/[token]`:** Nuova funzione serverless edge che espone il feed ICS sottoscrivibile. Richiede `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` come env vars in Cloudflare.
+- **Nuovi file:** `supabase/migrations/20260624000002_calendar_time_and_external.sql`, `src/lib/icsGenerator.ts`, `functions/ics/[token].ts`
+- **File modificati:** `src/features/calendar/pages/CalendarPage.tsx`, `src/lib/hooks/useCustomEvents.ts`, `src/types/database.ts`, `.spec/SCHEMA.md`
+- **Build:** `npx tsc --noEmit` — 0 errori. `npm run build` — ✓
+
 ## [v0.41.1] - 2026-06-24
 ### Stato: Miglioramento impatto visivo — orbi ambientali, transizioni premium, sidebar glow
 - **[PATCH] Ambient light orbs:** Aggiunti tre gradienti radiali animati (viola brand, blu elettrico, brand soffuso) fissi nello sfondo con blur 80-120px e animazioni floating/pulse. Visibili attraverso gli elementi glass (`backdrop-blur`) per maggiore profondità "futuristic modular glassmorphism".
@@ -18,12 +55,27 @@
 - **File modificati:** `src/shared/layouts/MainLayout.tsx`, `src/shared/layouts/Sidebar.tsx`, `.spec/UI_UX_SPEC.md`
 
 - **[PATCH] Verde success schiarito:** `--color-success` da `0 60 10` (`#003C0A`) a `0 156 19` (`#009C13`), poi ulteriormente a `16 185 129` (`#10B981`, smeraldo) — il verde era troppo scuro. Allineato UI_UX_SPEC e customization.ts.
+
+- **[PATCH] Pending color in dark mode:** `--color-pending` in `.dark` cambiato da `50 55 60` (grigio scuro, illeggibile) a `253 245 220` (bianco panna). I numeri "In attesa" nei KPI e badge ora sono visibili in dark mode.
 - **File modificati:** `src/index.css`, `src/lib/stores/customization.ts`, `.spec/UI_UX_SPEC.md`
+
+- **[PATCH] Theme bounce animation:** Sostituito il micro-respiro (scale 0.998→1→1.002) con un leggero rimbalzo elastico (damped spring: 1→0.992→1.006→0.997→1, 0.8s, `cubic-bezier(0.22, 1, 0.36, 1)`). Il rimbalzo accompagna il morphing dei colori con un effetto naturale di "assestamento".
+- **File modificati:** `src/index.css`, `.spec/UI_UX_SPEC.md`
+
+- **[PATCH] Animazione tema anche su cambio OS:** Il `prefers-color-scheme` change handler ora aggiunge `theme-changing` a `body`, così il rimbalzo si attiva anche quando il sistema operativo cambia tema automaticamente.
+- **File modificati:** `src/app/providers/ThemeProvider.tsx`
+
+- **[PATCH] Fix sidebar spostata dal bounce:** Aggiunto `transform-origin: top left` a `body.theme-changing` — il `scale` sul body creava un nuovo containing block per gli elementi `position: fixed` (sidebar, bottombar), spostandoli fuori schermo. L'origine top-left mantiene l'ancoraggio al viewport.
+- **File modificati:** `src/index.css`
 
 ### Stato: Premium theme transition — cubic-bezier custom + micro-scale breath
 - **[MINOR] Premium theme morph:** Rimosso il catch-all `* { transition }` che appiattiva tutti gli elementi allo stesso ritmo. Sostituito con transizione selettiva sul solo `body` usando `cubic-bezier(0.16, 1, 0.3, 1)` — Material Design "emphasized deceleration": partenza rapida, decelerazione che si addolcisce verso la fine. Aggiunta animazione `theme-breath` (scale 0.998→1→1.002 in 0.5s) attivata dalla classe `.theme-changing` su `body` — dà un micro-respiro di profondità. Le componenti esistenti (GlassCard, bottoni) usano le proprie transizioni naturali, creando uno stagger organico.
 - **File modificati:** `src/app/providers/ThemeProvider.tsx`, `src/index.css`, `.spec/UI_UX_SPEC.md`
 - **File rimossi:** `src/shared/ui/ThemeTransitionOverlay.tsx`
+- **Build:** `npx tsc --noEmit` — 0 errori. `npm run build` — ✓
+
+- **[PATCH] Sidebar e BottomBar layout animation:** Aggiunto `motion.div` con `layout` spring sugli item navigabili di Sidebar e BottomBar. Quando l'ordine viene modificato dalla pagina Personalizzazione, gli item si riposizionano con animazione fluida invece di uno switch istantaneo.
+- **File modificati:** `src/shared/layouts/Sidebar.tsx`, `src/shared/layouts/BottomBar.tsx`
 - **Build:** `npx tsc --noEmit` — 0 errori. `npm run build` — ✓
 
 ---

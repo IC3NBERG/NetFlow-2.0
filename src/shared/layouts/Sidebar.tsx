@@ -57,30 +57,36 @@ export function Sidebar() {
 
       <nav className="flex-1 space-y-1 px-3 py-4">
         {orderedNavItems.map((item) => (
-          <NavLink key={item.to} to={item.to} className="block">
-            {({ isActive }) => (
-              <div
-                className={cn(
-                  'relative flex items-center gap-3 rounded-full px-4 py-3 text-sm font-medium transition-colors duration-300',
-                  isActive
-                    ? 'text-white'
-                    : 'text-text-secondary hover:bg-surface/80 hover:text-text-primary',
-                )}
-              >
-                {isActive && (
-                  <motion.div
-                    layoutId="sidebar-active"
-                    className="absolute inset-0 rounded-full bg-brand shadow-[0_0_20px_rgba(108,92,231,0.35)]"
-                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                  />
-                )}
-                <span className="relative z-10 flex items-center gap-3">
-                  <item.icon className="h-5 w-5 shrink-0" />
-                  {item.label}
-                </span>
-              </div>
-            )}
-          </NavLink>
+          <motion.div
+            key={item.to}
+            layout
+            transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+          >
+            <NavLink to={item.to} className="block">
+              {({ isActive }) => (
+                <div
+                  className={cn(
+                    'relative flex items-center gap-3 rounded-full px-4 py-3 text-sm font-medium transition-colors duration-300',
+                    isActive
+                      ? 'text-white'
+                      : 'text-text-secondary hover:bg-surface/80 hover:text-text-primary',
+                  )}
+                >
+                  {isActive && (
+                    <motion.div
+                      layoutId="sidebar-active"
+                      className="absolute inset-0 rounded-full bg-brand shadow-[0_0_20px_rgba(108,92,231,0.35)]"
+                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                  <span className="relative z-10 flex items-center gap-3">
+                    <item.icon className="h-5 w-5 shrink-0" />
+                    {item.label}
+                  </span>
+                </div>
+              )}
+            </NavLink>
+          </motion.div>
         ))}
       </nav>
 

@@ -113,10 +113,16 @@ balance         = net_settled - total_expenses
 - Associabili a lavori (job_tags) e spese (expense_tags).
 - Filtraggio per tag.
 
-### 4.10 Condivisione (Shared View)
-- Pagina pubblica `/shared/:token` read-only per commercialista.
-- Token temporaneo con scadenza configurabile.
-- Mostra dashboard, lavori, fatture, preventivi, clienti, uscite.
+### 4.10 Condivisione (Shared View — Premium)
+- Pagina pubblica `/shared/:token` read-only per commercialista con design premium: ambient light orbs, animazioni stagger, glassmorphism, riepilogo finanziario.
+- Token temporaneo con scadenza configurabile (7/30/90 giorni o mai).
+- Protezione password opzionale con hash lato DB.
+- Limite visite configurabile (max_views + view_count).
+- Selettore sezioni: scegli quali dati condividere (lavori, fatture, preventivi, clienti, uscite).
+- Link attivabile/disattivabile senza eliminarlo.
+- Barra di ricerca globale nella vista pubblica.
+- Sezioni espandibili/collassabili con conteggio e "Mostra tutti" per oltre 5 items.
+- Mostra dashboard KPIs, riepilogo finanziario, lavori, fatture, preventivi, clienti, uscite.
 
 ### 4.11 Guida Fiscale
 - Sezione informativa basata sul regime fiscale scelto.

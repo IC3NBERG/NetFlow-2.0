@@ -1,16 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../supabase'
 import { useAuth } from '../../app/providers/AuthProvider'
-
-export interface CustomEvent {
-  id: string
-  user_id: string
-  title: string
-  description: string | null
-  date: string
-  color: string
-  created_at: string
-}
+import type { CustomEvent } from '../../types/database'
 
 export function useCustomEvents() {
   const { user } = useAuth()
@@ -22,6 +13,7 @@ export function useCustomEvents() {
         .select('*')
         .eq('user_id', user!.id)
         .order('date', { ascending: true })
+        .order('start_time', { ascending: true, nullsFirst: false })
       if (error) throw error
       return data as CustomEvent[]
     },
@@ -33,7 +25,14 @@ export function useCreateCustomEvent() {
   const queryClient = useQueryClient()
   const { user } = useAuth()
   return useMutation({
-    mutationFn: async (event: { title: string; description?: string; date: string; color?: string }) => {
+    mutationFn: async (event: {
+      title: string
+      description?: string
+      date: string
+      start_time?: string | null
+      end_time?: string | null
+      color?: string
+    }) => {
       const { data, error } = await supabase
         .from('custom_events')
         .insert({ ...event, user_id: user!.id })
@@ -41,6 +40,33 @@ export function useCreateCustomEvent() {
         .single()
       if (error) throw error
       return data as CustomEvent
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['custom_events'] })
+    },
+  })
+}
+
+export function useUpdateCustomEvent() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({
+      id,
+      ...data
+    }: {
+      id: string
+      title?: string
+      description?: string | null
+      date?: string
+      start_time?: string | null
+      end_time?: string | null
+      color?: string
+    }) => {
+      const { error } = await supabase
+        .from('custom_events')
+        .update(data)
+        .eq('id', id)
+      if (error) throw error
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['custom_events'] })

@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { useUserSettings } from './useUserSettings'
 import { useUnreadNotificationCounts } from './useNotifications'
 
@@ -8,18 +8,6 @@ export function useOsNotifications() {
   const { data: settings } = useUserSettings()
   const { data: unreadCounts } = useUnreadNotificationCounts()
   const prevTotalRef = useRef(0)
-
-  const requestPermission = useCallback(async () => {
-    if (!('Notification' in window)) return false
-    if (Notification.permission === 'granted') return true
-    if (Notification.permission === 'denied') return false
-    const permission = await Notification.requestPermission()
-    return permission === 'granted'
-  }, [])
-
-  useEffect(() => {
-    requestPermission()
-  }, [requestPermission])
 
   useEffect(() => {
     if (settings?.notifications_enabled === false) return
@@ -61,6 +49,4 @@ export function useOsNotifications() {
       // Notification API may fail
     }
   }
-
-  return { requestPermission }
 }

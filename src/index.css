@@ -23,7 +23,7 @@
     --color-text-secondary: 203 213 225;
     --color-success: 16 185 129;
     --color-expense: 255 45 45;
-    --color-pending: 50 55 60;
+    --color-pending: 253 245 220;
     --color-border: 255 255 255 0.1;
   }
 
@@ -45,13 +45,15 @@
 
   @keyframes theme-breath {
     0% { scale: 1; }
-    30% { scale: 0.998; }
-    60% { scale: 1.002; }
+    20% { scale: 0.992; }
+    45% { scale: 1.006; }
+    70% { scale: 0.997; }
     100% { scale: 1; }
   }
 
   body.theme-changing {
-    animation: theme-breath 1.2s ease-out;
+    animation: theme-breath 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    transform-origin: top left;
   }
 
   @media (prefers-reduced-motion: reduce) {

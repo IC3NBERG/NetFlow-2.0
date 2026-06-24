@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../supabase'
 import { useAuth } from '../../app/providers/AuthProvider'
-import type { Share } from '../../types/database'
+import type { Share, ShareSection } from '../../types/database'
 
 export function useShares() {
   const { user } = useAuth()
@@ -26,16 +26,55 @@ export function useCreateShare() {
   return useMutation({
     mutationFn: async (share: {
       access_level: Share['access_level']
+      name?: string
       description?: string
       expires_at?: string
+      password?: string
+      max_views?: number
+      sections?: ShareSection[]
     }) => {
+      const payload: Record<string, unknown> = {
+        ...share,
+        user_id: user!.id,
+        sections: share.sections ?? ['jobs', 'clients', 'invoices', 'expenses', 'quotes'],
+      }
+      delete payload.password
+      if (share.password) {
+        payload.password_hash = share.password
+      }
       const { data, error } = await supabase
         .from('shares')
-        .insert({ ...share, user_id: user!.id })
+        .insert(payload)
         .select()
         .single()
       if (error) throw error
       return data as Share
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['shares'] }),
+  })
+}
+
+export function useUpdateShare() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({
+      id,
+      ...data
+    }: {
+      id: string
+      name?: string
+      description?: string | null
+      is_active?: boolean
+      access_level?: Share['access_level']
+      expires_at?: string | null
+      max_views?: number | null
+      sections?: ShareSection[]
+    }) => {
+      const { error } = await supabase
+        .from('shares')
+        .update(data)
+        .eq('id', id)
+      if (error) throw error
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['shares'] }),
   })
@@ -49,21 +88,5 @@ export function useDeleteShare() {
       if (error) throw error
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['shares'] }),
-  })
-}
-
-export function useShareByToken(token: string | undefined) {
-  return useQuery({
-    queryKey: ['share', token],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('shares')
-        .select('*')
-        .eq('token', token)
-        .single()
-      if (error) throw error
-      return data as Share
-    },
-    enabled: !!token,
   })
 }

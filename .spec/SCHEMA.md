@@ -29,6 +29,7 @@ CREATE TABLE profiles (
   goal_metric       goal_metric DEFAULT 'net_settled',
   goal_data         jsonb DEFAULT '{}',
   dashboard_layout  jsonb DEFAULT '[]',
+  calendar_token    text UNIQUE,
   created_at        timestamptz DEFAULT now(),
   updated_at        timestamptz DEFAULT now()
 );
@@ -422,6 +423,12 @@ CREATE TABLE shares (
   token         text NOT NULL UNIQUE DEFAULT encode(extensions.gen_random_bytes(32), 'hex'),
   access_level  text NOT NULL DEFAULT 'view' CHECK (access_level IN ('view', 'export')),
   description   text,
+  name          text,
+  is_active     boolean NOT NULL DEFAULT true,
+  password_hash text,
+  max_views     integer,
+  view_count    integer NOT NULL DEFAULT 0,
+  sections      jsonb NOT NULL DEFAULT '["jobs","clients","invoices","expenses","quotes"]'::jsonb,
   expires_at    timestamptz,
   last_accessed timestamptz,
   created_at    timestamptz DEFAULT now()
@@ -462,6 +469,8 @@ CREATE TABLE custom_events (
   title       text NOT NULL,
   description text,
   date        date NOT NULL,
+  start_time  time,
+  end_time    time,
   color       text NOT NULL DEFAULT '#6C5CE7',
   created_at  timestamptz DEFAULT now()
 );
@@ -475,7 +484,28 @@ CREATE POLICY "custom_events_user_isolation" ON custom_events
   WITH CHECK ((select auth.uid()) = user_id);
 ```
 
-### 2.14 Storage: attachments bucket
+### 2.14 calendar_feeds
+```sql
+CREATE TABLE calendar_feeds (
+  id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id         uuid NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  provider        text NOT NULL CHECK (provider IN ('ics', 'google', 'apple', 'outlook')),
+  name            text NOT NULL,
+  sync_url        text,
+  last_synced_at  timestamptz,
+  enabled         boolean NOT NULL DEFAULT true,
+  created_at      timestamptz DEFAULT now(),
+  updated_at      timestamptz DEFAULT now()
+);
+
+CREATE INDEX idx_calendar_feeds_user ON calendar_feeds(user_id);
+CREATE INDEX idx_calendar_feeds_enabled ON calendar_feeds(user_id, enabled);
+
+ALTER TABLE calendar_feeds ENABLE ROW LEVEL SECURITY;
+-- 4 RLS policies (SELECT/INSERT/UPDATE/DELETE) scoped to auth.uid() = user_id
+```
+
+### 2.15 Storage: attachments bucket
 ```sql
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('attachments', 'attachments', true)
@@ -599,6 +629,7 @@ export interface Profile {
   goal_metric: GoalMetric;
   goal_data: GoalData | null;
   dashboard_layout: DashboardModule[] | null;
+  calendar_token: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -811,8 +842,22 @@ export interface CustomEvent {
   title: string;
   description: string | null;
   date: string;
+  start_time: string | null;
+  end_time: string | null;
   color: string;
   created_at: string;
+}
+
+export interface CalendarFeed {
+  id: string;
+  user_id: string;
+  provider: 'ics' | 'google' | 'apple' | 'outlook';
+  name: string;
+  sync_url: string | null;
+  last_synced_at: string | null;
+  enabled: boolean;
+  created_at: string;
+  updated_at: string;
 }
 ```
 

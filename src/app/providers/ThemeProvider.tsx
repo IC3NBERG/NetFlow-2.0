@@ -75,7 +75,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     if (theme !== 'system') return
 
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    const handler = () => applyThemeClass('system')
+    const handler = () => {
+      applyThemeClass('system')
+      document.body.classList.add('theme-changing')
+      setTimeout(() => document.body.classList.remove('theme-changing'), 1300)
+    }
 
     mediaQuery.addEventListener('change', handler)
     return () => mediaQuery.removeEventListener('change', handler)
