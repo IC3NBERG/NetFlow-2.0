@@ -1,4 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import {
   LayoutDashboard,
   Briefcase,
@@ -56,66 +57,105 @@ export function Sidebar() {
 
       <nav className="flex-1 space-y-1 px-3 py-4">
         {orderedNavItems.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            className={({ isActive }) =>
-              cn(
-                'flex items-center gap-3 rounded-full px-4 py-3 text-sm font-medium transition-all duration-200',
-                isActive
-                  ? 'bg-brand text-white'
-                  : 'text-text-secondary hover:bg-surface/80 hover:text-text-primary',
-              )
-            }
-          >
-            <item.icon className="h-5 w-5" />
-            {item.label}
+          <NavLink key={item.to} to={item.to} className="block">
+            {({ isActive }) => (
+              <div
+                className={cn(
+                  'relative flex items-center gap-3 rounded-full px-4 py-3 text-sm font-medium transition-colors duration-300',
+                  isActive
+                    ? 'text-white'
+                    : 'text-text-secondary hover:bg-surface/80 hover:text-text-primary',
+                )}
+              >
+                {isActive && (
+                  <motion.div
+                    layoutId="sidebar-active"
+                    className="absolute inset-0 rounded-full bg-brand shadow-[0_0_20px_rgba(108,92,231,0.35)]"
+                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                  />
+                )}
+                <span className="relative z-10 flex items-center gap-3">
+                  <item.icon className="h-5 w-5 shrink-0" />
+                  {item.label}
+                </span>
+              </div>
+            )}
           </NavLink>
         ))}
       </nav>
 
       <div className="px-3 py-3 space-y-2">
-        <NavLink
-          to="/customization"
-          className={({ isActive }) =>
-            cn(
-              'flex items-center gap-3 rounded-full px-4 py-3 text-sm font-medium transition-all duration-200',
-              isActive
-                ? 'bg-brand text-white'
-                : 'text-text-secondary hover:bg-surface/80 hover:text-text-primary',
-            )
-          }
-        >
-          <Sliders className="h-5 w-5" />
-          Personalizza
+        <NavLink to="/customization" className="block">
+          {({ isActive }) => (
+            <div
+              className={cn(
+                'relative flex items-center gap-3 rounded-full px-4 py-3 text-sm font-medium transition-colors duration-300',
+                isActive
+                  ? 'text-white'
+                  : 'text-text-secondary hover:bg-surface/80 hover:text-text-primary',
+              )}
+            >
+              {isActive && (
+                <motion.div
+                  layoutId="sidebar-active"
+                  className="absolute inset-0 rounded-full bg-brand shadow-[0_0_20px_rgba(108,92,231,0.35)]"
+                  transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                />
+              )}
+              <span className="relative z-10 flex items-center gap-3">
+                <Sliders className="h-5 w-5 shrink-0" />
+                Personalizza
+              </span>
+            </div>
+          )}
         </NavLink>
-        <NavLink
-          to="/settings"
-          className={({ isActive }) =>
-            cn(
-              'flex items-center gap-3 rounded-full px-4 py-3 text-sm font-medium transition-all duration-200',
-              isActive
-                ? 'bg-brand text-white'
-                : 'text-text-secondary hover:bg-surface/80 hover:text-text-primary',
-            )
-          }
-        >
-          <Settings className="h-5 w-5" />
-          Impostazioni
+        <NavLink to="/settings" className="block">
+          {({ isActive }) => (
+            <div
+              className={cn(
+                'relative flex items-center gap-3 rounded-full px-4 py-3 text-sm font-medium transition-colors duration-300',
+                isActive
+                  ? 'text-white'
+                  : 'text-text-secondary hover:bg-surface/80 hover:text-text-primary',
+              )}
+            >
+              {isActive && (
+                <motion.div
+                  layoutId="sidebar-active"
+                  className="absolute inset-0 rounded-full bg-brand shadow-[0_0_20px_rgba(108,92,231,0.35)]"
+                  transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                />
+              )}
+              <span className="relative z-10 flex items-center gap-3">
+                <Settings className="h-5 w-5 shrink-0" />
+                Impostazioni
+              </span>
+            </div>
+          )}
         </NavLink>
-        <NavLink
-          to="/help"
-          className={({ isActive }) =>
-            cn(
-              'flex items-center gap-3 rounded-full px-4 py-3 text-sm font-medium transition-all duration-200',
-              isActive
-                ? 'bg-brand text-white'
-                : 'text-text-secondary hover:bg-surface/80 hover:text-text-primary',
-            )
-          }
-        >
-          <LifeBuoy className="h-5 w-5" />
-          Aiuto
+        <NavLink to="/help" className="block">
+          {({ isActive }) => (
+            <div
+              className={cn(
+                'relative flex items-center gap-3 rounded-full px-4 py-3 text-sm font-medium transition-colors duration-300',
+                isActive
+                  ? 'text-white'
+                  : 'text-text-secondary hover:bg-surface/80 hover:text-text-primary',
+              )}
+            >
+              {isActive && (
+                <motion.div
+                  layoutId="sidebar-active"
+                  className="absolute inset-0 rounded-full bg-brand shadow-[0_0_20px_rgba(108,92,231,0.35)]"
+                  transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                />
+              )}
+              <span className="relative z-10 flex items-center gap-3">
+                <LifeBuoy className="h-5 w-5 shrink-0" />
+                Aiuto
+              </span>
+            </div>
+          )}
         </NavLink>
         <button
           onClick={handleLogout}

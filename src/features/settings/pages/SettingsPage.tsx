@@ -19,17 +19,18 @@ import { SharesManager } from '../components/SharesManager'
 import { AuditLogViewer } from '../components/AuditLogViewer'
 import {
   User, Moon, RefreshCw, Download, Upload, Bell, Database,
-  FileText, Shield, Save, AlertTriangle, Calendar, Share2, History,
+  FileText, Save, AlertTriangle, Calendar, Share2, History, Goal, TrendingUp,
   Trash2,
 } from 'lucide-react'
-import { type TaxRegime, type GoalMetric } from '../../../types/database'
+import { type TaxRegime, type GoalMetric, type NotificationCategory } from '../../../types/database'
+import { useNotificationPreference, useUpdateNotificationPreference } from '../../../lib/hooks/useUserSettings'
 import { exportToCSV, exportToJSON } from '../../../lib/export'
 import { backupFileSchema } from '../../../lib/validations'
 import { hardResetPwa } from '../../../lib/pwaReset'
 import { cn } from '../../../lib/utils'
 
 type ToastState = { message: string; type: 'success' | 'error' | 'info' } | null
-type SettingsTab = 'profile' | 'preferences' | 'invoices' | 'backup' | 'legal' | 'sharing' | 'audit'
+type SettingsTab = 'profile' | 'preferences' | 'invoices' | 'backup' | 'sharing' | 'audit'
 
 
 
@@ -40,7 +41,6 @@ const tabs: { id: SettingsTab; label: string; icon: typeof User }[] = [
   { id: 'backup', label: 'Backup', icon: Database },
   { id: 'sharing', label: 'Condivisione', icon: Share2 },
   { id: 'audit', label: 'Audit Log', icon: History },
-  { id: 'legal', label: 'Privacy', icon: Shield },
 ]
 
 export function SettingsPage() {
@@ -176,10 +176,10 @@ export function SettingsPage() {
     }
   }
 
-  async function handleToggleSetting(key: string, value: boolean) {
+  async function handleToggleSetting(key: string, value: boolean | number) {
     try {
       await updateSettings.mutateAsync({ [key]: value })
-      if (key === 'sync_enabled') setSyncEnabled(value)
+      if (key === 'sync_enabled') setSyncEnabled(value as boolean)
       setToast({ message: 'Impostazione aggiornata', type: 'success' })
     } catch {
       setToast({ message: 'Errore durante l\'aggiornamento', type: 'error' })
@@ -280,23 +280,54 @@ export function SettingsPage() {
     input.click()
   }
 
-  const legalSections = [
-    {
-      icon: Shield,
-      title: 'Informativa Privacy',
-      content: `I tuoi dati personali e finanziari vengono trattati esclusivamente per fornire il servizio di tracciamento contabile. I dati sono memorizzati su server crittografati (AES-256) e trasmessi via HTTPS. Base giuridica: esecuzione del contratto (art. 6.1.b GDPR) e adempimento obblighi fiscali (art. 6.1.c GDPR).`,
-    },
-    {
-      icon: AlertTriangle,
-      title: 'Cookie Policy',
-      content: `Utilizziamo solo cookie tecnici necessari: cookie di sessione per autenticazione, cookie di preferenza per il tema (365 giorni), Local Storage per preferenze offline. Nessun cookie di profilazione o marketing.`,
-    },
-    {
-      icon: Database,
-      title: 'Conservazione Dati',
-      content: `I dati finanziari sono conservati per 10 anni ai fini fiscali (DPR 600/73, art. 2220 CC). Alla cancellazione dell'account, tutti i dati vengono rimossi entro 30 giorni, salvi obblighi di legge.`,
-    },
-  ]
+  function NotificationToggle({
+    label, description, enabled, icon: Icon, onChange,
+  }: {
+    label: string; description: string; enabled: boolean; icon: typeof Bell; onChange: (v: boolean) => void
+  }) {
+    return (
+      <label className="flex items-center justify-between gap-3 cursor-pointer">
+        <div className="flex items-start gap-3 min-w-0 flex-1">
+          <Icon className="h-4 w-4 mt-0.5 text-text-secondary shrink-0" />
+          <div className="min-w-0 flex-1">
+            <p className="text-xs md:text-sm font-medium">{label}</p>
+            <p className="text-[10px] md:text-xs text-text-secondary">{description}</p>
+          </div>
+        </div>
+        <input
+          type="checkbox"
+          checked={enabled}
+          onChange={(e) => onChange(e.target.checked)}
+          className="h-4 w-4 md:h-5 md:w-5 rounded border-border bg-surface text-brand focus:ring-brand shrink-0 cursor-pointer"
+        />
+      </label>
+    )
+  }
+
+  function NotificationCategoryToggle({ category, label, description, icon: Icon }: {
+    category: NotificationCategory; label: string; description: string; icon: typeof Bell
+  }) {
+    const enabled = useNotificationPreference(category)
+    const updatePref = useUpdateNotificationPreference()
+    return (
+      <label className="flex items-center justify-between gap-3 cursor-pointer">
+        <div className="flex items-start gap-3 min-w-0 flex-1">
+          <Icon className="h-4 w-4 mt-0.5 text-text-secondary shrink-0" />
+          <div className="min-w-0 flex-1">
+            <p className="text-xs md:text-sm font-medium">{label}</p>
+            <p className="text-[10px] md:text-xs text-text-secondary">{description}</p>
+          </div>
+        </div>
+        <input
+          type="checkbox"
+          checked={enabled}
+          onChange={(e) => updatePref.mutate({ category, enabled: e.target.checked })}
+          className="h-4 w-4 md:h-5 md:w-5 rounded border-border bg-surface text-brand focus:ring-brand shrink-0 cursor-pointer"
+        />
+      </label>
+    )
+  }
+
 
   const container = {
     hidden: { opacity: 0 },
@@ -422,7 +453,55 @@ export function SettingsPage() {
             </GlassCard>
           </motion.div>
 
+          <motion.div variants={itemAnim}>
+            <GlassCard className="p-4 md:p-6 space-y-3">
+              <div className="flex items-center gap-3">
+                <RefreshCw className="h-5 w-5 text-pending" />
+                <h3 className="text-base md:text-lg font-semibold">Pulisci account</h3>
+              </div>
+              <p className="text-xs md:text-sm text-text-secondary">
+                Cancella tutti i dati finanziari (lavori, fatture, clienti, spese, preventivi, audit log, condivisioni, eventi). Il profilo rimane intatto.
+              </p>
+              <Button variant="danger" onClick={async () => {
+                if (!window.confirm('Sei sicuro di voler cancellare TUTTI i dati? Questa azione è irreversibile.')) return
+                if (!window.confirm('CONFERMA FINALE: tutti i dati finanziari verranno cancellati permanentemente. Il profilo resterà attivo.')) return
+                const { error } = await supabase.rpc('clean_user_data')
+                if (error) {
+                  setToast({ message: 'Errore durante la pulizia. Contatta il supporto.', type: 'error' })
+                } else {
+                  setToast({ message: 'Tutti i dati cancellati con successo', type: 'success' })
+                  queryClient.invalidateQueries()
+                }
+              }}>
+                <RefreshCw className="h-4 w-4 mr-2" /> Pulisci account
+              </Button>
+            </GlassCard>
+          </motion.div>
 
+          <motion.div variants={itemAnim}>
+            <GlassCard className="p-4 md:p-6 space-y-3">
+              <div className="flex items-center gap-3">
+                <Trash2 className="h-5 w-5 text-expense" />
+                <h3 className="text-base md:text-lg font-semibold">Eliminazione account</h3>
+              </div>
+              <p className="text-xs md:text-sm text-text-secondary">
+                Elimina permanentemente il tuo account e tutti i dati associati. Azione irreversibile — art. 17 GDPR (diritto all'oblio).
+              </p>
+              <Button variant="danger" onClick={async () => {
+                if (!window.confirm('Sei sicuro di voler eliminare il tuo account? I dati verranno persi definitivamente.')) return
+                if (!window.confirm('CONFERMA FINALE: questa azione è irreversibile. Tutti i dati finanziari e il profilo verranno cancellati. Non potrai più accedere.')) return
+                const { error } = await supabase.rpc('delete_user_account')
+                if (error) {
+                  setToast({ message: 'Errore durante l\'eliminazione. Contatta il supporto.', type: 'error' })
+                } else {
+                  setToast({ message: 'Account eliminato con successo', type: 'success' })
+                  window.location.href = '/login'
+                }
+              }}>
+                <Trash2 className="h-4 w-4 mr-2" /> Elimina account
+              </Button>
+            </GlassCard>
+          </motion.div>
         </motion.div>
       )}
 
@@ -465,25 +544,94 @@ export function SettingsPage() {
               {settingsLoading ? (
                 <p className="text-sm text-text-secondary">Caricamento...</p>
               ) : (
-                  <div className="space-y-3 md:space-y-4">
-                  <label className="flex items-center justify-between gap-3">
-                    <div className="min-w-0 flex-1">
-                      <p className="text-xs md:text-sm font-medium">Notifiche</p>
-                      <p className="text-[10px] md:text-xs text-text-secondary">Avvisi per backup, sync e scadenze</p>
-                    </div>
-                    <input type="checkbox" checked={settings?.notifications_enabled ?? true}
-                      onChange={(e) => handleToggleSetting('notifications_enabled', e.target.checked)}
-                      className="h-4 w-4 md:h-5 md:w-5 rounded border-border bg-surface text-brand focus:ring-brand shrink-0" />
-                  </label>
-                  <label className="flex items-center justify-between gap-3">
-                    <div className="min-w-0 flex-1">
-                      <p className="text-xs md:text-sm font-medium">Sincronizzazione automatica</p>
-                      <p className="text-[10px] md:text-xs text-text-secondary">Sincronizza automaticamente online</p>
-                    </div>
-                    <input type="checkbox" checked={settings?.sync_enabled ?? true}
-                      onChange={(e) => handleToggleSetting('sync_enabled', e.target.checked)}
-                      className="h-4 w-4 md:h-5 md:w-5 rounded border-border bg-surface text-brand focus:ring-brand shrink-0" />
-                  </label>
+                <div className="space-y-4 md:space-y-5">
+                  <NotificationToggle
+                    label="Notifiche globali"
+                    description="Abilita o disabilita tutte le notifiche"
+                    enabled={settings?.notifications_enabled ?? true}
+                    icon={Bell}
+                    onChange={(v) => handleToggleSetting('notifications_enabled', v)}
+                  />
+                  {settings?.notifications_enabled !== false && (
+                    <>
+                      <div className="border-t border-border pt-4">
+                        <p className="text-xs font-medium text-text-secondary mb-3 uppercase tracking-wider">
+                          Categorie
+                        </p>
+                        <div className="space-y-3">
+                          <NotificationCategoryToggle
+                            category="deadline"
+                            label="Scadenze lavori"
+                            description="Lavori in attesa di pagamento da oltre 30 giorni"
+                            icon={Calendar}
+                          />
+                          <NotificationCategoryToggle
+                            category="invoice"
+                            label="Fatture scadute"
+                            description="Fatture non pagate oltre la data di scadenza"
+                            icon={AlertTriangle}
+                          />
+                          <NotificationCategoryToggle
+                            category="backup"
+                            label="Backup"
+                            description="Promemoria per esportazione dati periodica"
+                            icon={Download}
+                          />
+                          <NotificationCategoryToggle
+                            category="sync"
+                            label="Sincronizzazione"
+                            description="Stato della connessione e modifiche in coda"
+                            icon={RefreshCw}
+                          />
+                          <NotificationCategoryToggle
+                            category="goal"
+                            label="Obiettivi finanziari"
+                            description="Progresso verso il target economico annuale"
+                            icon={Goal}
+                          />
+                          <NotificationCategoryToggle
+                            category="quote"
+                            label="Preventivi"
+                            description="Stato dei preventivi (accettati, scaduti, rifiutati)"
+                            icon={FileText}
+                          />
+                          <NotificationCategoryToggle
+                            category="expense"
+                            label="Spese elevate"
+                            description="Notifiche per spese sopra la media"
+                            icon={TrendingUp}
+                          />
+                          <NotificationCategoryToggle
+                            category="system"
+                            label="Sistema"
+                            description="Aggiornamenti app e avvisi tecnici"
+                            icon={Bell}
+                          />
+                        </div>
+                      </div>
+                      <div className="border-t border-border pt-4">
+                        <p className="text-xs font-medium text-text-secondary mb-3 uppercase tracking-wider">
+                          Promemoria backup
+                        </p>
+                        <div>
+                          <label className="block text-xs md:text-sm text-text-secondary mb-1">
+                            Intervallo promemoria backup
+                          </label>
+                          <select
+                            value={settings?.backup_reminder_interval_days ?? 7}
+                            onChange={(e) => handleToggleSetting('backup_reminder_interval_days', Number(e.target.value))}
+                            className="w-full rounded-input border border-border bg-surface px-4 py-2.5 text-text-primary text-sm focus:outline-none focus:ring-2 focus:ring-brand"
+                          >
+                            <option value={1}>Ogni giorno</option>
+                            <option value={3}>Ogni 3 giorni</option>
+                            <option value={7}>Ogni settimana</option>
+                            <option value={14}>Ogni 2 settimane</option>
+                            <option value={30}>Ogni mese</option>
+                          </select>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
             </GlassCard>
@@ -586,102 +734,6 @@ export function SettingsPage() {
         </motion.div>
       )}
 
-      {activeTab === 'legal' && (
-        <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
-          {legalSections.map((section) => {
-            const Icon = section.icon
-            return (
-              <motion.div key={section.title} variants={itemAnim}>
-                <GlassCard className="p-4 md:p-6 space-y-2 md:space-y-3">
-                  <div className="flex items-center gap-3">
-                    <Icon className="h-4 md:h-5 w-4 md:w-5 text-brand" />
-                    <h3 className="text-base md:text-lg font-semibold">{section.title}</h3>
-                  </div>
-                  <p className="text-xs md:text-sm text-text-secondary leading-relaxed">{section.content}</p>
-                </GlassCard>
-              </motion.div>
-            )
-          })}
-          <motion.div variants={itemAnim}>
-            <GlassCard className="p-4 md:p-6 space-y-3">
-              <div className="flex items-center gap-3">
-                <Download className="h-5 w-5 text-brand" />
-                <h3 className="text-base md:text-lg font-semibold">Portabilità dati</h3>
-              </div>
-              <p className="text-sm text-text-secondary">
-                Scarica una copia completa di tutti i tuoi dati personali (diritto alla portabilità, art. 20 GDPR)
-              </p>
-              <Button variant="secondary" onClick={async () => {
-                if (!user) return
-                const tables = ['jobs', 'invoices', 'clients', 'expenses', 'quotes']
-                const allData: Record<string, unknown[]> = {}
-                for (const table of tables) {
-                  const { data } = await supabase.from(table as 'jobs').select('*').eq('user_id', user.id)
-                  allData[table] = data ?? []
-                }
-                const blob = new Blob([JSON.stringify(allData, null, 2)], { type: 'application/json' })
-                const a = document.createElement('a')
-                a.href = URL.createObjectURL(blob)
-                a.download = `netflow-data-export-${new Date().toISOString().slice(0, 10)}.json`
-                a.click()
-                setToast({ message: 'Esportazione dati completata', type: 'success' })
-              }}>
-                <Download className="h-4 w-4" /> Scarica tutti i dati
-              </Button>
-            </GlassCard>
-          </motion.div>
-          <motion.div variants={itemAnim}>
-            <GlassCard className="p-4 md:p-6 space-y-3">
-              <div className="flex items-center gap-3">
-                <RefreshCw className="h-5 w-5 text-pending" />
-                <h3 className="text-base md:text-lg font-semibold">Pulisci account</h3>
-              </div>
-              <p className="text-sm text-text-secondary">
-                Cancella tutti i dati (lavori, fatture, clienti, spese, preventivi, audit log, condivisioni, eventi del calendario).
-                Il profilo e le impostazioni rimangono intatti.
-              </p>
-              <Button variant="danger" onClick={async () => {
-                if (!window.confirm('Sei sicuro di voler cancellare TUTTI i dati? Questa azione è irreversibile.')) return
-                if (!window.confirm('CONFERMA FINALE: tutti i dati finanziari verranno cancellati permanentemente. Il profilo resterà attivo.')) return
-                const { error } = await supabase.rpc('clean_user_data')
-                if (error) {
-                  setToast({ message: 'Errore durante la pulizia. Contatta il supporto.', type: 'error' })
-                } else {
-                  setToast({ message: 'Tutti i dati cancellati con successo', type: 'success' })
-                  queryClient.invalidateQueries()
-                }
-              }}>
-                <RefreshCw className="h-4 w-4" /> Pulisci account
-              </Button>
-            </GlassCard>
-          </motion.div>
-          <motion.div variants={itemAnim}>
-            <GlassCard className="p-4 md:p-6 space-y-3">
-              <div className="flex items-center gap-3">
-                <Trash2 className="h-5 w-5 text-expense" />
-                <h3 className="text-base md:text-lg font-semibold">Eliminazione account</h3>
-              </div>
-              <p className="text-sm text-text-secondary">
-                Elimina permanentemente il tuo account e tutti i dati associati.
-                Questa azione è irreversibile.
-              </p>
-              <Button variant="danger" onClick={async () => {
-                if (!window.confirm('Sei sicuro di voler eliminare il tuo account? I dati verranno persi definitivamente.')) return
-                if (!window.confirm('CONFERMA FINALE: questa azione è irreversibile. Tutti i dati finanziari e il profilo verranno cancellati. Non potrai più accedere.')) return
-                const { error } = await supabase.rpc('delete_user_account')
-                if (error) {
-                  setToast({ message: 'Errore durante l\'eliminazione. Contatta il supporto.', type: 'error' })
-                } else {
-                  setToast({ message: 'Account eliminato con successo', type: 'success' })
-                  window.location.href = '/login'
-                }
-              }}>
-                <Trash2 className="h-4 w-4" /> Elimina account
-              </Button>
-            </GlassCard>
-          </motion.div>
-        </motion.div>
-      )}
 
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
     </div>

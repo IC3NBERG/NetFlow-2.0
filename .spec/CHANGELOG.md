@@ -1,11 +1,88 @@
 # Changelog & Version Control
 
 ## Logica di Versioning
+
 - **PATCH (+0.0.1):** Bug fix, micro-modifiche UI, aggiornamento testi.
 - **MINOR (+0.1.0):** Nuova funzionalità, modifica schema DB, nuova pagina.
 - **MAJOR (+1.0.0):** Migrazione architetturale, cambio design system, rilascio MVP.
 
 ---
+
+## [v0.41.1] - 2026-06-24
+### Stato: Miglioramento impatto visivo — orbi ambientali, transizioni premium, sidebar glow
+- **[PATCH] Ambient light orbs:** Aggiunti tre gradienti radiali animati (viola brand, blu elettrico, brand soffuso) fissi nello sfondo con blur 80-120px e animazioni floating/pulse. Visibili attraverso gli elementi glass (`backdrop-blur`) per maggiore profondità "futuristic modular glassmorphism".
+- **[PATCH] Enhanced page transition:** Transizione cambio pagina migliorata: ora usa `y: 24 + scale: 0.97 → 1` combinato a opacità, con spring più morbido (`stiffness: 280, damping: 24, mass: 1.1`) per un effetto di "sollevamento" più premium.
+- **[PATCH] Sidebar active glow:** Aggiunta ombra brand (`shadow-[0_0_20px_rgba(108,92,231,0.35)]`) al pill animato della navigazione attiva, per un effetto glow che segue lo slide.
+- **[PATCH] GlassCard migliorata:** Aggiunto bordo sottile `border-white/[0.06]` e, on hover, glow brand `shadow-[0_8px_40px_rgba(108,92,231,0.08)]` + bordo più luminoso. Allineato alla spec UI (`border: 0.5px solid rgba(255,255,255,0.08)`).
+- **[PATCH] Intersezione sidebar/header ridisegnata:** Sidebar come colonna verticale, header come transetto orizzontale. Aggiunto un arco di congiunzione SVG (`A 32 32`) posizionato all'angolo di intersezione — una linea curva brand che parte dalla colonna sidebar e si raccorda al transetto header, creando un collegamento architettonico tra le due superfici glass. Header reso un transetto pulito (rimosso `rounded-l-2xl`). Logo area sidebar ridotto da `py-6` a `py-4` per allineamento verticale con l'header.
+- **File modificati:** `src/shared/layouts/MainLayout.tsx`, `src/shared/layouts/Sidebar.tsx`, `.spec/UI_UX_SPEC.md`
+
+### Stato: Premium theme transition — cubic-bezier custom + micro-scale breath
+- **[MINOR] Premium theme morph:** Rimosso il catch-all `* { transition }` che appiattiva tutti gli elementi allo stesso ritmo. Sostituito con transizione selettiva sul solo `body` usando `cubic-bezier(0.16, 1, 0.3, 1)` — Material Design "emphasized deceleration": partenza rapida, decelerazione che si addolcisce verso la fine. Aggiunta animazione `theme-breath` (scale 0.998→1→1.002 in 0.5s) attivata dalla classe `.theme-changing` su `body` — dà un micro-respiro di profondità. Le componenti esistenti (GlassCard, bottoni) usano le proprie transizioni naturali, creando uno stagger organico.
+- **File modificati:** `src/app/providers/ThemeProvider.tsx`, `src/index.css`, `.spec/UI_UX_SPEC.md`
+- **File rimossi:** `src/shared/ui/ThemeTransitionOverlay.tsx`
+- **Build:** `npx tsc --noEmit` — 0 errori. `npm run build` — ✓
+
+---
+
+## [v0.41.0] - 2026-06-24
+### Stato: Privacy nella barra superiore — nuova LegalPage professionale, GDPR approfondito
+- **[MINOR] Privacy spostata nella barra superiore:** Aggiunto pulsante Shield (`/legal`) nell'header di `MainLayout.tsx` accanto alla Guida Fiscale (Info), visibile su desktop. Rimosso tab "Privacy" dalle Impostazioni.
+- **[MINOR] Nuova LegalPage professionale:** Riscritta completamente `LegalPage.tsx` — 7 sezioni GDPR approfondite (Informativa Privacy, Dati trattati, Cookie Policy, Diritti, Conservazione, Sicurezza tecnica/organizzativa, Contatti). Email contatto: `giorgiocalleriall@gmail.com`. Portabilità dati rimossa (resta nelle Impostazioni).
+- **[MINOR] Rimossa sezione Privacy da Settings:** Rimossi tab `legal`, array `legalSections` e contenuti privacy da `SettingsPage.tsx`.
+- **[MINOR] Pulisci account ed Elimina account spostati in Impostazioni → Profilo:** Le due card azione (pulizia dati con `clean_user_data` ed eliminazione account con `delete_user_account`) sono state spostate dalla LegalPage alla sezione Profilo delle Impostazioni (`SettingsPage.tsx`), sotto "Salva profilo".
+- **[PATCH] Fix timeline audit log tagliata:** Ristrutturato layout timeline audit log — rimossi `border-l-2` e dots assoluti dal container scrollabile (che forzava overflow clipping). Ora usa layout flex a 2 colonne: linea timeline separata + dots con `z-10` centrate sulla linea. I dots non vengono più tagliati dall'overflow.
+- **File modificati:** `src/shared/layouts/MainLayout.tsx`, `src/features/legal/pages/LegalPage.tsx`, `src/features/settings/pages/SettingsPage.tsx`, `src/features/settings/components/AuditLogViewer.tsx`, `package.json`, `src/lib/hooks/useOsNotifications.ts`, `src/lib/hooks/useGoalNotifications.ts`, `src/lib/hooks/useNotificationCleanup.ts`
+- **[PATCH] Ottimizzazioni Supabase config:** Impostato `auto_expose_new_tables = false`, abilitato pooler (transaction mode), `minimum_password_length` portato da 6 a 8. Applicata migrazione `20260624000001_notifications_system.sql` al remoto.
+- **File modificati:** `supabase/config.toml`, `.spec/CHANGELOG.md`
+- **Build:** `npx tsc --noEmit` — 0 errori.
+
+## [v0.40.2] - 2026-06-24
+### Stato: Fix taglio netto header allo scroll
+- **[PATCH] Header scroll transition:** Sostituito `bg-surface-alt/80` con `bg-gradient-to-b from-surface-alt via-surface-alt/70 to-surface-alt/0` + `backdrop-blur-xl`. L'header sfuma gradualmente da opaco (top) a trasparente (bottom), creando una transizione morbida quando il contenuto scorre sotto. Aggiunta anche box-shadow per profondità e bordo inferiore con gradiente sottile.
+- **File modificati:** `src/shared/layouts/MainLayout.tsx`, `src/index.css`
+
+### Stato: Aggiornamento colori entrate/uscite
+- **[PATCH] Colori entrate/uscite aggiornati:** Entrate da `#00b894` a `#003c0a` (verde più scuro), Uscite da `#ff6b6b` a `#ff2d2d` (rosso più vivo). Migrazione automatica: i vecchi default vengono rimossi da localStorage all'avvio.
+- **File modificati:** `src/index.css`, `src/lib/stores/customization.ts`
+
+---
+
+## [v0.40.1] - 2026-06-24
+### Stato: Enhanced Notifications v2 — Realtime, OS notifiche, favicon badge, suono, goal milestone, pagina notifiche
+- **[MAJOR] Realtime push notifiche:** Nuovo `useRealtimeNotifications` — sottoscrizione Supabase Realtime alla tabella `notifications`. Le notifiche arrivano istantaneamente senza polling.
+- **[MINOR] Notifiche OS (Browser API):** `useOsNotifications` — richiede permesso `Notification` al mount e mostra notifiche desktop native quando l'app è in background. Icona: `logo-icon.svg`.
+- **[MINOR] Favicon badge:** `useFaviconBadge` — badge rosso con conteggio (Canvas) sovrapposto alla favicon. `9+` per oltre 9 notifiche.
+- **[MINOR] Suono notifiche:** `useNotificationSound` — chime via Web Audio API (oscillatore 880→1108Hz, 300ms) all'arrivo di nuove notifiche.
+- **[MINOR] Auto-cleanup:** `useNotificationCleanup` — chiama RPC `cleanup_notifications(30)` all'avvio per eliminare notifiche dismissate da >30gg.
+- **[MINOR] Goal milestone:** `useGoalNotifications` — notifiche automatiche al 50%, 80%, 100% dell'obiettivo finanziario.
+- **[MINOR] Sync notifications:** SyncProvider ora crea notifica `sync` quando la connessione torna online e la coda si svuota.
+- **[MINOR] Nuova pagina /notifications:** `NotificationsPage` — storico completo con filtri per categoria, toggle archiviate, badges conteggio, azioni leggi/nascondi.
+- **[MINOR] Link "Vedi tutte" nel NotificationCenter:** Footer del dropdown che porta a `/notifications`.
+- **Nuovi file:** `src/lib/hooks/useRealtimeNotifications.ts`, `src/lib/hooks/useOsNotifications.ts`, `src/lib/hooks/useFaviconBadge.ts`, `src/lib/hooks/useNotificationSound.ts`, `src/lib/hooks/useNotificationCleanup.ts`, `src/lib/hooks/useGoalNotifications.ts`, `src/features/notifications/pages/NotificationsPage.tsx`
+- **File modificati:** `src/shared/layouts/MainLayout.tsx`, `src/shared/ui/NotificationCenter.tsx`, `src/app/providers/SyncProvider.tsx`, `src/app/router.tsx`, `src/app/protectedRouteConfig.tsx`, `.spec/ARCHITECTURE.md`, `.spec/UI_UX_SPEC.md`, `.spec/PRD.md`
+- **Build:** `npx tsc --noEmit` — 0 errori. `npm run build` — ✓.
+
+## [v0.40.0] - 2026-06-24
+### Stato: Enhanced Notifications System — persistente, categorizzato, personalizzabile
+- **[MAJOR] Nuovo sistema notifiche persistente:** Creata tabella `notifications` (DB migration 024) con 8 categorie, RLS, indici. Nuove RPC: `mark_notification_read`, `dismiss_notification`, `mark_all_notifications_read`, `cleanup_notifications`, `get_unread_notification_counts`. Aggiunte colonne `notification_preferences` (JSONB per-categoria) e `backup_reminder_interval_days` a `user_settings`.
+- **[MINOR] Nuovo hook useNotifications:** TanStack Query con polling 60s, hooks derivati per mark-read/dismiss/create/mark-all-read. `useUnreadNotificationCounts` per badge in tempo reale.
+- **[MINOR] NotificationService (notificationService.ts):** Factory lato client con `checkAndCreateDeadlineNotifications`, `checkAndCreateInvoiceNotifications`, `checkAndCreateBackupNotification` — chiamate all'apertura del centro notifiche.
+- **[MINOR] NotificationCenter riscritto:** Dropdown persistente da DB con badge contatore (9+), filtri per categoria (pill buttons), azioni mark-read/dismiss individuali, bottone "Leggi tutto", timestamp relativi, stato caricamento/vuoto.
+- **[MINOR] BackupReminder migliorato:** Nuove opzioni snooze (1 giorno, 3 giorni, più tardi). Intervallo configurabile in Impostazioni.
+- **[MINOR] Impostazioni notifiche potenziate:** 8 toggle per-categoria (Scadenze lavori, Fatture scadute, Backup, Sincronizzazione, Obiettivi, Preventivi, Spese elevate, Sistema). Nuovo select per intervallo promemoria backup.
+- **Nuovi file:** `src/lib/hooks/useNotifications.ts`, `src/lib/notificationService.ts`, `supabase/migrations/20260624000001_notifications_system.sql`
+- **File modificati:** `src/types/database.ts`, `src/shared/ui/NotificationCenter.tsx`, `src/shared/ui/BackupReminder.tsx`, `src/features/settings/pages/SettingsPage.tsx`, `src/lib/hooks/useUserSettings.ts`, `.spec/SCHEMA.md`, `.spec/ARCHITECTURE.md`, `.spec/UI_UX_SPEC.md`, `.spec/PRD.md`
+- **Build:** `npx tsc --noEmit` — verificare.
+
+## [v0.38.0] - 2026-06-24
+### Stato: Dashboard — nuovi colori saldo, layout metriche verticali, fix pending dark mode
+- **[MINOR] Nuovi colori base dashboard:** Sostituito `--color-success` da `#00B894` a `#009C13` (verde) e `--color-expense` da `#FF6B6B` a `#E32400` (rosso) in `index.css`. Il saldo ora si colora dinamicamente: verde (`text-success`) se >= 0, rosso (`text-expense`) se negativo.
+- **[PATCH] Pending color dark mode:** `--color-pending` in `.dark` cambiato da `148 163 184` (grigio chiaro) a `50 55 60` (grigio scuro, uguale alla light mode) per leggibilità.
+- **[MINOR] Layout metriche KPI ridisegnato:** Le 8 metriche ora sono raggruppate in 4 coppie verticali: Lordo In Attesa/Lordo, Netto In Attesa/Netto, Cash In Attesa/Cash, Uscite/Saldo. Nuove label: "Lordo In Attesa" (ex "In Attesa"), "Lordo" (ex "Incassati"), "Netto In Attesa" (ex "Netti In Attesa"), "Netto" (ex "Netti Incassati"), "Cash" (ex "Cash Incassati").
+- **[PATCH] Animazione cambio tab sidebar e bottom bar:** Aggiunta animazione spring con Framer Motion `layoutId` — il pill di sfondo attivo (`bg-brand`) ora scivola fluidamente tra le voci di navigazione al cambio tab, sia nella sidebar desktop che nella bottom bar mobile. Parametri spring: `stiffness 380, damping 30`. Allineato `transition-colors` a `duration-300` (come da UI_UX_SPEC).
+- **File modificati:** `src/index.css`, `src/features/dashboard/components/KPIGroup.tsx`, `src/features/dashboard/pages/DashboardPage.tsx`, `src/shared/layouts/Sidebar.tsx`, `src/shared/layouts/BottomBar.tsx`
+- **Build:** `npx tsc --noEmit` — 0 errori. `npm run build` — ✓
 
 ## [v0.37.1] - 2026-06-24
 ### Stato: Fix 400 su /token dopo conferma email — PKCE flow e redirectTo

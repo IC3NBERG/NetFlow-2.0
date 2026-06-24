@@ -9,8 +9,8 @@
     --color-surface-alt: 248 249 250;
     --color-text-primary: 26 26 46;
     --color-text-secondary: 99 110 114;
-    --color-success: 0 184 148;
-    --color-expense: 255 107 107;
+    --color-success: 0 60 10;
+    --color-expense: 255 45 45;
     --color-pending: 50 55 60;
     --color-border: 0 0 0 0.1;
   }
@@ -21,9 +21,9 @@
     --color-surface-alt: 15 15 26;
     --color-text-primary: 255 255 255;
     --color-text-secondary: 203 213 225;
-    --color-success: 0 184 148;
-    --color-expense: 255 107 107;
-    --color-pending: 148 163 184;
+    --color-success: 0 60 10;
+    --color-expense: 255 45 45;
+    --color-pending: 50 55 60;
     --color-border: 255 255 255 0.1;
   }
 
@@ -35,6 +35,32 @@
     @apply font-sans antialiased;
     background-color: rgb(var(--color-surface-alt));
     color: rgb(var(--color-text-primary));
+  }
+
+  body {
+    transition:
+      background-color 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+      color 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes theme-breath {
+    0% { scale: 1; }
+    30% { scale: 0.998; }
+    60% { scale: 1.002; }
+    100% { scale: 1; }
+  }
+
+  body.theme-changing {
+    animation: theme-breath 1.2s ease-out;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    body {
+      transition-duration: 0.01ms !important;
+    }
+    body.theme-changing {
+      animation: none !important;
+    }
   }
 }
 
@@ -61,4 +87,20 @@
   .btn-ghost:hover {
     background-color: rgba(var(--color-text-primary), 0.1);
   }
+
+  .header-blur-edge {
+    position: relative;
+    box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.25);
+  }
+  .header-blur-edge::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.06) 20%, rgba(255, 255, 255, 0.06) 80%, transparent);
+    pointer-events: none;
+  }
+
 }

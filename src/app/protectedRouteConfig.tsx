@@ -14,6 +14,7 @@ const AccountPage = lazy(() => import('../features/account/pages/AccountPage').t
 const LegalPage = lazy(() => import('../features/legal/pages/LegalPage').then(m => ({ default: m.LegalPage })))
 const QuotesPage = lazy(() => import('../features/quotes/pages/QuotesPage').then(m => ({ default: m.QuotesPage })))
 const CalendarPage = lazy(() => import('../features/calendar/pages/CalendarPage').then(m => ({ default: m.CalendarPage })))
+const NotificationsPage = lazy(() => import('../features/notifications/pages/NotificationsPage').then(m => ({ default: m.NotificationsPage })))
 
 export const lazyPage = {
   DashboardPage,
@@ -30,4 +31,5 @@ export const lazyPage = {
   LegalPage,
   QuotesPage,
   CalendarPage,
+  NotificationsPage,
 }

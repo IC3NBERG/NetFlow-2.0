@@ -4,13 +4,20 @@ import { Sidebar } from './Sidebar'
 import { BottomBar } from './BottomBar'
 import { useSync } from '../../app/providers/SyncProvider'
 import { useRealtimeSync } from '../../lib/hooks/useRealtimeSync'
+import { useRealtimeNotifications } from '../../lib/hooks/useRealtimeNotifications'
+import { useNewNotificationTracker } from '../../lib/hooks/useRealtimeNotifications'
+import { useOsNotifications } from '../../lib/hooks/useOsNotifications'
+import { useFaviconBadge } from '../../lib/hooks/useFaviconBadge'
+import { useNotificationSound } from '../../lib/hooks/useNotificationSound'
+import { useNotificationCleanup } from '../../lib/hooks/useNotificationCleanup'
+import { useGoalNotifications } from '../../lib/hooks/useGoalNotifications'
 import { SyncBanner } from '../../shared/ui/SyncBanner'
 import { BackupReminder } from '../../shared/ui/BackupReminder'
 import { NotificationCenter } from '../../shared/ui/NotificationCenter'
 import { FiscalYearSelector } from '../../shared/ui/FiscalYearSelector'
 import { CommandPalette } from '../../shared/ui/CommandPalette'
 import { cn } from '../../lib/utils'
-import { Info, Search } from 'lucide-react'
+import { Info, Search, Shield } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 export function MainLayout({ children }: { children?: ReactNode }) {
@@ -18,15 +25,29 @@ export function MainLayout({ children }: { children?: ReactNode }) {
   const navigate = useNavigate()
   const location = useLocation()
   useRealtimeSync()
+  useRealtimeNotifications()
+  useNewNotificationTracker()
+  useOsNotifications()
+  useFaviconBadge()
+  useNotificationSound()
+  useNotificationCleanup()
+  useGoalNotifications()
 
   return (
     <div className="min-h-screen bg-surface-alt">
+      {/* Ambient light orbs for glassmorphism depth */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-brand/8 animate-float-slow blur-[120px]" />
+        <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] rounded-full bg-[#00D2FF]/6 animate-float-medium blur-[100px]" />
+        <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] rounded-full bg-brand/5 animate-pulse-glow blur-[80px]" />
+      </div>
+
       <CommandPalette />
       <SyncBanner />
       <BackupReminder />
       <Sidebar />
       <div className="lg:ml-[280px] md:ml-[72px] ml-0 pb-20 md:pb-0">
-        <header className="sticky top-0 z-30 flex items-center justify-between bg-surface-alt/80 backdrop-blur-md px-4 md:px-6 lg:px-8 py-3 md:py-4">
+        <header className="sticky top-0 z-30 flex items-center justify-between bg-gradient-to-b from-surface-alt via-surface-alt/70 to-surface-alt/0 backdrop-blur-xl px-4 md:px-6 lg:px-8 py-3 md:py-4 header-blur-edge">
           <div className="flex items-center gap-4">
             <div className="hidden md:block">
               <FiscalYearSelector />
@@ -48,6 +69,13 @@ export function MainLayout({ children }: { children?: ReactNode }) {
               title="Guida Fiscale"
             >
               <Info className="h-5 w-5" />
+            </button>
+            <button
+              onClick={() => navigate('/legal')}
+              className="hidden md:inline-flex rounded-full p-2 text-text-secondary hover:bg-surface/80 hover:text-brand transition-all"
+              title="Privacy e trattamento dati"
+            >
+              <Shield className="h-5 w-5" />
             </button>
             <NotificationCenter />
             <div className="flex items-center gap-1 md:gap-2 text-xs">
@@ -79,9 +107,9 @@ export function MainLayout({ children }: { children?: ReactNode }) {
         <main className="p-4 md:p-6 lg:p-8">
           <motion.div
             key={location.pathname}
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+            initial={{ opacity: 0, y: 24, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ type: 'spring', stiffness: 280, damping: 24, mass: 1.1 }}
           >
             {children ?? <Outlet />}
           </motion.div>

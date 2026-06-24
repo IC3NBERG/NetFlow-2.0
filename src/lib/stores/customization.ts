@@ -34,8 +34,19 @@ export const useCustomizationStore = create<CustomizationStore>((set) => {
   }
 
   const brandColor = localStorage.getItem('fintrack-color-brand') || '#6c5ce7'
-  const successColor = localStorage.getItem('fintrack-color-success') || '#00b894'
-  const expenseColor = localStorage.getItem('fintrack-color-expense') || '#ff6b6b'
+  const successColor = localStorage.getItem('fintrack-color-success') || '#003c0a'
+  const expenseColor = localStorage.getItem('fintrack-color-expense') || '#ff2d2d'
+
+  const OLD_DEFAULTS: Record<string, string> = {
+    'fintrack-color-success': '#00b894',
+    'fintrack-color-expense': '#ff6b6b',
+  }
+
+  for (const [key, oldVal] of Object.entries(OLD_DEFAULTS)) {
+    if (localStorage.getItem(key) === oldVal) {
+      localStorage.removeItem(key)
+    }
+  }
 
   return {
     sidebarOrder,
@@ -66,8 +77,8 @@ export const useCustomizationStore = create<CustomizationStore>((set) => {
       localStorage.removeItem('fintrack-color-expense')
       set({
         brandColor: '#6c5ce7',
-        successColor: '#00b894',
-        expenseColor: '#ff6b6b',
+        successColor: '#003c0a',
+        expenseColor: '#ff2d2d',
       })
     },
   }

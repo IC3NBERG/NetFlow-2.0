@@ -130,7 +130,11 @@ balance         = net_settled - total_expenses
 - **Backup:** Export dati (JSON/CSV), backup automatico.
 - **Sincronizzazione:** Stato sync, ultimo sync, forzatura sync.
 - **Tema:** Chiaro/Scuro/Sistema.
-- **Notifiche:** Preferenze reminder (backup, sync, scadenze).
+- **Notifiche:** 
+  - Master toggle globale on/off.
+  - Per-categoria on/off: Scadenze lavori, Fatture scadute, Backup, Sincronizzazione, Obiettivi finanziari, Preventivi, Spese elevate, Sistema.
+  - Intervallo promemoria backup configurabile (1/3/7/14/30 giorni).
+  - Le preferenze sono salvate in `user_settings.notification_preferences` (JSONB).
 
 ### 5.2 Account
 - **Profilo:** Modifica dati personali/aziendali, logo.
@@ -146,7 +150,21 @@ balance         = net_settled - total_expenses
 ---
 
 ## 7. UX & Pop-up
-- **Reminder backup:** Pop-up centrato con backdrop blur.
+- **Centro Notifiche persistente:** Dropdown dalla campanella nell'header. Le notifiche sono salvate nel DB (`notifications` table), marcabili come lette/nascoste.
+- **Pagina Notifiche completa:** `/notifications` — storico completo, filtri per categoria, mostra archiviate, badges conteggio. Azioni di massa (leggi tutto).
+- **Categorie notifiche (8):** deadline, invoice, backup, sync, goal, quote, expense, system — ognuna con icona e colore dedicati.
+- **Filtri per categoria:** Pill buttons nel dropdown del centro notifiche e nella pagina dedicata.
+- **Badge contatore:** Numero notifiche non lette (max `9+`) sulla campanella. Colore rosso (`bg-expense`).
+- **Badge favicon:** La favicon del tab mostra un badge rosso con conteggio notifiche non lette (Canvas rendering over logo).
+- **Suono notifiche:** Breve chime audio via Web Audio API all'arrivo di nuove notifiche.
+- **Notifiche OS:** Browser Notification API — notifica desktop nativa quando l'app è in background.
+- **Realtime push:** Sottoscrizione Supabase Realtime per invalidazione istantanea della cache all'arrivo di nuove notifiche.
+- **Mark-all-read:** Bottone "Leggi tutto" per segnare tutte come lette (dropdown + pagina).
+- **Dismiss individuale:** Ogni notifica ha azioni hover (leggi/nascondi).
+- **Notifiche automatiche:** All'avvio vengono generati check per: scadenze job (>30gg `completed_pending`), fatture scadute, backup rimandato, goal milestone (50/80/100%), sync completato.
+- **Goal milestone:** Notifiche automatiche al raggiungimento del 50%, 80% e 100% dell'obiettivo finanziario annuale.
+- **Auto-cleanup:** Le notifiche dismissate da >30 giorni vengono automaticamente cancellate all'avvio.
+- **Reminder backup:** Pop-up centrato con backdrop blur. Opzioni snooze (1 giorno, 3 giorni, più tardi). Intervallo configurabile in Impostazioni.
 - **Sync alert:** Notifica quando la connessione cade/ritorna con riepilogo elementi sincronizzati.
 - **Offline queue:** Coda locale delle operazioni in attesa di sync, visibile all'utente nelle impostazioni.
 - **Session expired:** Pop-up bloccante con reindirizzamento al login.

@@ -130,6 +130,24 @@ export interface FiscalSetup {
   updated_at: string
 }
 
+export type NotificationCategory = 'deadline' | 'invoice' | 'backup' | 'sync' | 'goal' | 'quote' | 'expense' | 'system'
+
+export interface Notification {
+  id: string
+  user_id: string
+  category: NotificationCategory
+  title: string
+  message: string
+  link: string | null
+  icon: string | null
+  is_read: boolean
+  is_dismissed: boolean
+  dismissed_at: string | null
+  read_at: string | null
+  metadata: Record<string, unknown> | null
+  created_at: string
+}
+
 export interface UserSettings {
   id: string
   user_id: string
@@ -139,6 +157,8 @@ export interface UserSettings {
   backup_frequency: 'daily' | 'weekly' | 'monthly'
   sync_enabled: boolean
   notifications_enabled: boolean
+  notification_preferences: Record<NotificationCategory, boolean> | null
+  backup_reminder_interval_days: number
   created_at: string
   updated_at: string
 }

@@ -80,6 +80,7 @@ export function AppRouter() {
         <Route path="/shared/:token" element={<SharedViewPage />} />
         <Route path="/" element={<HomeRedirect />} />
 
+        <Route path="/notifications" element={<AuthGate><Suspense fallback={<PageLoader />}><lazyPage.NotificationsPage /></Suspense></AuthGate>} />
         <Route path="/dashboard" element={<AuthGate><Suspense fallback={<PageLoader />}><lazyPage.DashboardPage /></Suspense></AuthGate>} />
         <Route path="/jobs" element={<AuthGate><Suspense fallback={<PageLoader />}><lazyPage.JobsPage /></Suspense></AuthGate>} />
         <Route path="/quotes" element={<AuthGate><Suspense fallback={<PageLoader />}><lazyPage.QuotesPage /></Suspense></AuthGate>} />

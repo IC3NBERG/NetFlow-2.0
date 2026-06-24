@@ -240,10 +240,49 @@ CREATE TABLE user_settings (
   backup_frequency  text NOT NULL DEFAULT 'weekly' CHECK (backup_frequency IN ('daily', 'weekly', 'monthly')),
   sync_enabled      boolean NOT NULL DEFAULT true,
   notifications_enabled boolean NOT NULL DEFAULT true,
+  notification_preferences jsonb NOT NULL DEFAULT '{"deadline":true,"invoice":true,"backup":true,"sync":true,"goal":true,"quote":true,"expense":true,"system":true}',
+  backup_reminder_interval_days integer NOT NULL DEFAULT 7,
   created_at        timestamptz DEFAULT now(),
   updated_at        timestamptz DEFAULT now()
 );
 ```
+
+### 2.8a notifications
+```sql
+CREATE TABLE public.notifications (
+  id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id         uuid NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  category        text NOT NULL CHECK (category IN ('deadline','invoice','backup','sync','goal','quote','expense','system')),
+  title           text NOT NULL,
+  message         text NOT NULL,
+  link            text,
+  icon            text,
+  is_read         boolean NOT NULL DEFAULT false,
+  is_dismissed    boolean NOT NULL DEFAULT false,
+  dismissed_at    timestamptz,
+  read_at         timestamptz,
+  metadata        jsonb DEFAULT '{}',
+  created_at      timestamptz DEFAULT now()
+);
+
+CREATE INDEX idx_notifications_user ON notifications(user_id);
+CREATE INDEX idx_notifications_unread ON notifications(user_id, is_read) WHERE NOT is_dismissed;
+CREATE INDEX idx_notifications_category ON notifications(user_id, category);
+CREATE INDEX idx_notifications_created ON notifications(user_id, created_at DESC);
+
+ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
+-- 4 RLS policies (SELECT/INSERT/UPDATE/DELETE) scoped to auth.uid() = user_id
+```
+
+### 2.8b Notification RPCs
+```sql
+-- mark_notification_read(p_notification_id uuid) → void
+-- dismiss_notification(p_notification_id uuid) → void
+-- mark_all_notifications_read() → void
+-- cleanup_notifications(p_older_than_days integer DEFAULT 30) → integer
+-- get_unread_notification_counts() → jsonb (category → count)
+```
+Tutti SECURITY DEFINER, scoped all'utente autenticato.
 
 ### 2.9 tags
 ```sql
@@ -650,6 +689,24 @@ export interface FiscalSetup {
   updated_at: string;
 }
 
+export type NotificationCategory = 'deadline' | 'invoice' | 'backup' | 'sync' | 'goal' | 'quote' | 'expense' | 'system';
+
+export interface Notification {
+  id: string;
+  user_id: string;
+  category: NotificationCategory;
+  title: string;
+  message: string;
+  link: string | null;
+  icon: string | null;
+  is_read: boolean;
+  is_dismissed: boolean;
+  dismissed_at: string | null;
+  read_at: string | null;
+  metadata: Record<string, unknown> | null;
+  created_at: string;
+}
+
 export interface UserSettings {
   id: string;
   user_id: string;
@@ -659,6 +716,8 @@ export interface UserSettings {
   backup_frequency: 'daily' | 'weekly' | 'monthly';
   sync_enabled: boolean;
   notifications_enabled: boolean;
+  notification_preferences: Record<NotificationCategory, boolean> | null;
+  backup_reminder_interval_days: number;
   created_at: string;
   updated_at: string;
 }

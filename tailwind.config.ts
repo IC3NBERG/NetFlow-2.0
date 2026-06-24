@@ -31,6 +31,27 @@ export default {
         sans: ['Inter', 'system-ui', 'sans-serif'],
         mono: ['JetBrains Mono', 'monospace'],
       },
+      animation: {
+        'float-slow': 'float-slow 25s ease-in-out infinite',
+        'float-medium': 'float-medium 20s ease-in-out infinite',
+        'pulse-glow': 'pulse-glow 8s ease-in-out infinite',
+      },
+      keyframes: {
+        'float-slow': {
+          '0%, 100%': { transform: 'translate(0, 0) rotate(0deg)' },
+          '33%': { transform: 'translate(40px, -30px) rotate(1deg)' },
+          '66%': { transform: 'translate(-20px, 40px) rotate(-1deg)' },
+        },
+        'float-medium': {
+          '0%, 100%': { transform: 'translate(0, 0) rotate(0deg)' },
+          '25%': { transform: 'translate(-30px, 20px) rotate(1deg)' },
+          '75%': { transform: 'translate(30px, -20px) rotate(-1deg)' },
+        },
+        'pulse-glow': {
+          '0%, 100%': { opacity: '0.6' },
+          '50%': { opacity: '1' },
+        },
+      },
     },
   },
   plugins: [],

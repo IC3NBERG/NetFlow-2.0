@@ -19,15 +19,16 @@ export function DashboardPage() {
   if (!data) return null
 
   const layout = resolveDashboardLayout(data.profile?.dashboard_layout)
+  const balanceColor = data.metrics.balance >= 0 ? 'text-success' : 'text-expense'
   const kpiMetrics = [
-    { label: 'In Attesa', value: data.metrics.gross_pending, color: 'text-pending' },
-    { label: 'Incassati', value: data.metrics.gross_settled, color: 'text-success' },
-    { label: 'Netti In Attesa', value: data.metrics.net_pending, color: 'text-pending' },
-    { label: 'Netti Incassati', value: data.metrics.net_settled, color: 'text-success' },
+    { label: 'Lordo In Attesa', value: data.metrics.gross_pending, color: 'text-pending' },
+    { label: 'Lordo', value: data.metrics.gross_settled, color: 'text-success' },
+    { label: 'Netto In Attesa', value: data.metrics.net_pending, color: 'text-pending' },
+    { label: 'Netto', value: data.metrics.net_settled, color: 'text-success' },
     { label: 'Cash In Attesa', value: data.metrics.cash_pending, color: 'text-pending' },
-    { label: 'Cash Incassati', value: data.metrics.cash_settled, color: 'text-success' },
+    { label: 'Cash', value: data.metrics.cash_settled, color: 'text-success' },
     { label: 'Uscite', value: data.metrics.expenses_total, color: 'text-expense' },
-    { label: 'Saldo', value: data.metrics.balance, color: 'text-success' },
+    { label: 'Saldo', value: data.metrics.balance, color: balanceColor },
   ]
 
   const modules: Record<DashboardModuleId, ReactNode> = {

@@ -11,11 +11,16 @@
 
 ### 1.2 Glassmorphism Effects
 - **Background pagina:** Sfondo scuro (`#0F0F1A`) con gradienti radiali soffusi (brand viola e blu elettrico con opacità 5-10%).
+- **Ambient Light Orbs (v0.41.1):** Tre gradienti radiali animati fissi nello sfondo:
+  - Viola brand (rgba(108,92,231,0.12), 600px) — floating lento (8s), posizione top-left
+  - Blu elettrico (rgba(0,210,255,0.06), 500px) — floating opposto (10s), posizione center-right
+  - Brand soffuso (rgba(108,92,231,0.04), 400px) — pulse dolce (6s), posizione bottom-center
+  - `filter: blur(80-120px)` per effusion morbida. Visibili attraverso gli elementi glass (`backdrop-blur`).
 - **Card/Moduli:** 
   - `background: rgba(26, 26, 46, 0.6)` con `backdrop-filter: blur(25px)`
   - `border: 0.5px solid rgba(255, 255, 255, 0.08)` ultra-sottile semi-trasparente
   - `box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3)` per profondità
-- **Hover card:** Aumento della luminosità del vetro (`background: rgba(26, 26, 46, 0.8)`) e leggero scale.
+- **Hover card:** Aumento della luminosità del vetro (`background: rgba(26, 26, 46, 0.8)`) e leggero scale. GlassCard aggiunge anche glow brand (`shadow-[0_8px_40px_rgba(108,92,231,0.08)]`) e bordo più luminoso on hover.
 
 ### 1.3 Border Radius
 - **Cards / Moduli:** `1.5rem` (24px)
@@ -30,9 +35,9 @@
 | Brand Secondary | `#00D2FF` (Blu Elettrico) | `#0098C7` | Hover, gradienti radiali sfondo |
 | Background | `#0F0F1A` | `#F8F9FA` | Sfondo principale con gradienti radiali |
 | Surface Glass | `rgba(26,26,46,0.6)` | `rgba(255,255,255,0.7)` | Cards con backdrop-blur |
-| Success (Incassato) | `#00B894` (Smeraldo) | `#00B894` | Badge incassato, KPIs positive, anelli progresso |
-| Pending | `#636E72` + 60% opacità | `#B2BEC3` | Badge in attesa, anelli parziali |
-| Expenses | `#FF6B6B` (Corallo) | `#E17055` | Uscite, alert |
+| Success (Incassato) | `#009C13` (Verde) | `#009C13` | Badge incassato, KPIs positive, anelli progresso |
+| Pending | `#32373C` (Grigio Scuro) | `#32373C` | Badge in attesa, anelli parziali |
+| Expenses | `#E32400` (Rosso) | `#E32400` | Uscite, alert, saldo negativo |
 | Text Primary | `#FFFFFF` | `#1A1A2E` | Titoli, corpo |
 | Text Secondary | `#A0A0B8` | `#636E72` | Sottotitoli, label |
 
@@ -72,11 +77,19 @@
 - **Header:** Semplificato, solo titolo e hamburger menu per drawer laterale.
 
 ### 2.4 Transizioni
-- **Cambio pagina:** `key`-based `motion.div` con spring entrance (`initial: opacity 0 + x:30`, `animate: opacity 1 + x:0`). Nessuna exit animation — React smonta la vecchia pagina immediatamente e monta la nuova con slide+fade. Evita pagine vuote. Spring physics: `stiffness 320, damping 28`.
-- **Sidebar:** `transition-all duration-300 ease-out`.
+- **Cambio pagina (v0.41.1):** `key`-based `motion.div` con spring entrance (`initial: opacity 0 + y: 24 + scale: 0.97`, `animate: opacity 1 + y: 0 + scale: 1`). Effetto "sollevamento" premium. Nessuna exit animation — React smonta la vecchia pagina immediatamente e monta la nuova. Spring physics: `stiffness: 280, damping: 24, mass: 1.1`.
+- **Sidebar:** `transition-all duration-300 ease-out` + animazione spring con Framer Motion `layoutId` per il pill di navigazione attivo (`stiffness 380, damping 30`). Il pill (`bg-brand`) scivola fluidamente tra le voci al cambio tab.
+- **Sidebar active glow (v0.41.1):** `box-shadow: 0 0 20px rgba(108,92,231,0.35)` sul pill attivo per effetto glow che segue lo slide.
 - **Moduli Dashboard:** `initial={{ opacity: 0, scale: 0.9 }}` con Framer Motion per simulare caricamento OS futuristico.
 - **Dashboard ingresso pagina:** `fade + scale(0.97 → 1)` con titolo che scende dall'alto (`y: -8 → 0`, delay 0.05s).
 - **Cards:** `hover:scale-[1.02]` con `transition-transform duration-200`.
+- **Cambio tema (v0.41.1):** Transizione CSS selettiva su `body` con `cubic-bezier(0.16, 1, 0.3, 1)` — Material Design "emphasized deceleration": partenza rapida, decelerazione che si addolcisce. I colori morphiano naturalmente senza overlay, clip-path o bordi geometrici. All'attivazione, `body` riceve classe `.theme-changing` che innesca animazione `theme-breath` (scale 0.998→1→1.002 in 0.5s, micro-respiro di profondità). Le componenti (GlassCard, bottoni) usano le proprie transizioni naturali, creando uno stagger organico. Supportato sia per cambio manuale (Scuro/Chiaro/Sistema) che per cambio automatico OS (prefers-color-scheme).
+
+### 2.5 Sidebar/Header Intersection (v0.41.1)
+- **Sidebar:** Colonna verticale fissa a sinistra (280px), superficie glass indipendente.
+- **Header:** Transetto orizzontale che attraversa la parte superiore del contenuto principale.
+- **Arco di congiunzione:** SVG path (`A 32 32`) posizionato all'angolo di intersezione — una linea curva brand (stroke `#6C5CE7`, fill none) che parte dal bordo destro della sidebar e si raccorda al bordo inferiore dell'header, creando un collegamento architettonico fluido tra le due superfici glass.
+- **Header:** `rounded-l-none` (nessun bordo sinistro arrotondato) per adiacenza pulita alla sidebar. Il logo nella sidebar ha padding verticale `py-4` per allineamento con l'header.
 
 ---
 
@@ -89,8 +102,11 @@
 - border: 0.5px solid rgba(255,255,255,0.08)
 - border-radius: 1.5rem
 - box-shadow: 0 8px 32px rgba(0,0,0,0.3)
-- hover: background luminosità aumentata + scale(1.01)
 - transition: all 0.3s ease-out
+- hover: 
+  - background luminosità aumentata + scale(1.01)
+  - shadow-[0_8px_40px_rgba(108,92,231,0.08)] (glow brand)
+  - border colore più luminoso (opacità aumentata)
 ```
 
 ### 3.2 Dashboard (Griglia Modulare)
@@ -147,6 +163,46 @@
 - **Posizione:** Bottom-center su mobile, bottom-right su desktop.
 - **Tipi:** success (smeraldo), error (corallo), warning (giallo), info (brand).
 - **Auto-dismiss:** 4 secondi, tranne errori di sync.
+
+### 3.7a Notification Center (Dropdown)
+- **Badge:** Contatore notifiche non lette sulla campanella (max `9+`). Colore `bg-expense`.
+- **Dropdown:** `w-80 sm:w-96`, `right-0`, glass surface. Filtri per categoria (pill buttons orizzontali scrollabili).
+- **Notifica singola:** Icona categoria, titolo, messaggio (2 righe max), timestamp relativo. Azioni hover: segna come letto (check) e nascondi (X). Link cliccabile alla pagina pertinente.
+- **Stato vuoto:** Icona campanella opaca + testo "Nessuna notifica".
+- **Bottone "Leggi tutto":** Segna tutte come lette. Visibile solo se ci sono notifiche non lette.
+
+### 3.7b Notification History Page (`/notifications`)
+- **Layout:** Titolo pagina "Centro Notifiche" + sottotitolo con conteggio non lette. Barra filtri orizzontale per categoria con badges conteggio.
+- **Card notifica:** GlassCard con icona categoria in cerchio semitrasparente, titolo, messaggio, timestamp, badge "non letto" (bordo brand). Bottoni hover: segna come letto, nascondi.
+- **Filtri:** Tutte / Scadenze / Fatture / Backup / Sync / Obiettivi / Preventivi / Spese / Sistema. Ogni pill mostra conteggio non lette.
+- **Toggle archiviate:** Bottone cestino per mostrare/nascondere notifiche dismissate (mostrate con opacità 50%).
+- **Bottone "Leggi tutto":** Segna tutte come lette. Visibile solo se ci sono non lette.
+- **Stato vuoto:** Per categoria o globale — icona + testo + link "Vedi tutte".
+- **Animazione:** Framer Motion staggered con `delay: 0.04s` per ogni card.
+
+### 3.7c Favicon Badge
+- Quando ci sono notifiche non lette, la favicon mostra un badge rosso con il conteggio (max `9+`).
+- Disegnato su Canvas: overlay cerchio rosso (posizione 26,6) + testo bianco sulla favicon base.
+- Zero notifiche → favicon normale (`logo-icon.svg`).
+
+### 3.7d Suono Notifiche
+- Riproduzione via Web Audio API (oscillatore sinusoide 880→1108Hz, durata 300ms, volume 15%).
+- Attivato solo quando il conteggio notifiche non lette aumenta.
+- Rispetta `notifications_enabled` globale.
+
+### 3.7e Notifiche OS (Browser Notification API)
+- Richiede permesso al mount.
+- Mostra notifica desktop nativa solo se l'app NON è in focus (`document.hasFocus()`).
+- Icona: `logo-icon.svg`. Tag: `netflow-notification` (raggruppa notifiche dello stesso tipo).
+- Rispetta `notifications_enabled` globale.
+
+### 3.7f Backup Reminder (Modal)
+- **Posizione:** Centrato, `max-w-md`, backdrop blur.
+- **Opzioni snooze:** "Ricorda tra 1 giorno", "Ricorda tra 3 giorni", "Più tardi" (testo link).
+- **Bottone primario:** "Vai alle impostazioni" con icona Download.
+- **Icona:** Download in cerchio `#F59E0B`/20.
+- **Animazione:** Framer Motion scale+fade.
+- **Intervallo:** Configurabile in Impostazioni (1/3/7/14/30 giorni).
 
 ### 3.8 Empty States (Stati Vuoti)
 - **Empatia:** Evitare interfacce puramente strumentali e fredde (es. semplice testo "Nessuna spesa").

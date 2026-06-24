@@ -18,6 +18,19 @@ function hexToRgb(hex: string): string {
   return `${r} ${g} ${b}`
 }
 
+function applyThemeClass(theme: Theme) {
+  const root = document.documentElement
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+
+  if (theme === 'dark' || (theme === 'system' && prefersDark)) {
+    root.classList.add('dark')
+    root.classList.remove('light')
+  } else {
+    root.classList.remove('dark')
+    root.classList.add('light')
+  }
+}
+
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const { brandColor, successColor, expenseColor } = useCustomizationStore()
   const [theme, setThemeState] = useState<Theme>(() => {
@@ -48,33 +61,21 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     localStorage.setItem('fintrack-theme', theme)
+    applyThemeClass(theme)
 
-    const root = document.documentElement
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-
-    if (theme === 'dark' || (theme === 'system' && prefersDark)) {
-      root.classList.add('dark')
-      root.classList.remove('light')
-    } else {
-      root.classList.remove('dark')
-      root.classList.add('light')
-    }
+    document.body.classList.add('theme-changing')
+    const timer = setTimeout(
+      () => document.body.classList.remove('theme-changing'),
+      1300,
+    )
+    return () => clearTimeout(timer)
   }, [theme])
 
   useEffect(() => {
     if (theme !== 'system') return
 
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    const handler = () => {
-      const root = document.documentElement
-      if (mediaQuery.matches) {
-        root.classList.add('dark')
-        root.classList.remove('light')
-      } else {
-        root.classList.remove('dark')
-        root.classList.add('light')
-      }
-    }
+    const handler = () => applyThemeClass('system')
 
     mediaQuery.addEventListener('change', handler)
     return () => mediaQuery.removeEventListener('change', handler)

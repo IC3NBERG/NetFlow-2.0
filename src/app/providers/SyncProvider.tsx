@@ -207,6 +207,40 @@ export function SyncProvider({ children }: { children: ReactNode }) {
     }
   }, [isOnline, queueLength, isSyncing, processQueue])
 
+  useEffect(() => {
+    if (isOnline && queueLength === 0 && !isSyncing && syncStatus !== 'error') {
+      const hadOffline = sessionStorage.getItem('was_offline')
+      if (hadOffline === 'true') {
+        import('../../lib/notificationService').then(({ createNotification }) => {
+          supabase.auth.getSession().then(({ data: { session } }) => {
+            if (!session?.user) return
+            supabase
+              .from('user_settings')
+              .select('notification_preferences, notifications_enabled')
+              .eq('user_id', session.user.id)
+              .single()
+              .then(({ data: s }) => {
+                if (!s?.notifications_enabled) return
+                const prefs = (s.notification_preferences ?? {}) as Record<string, boolean>
+                if (!prefs.sync) return
+                createNotification({
+                  category: 'sync',
+                  title: 'Sincronizzazione completata',
+                  message: 'Tutti i dati sono stati sincronizzati con successo.',
+                  link: '/settings',
+                  icon: 'RefreshCw',
+                  metadata: { source: 'sync_reconnect' },
+                }).catch(() => {})
+              })
+          })
+        })
+      }
+    }
+    if (!isOnline) {
+      sessionStorage.setItem('was_offline', 'true')
+    }
+  }, [isOnline, queueLength, isSyncing, syncStatus])
+
   async function forceSync() {
     if (isOnline) await processQueue()
   }
