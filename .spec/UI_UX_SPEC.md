@@ -35,7 +35,7 @@
 | Brand Secondary | `#00D2FF` (Blu Elettrico) | `#0098C7` | Hover, gradienti radiali sfondo |
 | Background | `#0F0F1A` | `#F8F9FA` | Sfondo principale con gradienti radiali |
 | Surface Glass | `rgba(26,26,46,0.6)` | `rgba(255,255,255,0.7)` | Cards con backdrop-blur |
-| Success (Incassato) | `#009C13` (Verde) | `#009C13` | Badge incassato, KPIs positive, anelli progresso |
+| Success (Incassato) | `#10B981` (Smeraldo) | `#10B981` | Badge incassato, KPIs positive, anelli progresso |
 | Pending | `#32373C` (Grigio Scuro) | `#32373C` | Badge in attesa, anelli parziali |
 | Expenses | `#E32400` (Rosso) | `#E32400` | Uscite, alert, saldo negativo |
 | Text Primary | `#FFFFFF` | `#1A1A2E` | Titoli, corpo |
