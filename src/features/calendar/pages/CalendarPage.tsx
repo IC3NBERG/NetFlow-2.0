@@ -1,7 +1,8 @@
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
-import { ChevronLeft, ChevronRight, CalendarDays, CreditCard, AlertCircle, Plus, Trash2, Download, Globe, Copy, Check, ExternalLink } from 'lucide-react'
+import { ChevronLeft, ChevronRight, CalendarDays, CreditCard, AlertCircle, Plus, Trash2, Download, Globe, Copy, Check, RefreshCw } from 'lucide-react'
 import { GlassCard } from '../../../shared/ui/GlassCard'
+import { Toast } from '../../../shared/ui/Toast'
 import { Badge } from '../../../shared/ui/Badge'
 import { Button } from '../../../shared/ui/Button'
 import { Modal } from '../../../shared/ui/Modal'
@@ -48,6 +49,7 @@ export function CalendarPage() {
   const [calendarToken, setCalendarToken] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const [viewMode, setViewMode] = useState<'month' | 'agenda'>('month')
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
 
   useEffect(() => {
     if (user?.calendar_token) {
@@ -121,10 +123,33 @@ export function CalendarPage() {
     }
   }, [icsUrl])
 
+  const webcalUrl = useMemo(() => {
+    if (!calendarToken) return null
+    return `webcal://${window.location.host}/ics/${calendarToken}`
+  }, [calendarToken])
+
+  const subscribeUrls = useMemo(() => {
+    if (!icsUrl || !webcalUrl) return null
+    return {
+      google: `https://calendar.google.com/calendar/u/0/r?cid=${encodeURIComponent(webcalUrl)}`,
+      apple: webcalUrl,
+      outlook: `https://outlook.live.com/owa/?path=/calendar/action/compose&rru=addsubscription&name=NetFlow+Calendario&url=${encodeURIComponent(icsUrl)}`,
+    }
+  }, [icsUrl, webcalUrl])
+
   const handleRefreshToken = useCallback(async () => {
-    const { data, error } = await supabase.rpc('refresh_calendar_token')
-    if (!error && data) {
-      setCalendarToken(data)
+    try {
+      const { data, error } = await supabase.rpc('refresh_calendar_token')
+      if (error) {
+        setToast({ message: 'Errore durante la rigenerazione del token', type: 'error' })
+        return
+      }
+      if (data) {
+        setCalendarToken(data)
+        setToast({ message: 'Nuovo token generato con successo', type: 'success' })
+      }
+    } catch {
+      setToast({ message: 'Errore di connessione', type: 'error' })
     }
   }, [])
 
@@ -223,7 +248,7 @@ export function CalendarPage() {
                   className="rounded-full bg-surface/60 p-2 text-text-secondary hover:text-text-primary transition-colors"
                   title="Genera nuovo token"
                 >
-                  <ExternalLink className="h-4 w-4" />
+                  <RefreshCw className="h-4 w-4" />
                 </button>
               </>
             ) : (
@@ -231,6 +256,33 @@ export function CalendarPage() {
             )}
           </div>
         </div>
+        {subscribeUrls && (
+          <div className="flex items-center gap-2 mt-3">
+            <span className="text-xs text-text-secondary mr-1">Aggiungi a:</span>
+            <a
+              href={subscribeUrls.google}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-full bg-surface/60 px-3 py-1.5 text-xs text-text-secondary hover:text-text-primary hover:bg-surface/80 transition-colors"
+            >
+              Google Calendar
+            </a>
+            <a
+              href={subscribeUrls.apple}
+              className="rounded-full bg-surface/60 px-3 py-1.5 text-xs text-text-secondary hover:text-text-primary hover:bg-surface/80 transition-colors"
+            >
+              Apple Calendar
+            </a>
+            <a
+              href={subscribeUrls.outlook}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-full bg-surface/60 px-3 py-1.5 text-xs text-text-secondary hover:text-text-primary hover:bg-surface/80 transition-colors"
+            >
+              Outlook
+            </a>
+          </div>
+        )}
       </GlassCard>
 
       {/* View toggle */}
@@ -474,6 +526,7 @@ export function CalendarPage() {
           </div>
         </div>
       </Modal>
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
     </div>
   )
 }

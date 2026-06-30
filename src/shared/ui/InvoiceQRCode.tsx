@@ -7,15 +7,17 @@ interface InvoiceQRCodeProps {
   invoiceNumber: string
   grossAmount: number
   iban?: string
+  creditorName?: string
 }
 
-export function InvoiceQRCode({ invoiceNumber, grossAmount, iban }: InvoiceQRCodeProps) {
+export function InvoiceQRCode({ invoiceNumber, grossAmount, iban, creditorName }: InvoiceQRCodeProps) {
   const [dataUrl, setDataUrl] = useState('')
 
   useEffect(() => {
+    const fmt = (n: number) => n.toFixed(2).replace('.', ',')
     const paymentData = iban
-      ? `RMT\n${iban}\n${grossAmount.toFixed(2).replace('.', ',')}\n${invoiceNumber}\n`
-      : `Fattura: ${invoiceNumber}\nTotale: € ${grossAmount.toFixed(2)}`
+      ? `BCD\n001\n1\nSCT\n${iban}\n${creditorName ?? ''}\nEUR${fmt(grossAmount)}\n\n${invoiceNumber}\n`
+      : `FATTURA: ${invoiceNumber}\nTOTALE: € ${fmt(grossAmount)}\nINTESTATARIO: ${creditorName ?? ''}\n`
 
     QRCodeLib.toDataURL(paymentData, {
       width: 180,
@@ -28,7 +30,7 @@ export function InvoiceQRCode({ invoiceNumber, grossAmount, iban }: InvoiceQRCod
       }
       setDataUrl(url)
     })
-  }, [invoiceNumber, grossAmount, iban])
+  }, [invoiceNumber, grossAmount, iban, creditorName])
 
   function handleDownload() {
     if (!dataUrl) return

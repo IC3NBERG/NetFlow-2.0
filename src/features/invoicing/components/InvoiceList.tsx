@@ -8,13 +8,14 @@ import { cn } from '../../../lib/utils'
 import { useAuth } from '../../../app/providers/AuthProvider'
 import { generateInvoicePdf } from '../../../lib/pdfInvoice'
 import { CheckCircle, Send, FileText, Download, QrCode, Loader2 } from 'lucide-react'
-import type { Invoice, Job } from '../../../types/database'
+import type { Invoice, Job, Client } from '../../../types/database'
 
 interface InvoiceListProps {
   invoices: Invoice[]
   onMarkAsPaid: (id: string) => void
   onMarkAsSent: (id: string) => void
   relatedJobs: (invoiceId: string) => Job[]
+  clients: Client[]
 }
 
 type ToastState = { message: string; type: 'success' | 'error' | 'info' } | null
@@ -25,7 +26,7 @@ const statusConfig = {
   paid: { label: 'Pagata', color: 'bg-success/20 text-success' },
 }
 
-export function InvoiceList({ invoices, onMarkAsPaid, onMarkAsSent, relatedJobs }: InvoiceListProps) {
+export function InvoiceList({ invoices, onMarkAsPaid, onMarkAsSent, relatedJobs, clients }: InvoiceListProps) {
   const { user } = useAuth()
   const [downloadingId, setDownloadingId] = useState<string | null>(null)
   const [qrVisibleId, setQrVisibleId] = useState<string | null>(null)
@@ -35,13 +36,18 @@ export function InvoiceList({ invoices, onMarkAsPaid, onMarkAsSent, relatedJobs 
     setDownloadingId(inv.id)
     try {
       const jobs = relatedJobs(inv.id)
+      const firstJob = jobs[0]
+      const client = firstJob?.client_id
+        ? clients.find((c) => c.id === firstJob.client_id) ?? null
+        : null
+      const goalData = user?.goal_data && typeof user.goal_data === 'object' ? user.goal_data as { invoice_footer?: string; iban?: string } : null
       const blob = await generateInvoicePdf({
         type: inv.type as 'invoice' | 'parcella',
         invoiceNumber: inv.invoice_number,
         issuedDate: new Date(inv.issued_date).toLocaleDateString('it-IT'),
         dueDate: inv.due_date ? new Date(inv.due_date).toLocaleDateString('it-IT') : null,
         jobs: jobs.map((j) => ({ title: j.title, amount_card: j.amount_card, amount_cash: j.amount_cash })),
-        client: null,
+        client: client ? { name: client.name, address: client.address, vat_number: client.vat_number, fiscal_code: client.fiscal_code } : null,
         profile: {
           business_name: user?.business_name ?? null,
           full_name: user?.full_name ?? null,
@@ -53,6 +59,7 @@ export function InvoiceList({ invoices, onMarkAsPaid, onMarkAsSent, relatedJobs 
         grossAmount: inv.gross_amount,
         taxAmount: inv.tax_amount,
         netAmount: inv.net_amount,
+        footer: goalData?.invoice_footer ?? undefined,
       })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
@@ -129,7 +136,12 @@ export function InvoiceList({ invoices, onMarkAsPaid, onMarkAsSent, relatedJobs 
               </div>
               {qrVisibleId === inv.id && (
                 <div className="border-t border-border pt-3 flex justify-center">
-                  <InvoiceQRCode invoiceNumber={inv.invoice_number} grossAmount={inv.gross_amount} />
+                  <InvoiceQRCode
+                    invoiceNumber={inv.invoice_number}
+                    grossAmount={inv.gross_amount}
+                    iban={user?.goal_data && typeof user.goal_data === 'object' ? (user.goal_data as { iban?: string }).iban : undefined}
+                    creditorName={user?.business_name ?? user?.full_name ?? undefined}
+                  />
                 </div>
               )}
             </GlassCard>

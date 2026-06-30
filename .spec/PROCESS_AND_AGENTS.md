@@ -104,7 +104,7 @@ Ogni volta che un agente completa un task di codifica, deve obbligatoriamente:
 | ✅ P3 | Tag per lavori/spese | Fatto |
 | ⬜ | Condivisione pubblica commercialista | Fatto |
 | ⬜ | Google OAuth | In attesa |
-| ⬜ | Fattura PDF export | Da fare |
+| ✅ | Fattura PDF export con QR e dati cliente | Fatto |
 
 ---
 

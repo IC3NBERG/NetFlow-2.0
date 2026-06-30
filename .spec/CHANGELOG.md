@@ -8,6 +8,39 @@
 
 ---
 
+## [v0.43.2] - 2026-07-01
+### Stato: Migration fix — RPC esteso spostato in nuova migration (027)
+- **[PATCH] Nuova migration `20260624000004_extend_calendar_rpc.sql`:** La modifica a `get_calendar_events_by_token` (inclusione jobs e invoices nell'ICS feed) era stata applicata direttamente su `20260624000002_calendar_time_and_external.sql` DOPO che questa era già stata deployata sul DB remoto. Creata nuova migration separata contenente solo l'aggiornamento dell'RPC. Migration 025 ripristinata alla versione committed.
+- **[PATCH] Version bump:** package.json allineato a v0.43.2.
+- **Nuovo file:** `supabase/migrations/20260624000004_extend_calendar_rpc.sql`
+- **File modificati:** `package.json`, `supabase/migrations/20260624000002_calendar_time_and_external.sql`
+- **Migration push:** `npx supabase db push` — ✓ applicata al remoto.
+- **Build:** `npm run build` — ✓. `npx tsc --noEmit` — 0 errori. `npx vitest run` — 4/4 test passanti.
+### Stato: QR code fatture con contenuto pagamento + PDF scaricabile con dati cliente
+- **[PATCH] QR code fatture con EPC QR:** Il QR ora contiene il formato EPC standard europeo (`BCD\n001\n1\nSCT\n{IBAN}\n...`) quando l'IBAN è configurato, altrimenti mostra dati fattura strutturati. Il QR è scansionabile dalle app bancarie per precompilare il bonifico.
+- **[PATCH] Nuovo campo IBAN in Account → Personalizzazione Fatture:** Aggiunto input IBAN salvato in `profiles.goal_data.iban` (JSONB). L'IBAN viene passato al QR code e usato nel formato EPC.
+- **[PATCH] PDF scaricabile con dati cliente:** Il download PDF ora cerca il cliente dal primo job collegato alla fattura e include nome, indirizzo, P.IVA, CF nel documento.
+- **[PATCH] Fix salvataggio template fatture:** `handleSaveTemplate` ora salva correttamente `goal_data` con `invoice_footer` e `iban`.
+- **File modificati:** `src/types/database.ts`, `src/shared/ui/InvoiceQRCode.tsx`, `src/features/invoicing/components/InvoiceList.tsx`, `src/features/invoicing/pages/InvoicingPage.tsx`, `src/features/account/pages/AccountPage.tsx`, `.spec/CHANGELOG.md`
+- **Build:** `npx tsc --noEmit` — 0 errori. `npm run build` — ✓
+
+## [v0.43.1] - 2026-07-01
+### Stato: Fix ICS feed e UI calendario — bottoni subscribe, RPC all-eventi, toast feedback
+- **[PATCH] RPC `get_calendar_events_by_token` esteso:** Ora include eventi da `jobs` (pending_date, end_date) e `invoices` (due_date) oltre ai `custom_events` — il feed ICS sottoscrivibile contiene tutti gli eventi del calendario.
+- **[PATCH] Bottoni subscribe one-click:** Aggiunti bottoni "Google Calendar", "Apple Calendar", "Outlook" nella card di collegamento calendario esterno — link diretti per sottoscrizione con webcal:// e URL dedicati.
+- **[PATCH] Fix pulsante refresh token:** Aggiunto `toast` di feedback (successo/errore) quando si rigenera il token. Icona cambiata da `ExternalLink` a `RefreshCw`.
+- **[PATCH] Fix copia link:** Aggiunto `toast` di feedback quando il link viene copiato negli appunti.
+- **File modificati:** `supabase/migrations/20260624000002_calendar_time_and_external.sql`, `src/features/calendar/pages/CalendarPage.tsx`, `.spec/SCHEMA.md`
+- **Build:** `npx tsc --noEmit` — 0 errori. `npm run build` — ✓
+
+## [v0.43.1] - 2026-07-01
+### Stato: SharedViewPage — tema chiaro/scuro, UX premium, animazioni migliorate
+- **[PATCH] SharedViewPage tema-aware:** Sostituiti tutti i colori hardcoded dark (`bg-[#0F0F1A]`, `bg-[rgba(26,26,46,0.6)]`, `border-white/[X]`) con variabili tema (`bg-surface-alt`, `bg-surface/60`, `border-border`). La pagina rispetta ora il tema di sistema (light/dark).
+- **[PATCH] UI premium:** StatCard con ring-1 vetro, icona in bg-color/10, glow brand on hover migliorato. Sezioni espandibili trasformate in pill glass con bordo arrotondato 1.5rem e backdrop-blur.
+- **[PATCH] UX migliorata:** Multi-sezione espandibile simultaneamente (Set invece di single string), jobs e invoices aperti di default, bottone clear nella barra di ricerca, empty state per ricerca senza risultati, supporto tastiera (role=button + onKeyDown), animazione accordion con cubic-bezier emphasized deceleration.
+- **File modificati:** `src/features/shared/pages/SharedViewPage.tsx`
+- **Build:** `npx tsc --noEmit` — 0 errori. `npm run build` — ✓
+
 ## [v0.43.0] - 2026-06-24
 ### Stato: Condivisione premium — link protetti, selettore sezioni, vista pubblica migliorata
 - **[MINOR] Condivisione premum:** Nuove colonne sulla tabella `shares`: `name` (nome link), `is_active` (toggle on/off), `password_hash` (protezione password), `max_views` + `view_count` (limite visite), `sections` (seleziona quali dati condividere).

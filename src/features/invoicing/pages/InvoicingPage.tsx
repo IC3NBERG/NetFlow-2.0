@@ -149,6 +149,7 @@ export function InvoicingPage() {
         onMarkAsPaid={handleMarkAsPaid}
         onMarkAsSent={handleMarkAsSent}
         relatedJobs={relatedJobs}
+        clients={clients}
       />
 
       <InvoiceFormModal

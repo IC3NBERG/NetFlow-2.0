@@ -16,6 +16,7 @@ export interface GoalData {
     color: string
   }>
   invoice_footer?: string
+  iban?: string
 }
 
 export type DashboardModuleId = 'kpi-group' | 'charts' | 'quick-register' | 'progress-rings' | 'bar-chart'

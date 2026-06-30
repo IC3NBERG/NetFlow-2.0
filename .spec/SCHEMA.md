@@ -599,14 +599,15 @@ export type QuoteStatus = 'draft' | 'sent' | 'accepted' | 'rejected' | 'converte
 export type DashboardModuleId = 'kpi-group' | 'charts' | 'quick-register' | 'progress-rings' | 'bar-chart';
 
 export interface GoalData {
-  target: number;
-  metric: GoalMetric;
+  target: number
+  metric: GoalMetric
   segments: Array<{
-    label: string;
-    value: number;
-    color: string;
-  }>;
-  invoice_footer?: string;
+    label: string
+    value: number
+    color: string
+  }>
+  invoice_footer?: string
+  iban?: string
 }
 
 export interface DashboardModule {

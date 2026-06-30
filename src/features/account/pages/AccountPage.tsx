@@ -7,6 +7,7 @@ import { Toast } from '../../../shared/ui/Toast'
 import { useAuth } from '../../../app/providers/AuthProvider'
 import { useUpdateProfile } from '../../../lib/hooks/useProfile'
 import { User, FileText, Save, Upload } from 'lucide-react'
+import type { GoalData } from '../../../types/database'
 
 type ToastState = { message: string; type: 'success' | 'error' | 'info' } | null
 
@@ -18,8 +19,8 @@ export function AccountPage() {
   const [vatNumber, setVatNumber] = useState('')
   const [fiscalCode, setFiscalCode] = useState('')
   const [address, setAddress] = useState('')
-  const [invoiceHeader, setInvoiceHeader] = useState('')
   const [invoiceFooter, setInvoiceFooter] = useState('')
+  const [iban, setIban] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [toast, setToast] = useState<ToastState>(null)
 
@@ -30,6 +31,9 @@ export function AccountPage() {
       setVatNumber(user.vat_number ?? '')
       setFiscalCode(user.fiscal_code ?? '')
       setAddress(user.address ?? '')
+      const gd = user.goal_data && typeof user.goal_data === 'object' ? user.goal_data as GoalData : null
+      setInvoiceFooter(gd?.invoice_footer ?? '')
+      setIban(gd?.iban ?? '')
     }
   }, [user])
 
@@ -58,9 +62,12 @@ export function AccountPage() {
     if (!user) return
     setIsSubmitting(true)
     try {
+      const currentGoalData = user.goal_data && typeof user.goal_data === 'object' ? user.goal_data as GoalData : { target: 0, metric: 'net_settled' as const, segments: [] }
       await updateProfile.mutateAsync({
         id: user.id,
+        goal_data: { ...currentGoalData, invoice_footer: invoiceFooter || undefined, iban: iban || undefined },
       })
+      await refreshProfile()
       setToast({ message: 'Template aggiornato', type: 'success' })
     } catch {
       setToast({ message: 'Errore durante il salvataggio', type: 'error' })
@@ -153,10 +160,10 @@ export function AccountPage() {
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <Input
-                label="Intestazione documento"
-                placeholder="Il tuo nome / azienda"
-                value={invoiceHeader}
-                onChange={(e) => setInvoiceHeader(e.target.value)}
+                label="IBAN"
+                placeholder="IT00X0000000000000000000000"
+                value={iban}
+                onChange={(e) => setIban(e.target.value.toUpperCase())}
               />
               <Input
                 label="Piè di pagina"
