@@ -131,7 +131,7 @@ export function CalendarPage() {
   const subscribeUrls = useMemo(() => {
     if (!icsUrl || !webcalUrl) return null
     return {
-      google: `https://calendar.google.com/calendar/u/0/r?cid=${encodeURIComponent(webcalUrl)}`,
+      google: `https://calendar.google.com/calendar/u/0/r?cid=${encodeURIComponent(icsUrl)}`,
       apple: webcalUrl,
       outlook: `https://outlook.live.com/owa/?path=/calendar/action/compose&rru=addsubscription&name=NetFlow+Calendario&url=${encodeURIComponent(icsUrl)}`,
     }

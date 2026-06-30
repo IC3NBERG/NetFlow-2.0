@@ -67,13 +67,23 @@ function generateIcs(events: Array<{
   return lines.join('\r\n')
 }
 
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, OPTIONS',
+  'Access-Control-Allow-Headers': '*',
+}
+
 export async function onRequest(context) {
   const { token } = context.params
   const supabaseUrl = context.env.VITE_SUPABASE_URL
   const supabaseKey = context.env.VITE_SUPABASE_ANON_KEY
 
   if (!supabaseUrl || !supabaseKey) {
-    return new Response('Server configuration error', { status: 500 })
+    return new Response('Server configuration error', { status: 500, headers: CORS_HEADERS })
+  }
+
+  if (context.request.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: CORS_HEADERS })
   }
 
   try {
@@ -87,7 +97,9 @@ export async function onRequest(context) {
     })
 
     if (!response.ok) {
-      return new Response('Calendario non trovato', { status: 404 })
+      const errorBody = await response.text().catch(() => '')
+      console.error(`ICS feed: Supabase returned ${response.status} for token ${token}: ${errorBody}`)
+      return new Response('Calendario non trovato', { status: 404, headers: CORS_HEADERS })
     }
 
     const events = await response.json()
@@ -95,6 +107,7 @@ export async function onRequest(context) {
 
     return new Response(ics, {
       headers: {
+        ...CORS_HEADERS,
         'Content-Type': 'text/calendar; charset=utf-8',
         'Content-Disposition': 'inline; filename="netflow-calendario.ics"',
         'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -102,6 +115,6 @@ export async function onRequest(context) {
     })
   } catch (err) {
     console.error('ICS feed error:', err)
-    return new Response('Errore interno', { status: 500 })
+    return new Response('Errore interno', { status: 500, headers: CORS_HEADERS })
   }
 }

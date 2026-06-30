@@ -158,7 +158,7 @@ export function Sidebar() {
               )}
               <span className="relative z-10 flex items-center gap-3">
                 <LifeBuoy className="h-5 w-5 shrink-0" />
-                Aiuto
+                Aiuto/Contatti
               </span>
             </div>
           )}

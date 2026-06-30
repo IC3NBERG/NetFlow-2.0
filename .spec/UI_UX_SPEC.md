@@ -77,13 +77,14 @@
 - **Header:** Semplificato, solo titolo e hamburger menu per drawer laterale.
 
 ### 2.4 Transizioni
-- **Cambio pagina (v0.41.1):** `key`-based `motion.div` con spring entrance (`initial: opacity 0 + y: 24 + scale: 0.97`, `animate: opacity 1 + y: 0 + scale: 1`). Effetto "sollevamento" premium. Nessuna exit animation — React smonta la vecchia pagina immediatamente e monta la nuova. Spring physics: `stiffness: 280, damping: 24, mass: 1.1`.
+- **Cambio pagina (v0.44.5):** Tutte le pagine sono caricate eager (no `React.lazy()`). Il cambio pagina è istantaneo — il componente della nuova pagina è già in memoria. `key`-based `motion.div` con spring entrance (`initial: opacity 0 + y: 24 + scale: 0.97`, `animate: opacity 1 + y: 0 + scale: 1`). Effetto "sollevamento" premium. Nessuna exit animation — React smonta la vecchia pagina immediatamente e monta la nuova. Spring physics: `stiffness: 280, damping: 24, mass: 1.1`.
+- **Nessun loading spinner:** Non esiste più `PageLoader` come fallback di navigazione. Lo stato `isLoading` dell'auth check iniziale rende `null` per un brevissimo istante (tipicamente <100ms).
 - **Sidebar:** `transition-all duration-300 ease-out` + animazione spring con Framer Motion `layoutId` per il pill di navigazione attivo (`stiffness 380, damping 30`). Il pill (`bg-brand`) scivola fluidamente tra le voci al cambio tab.
 - **Sidebar active glow (v0.41.1):** `box-shadow: 0 0 20px rgba(197,150,58,0.35)` sul pill attivo per effetto glow che segue lo slide.
 - **Moduli Dashboard:** `initial={{ opacity: 0, scale: 0.9 }}` con Framer Motion per simulare caricamento OS futuristico.
 - **Dashboard ingresso pagina:** `fade + scale(0.97 → 1)` con titolo che scende dall'alto (`y: -8 → 0`, delay 0.05s).
 - **Cards:** `hover:scale-[1.02]` con `transition-transform duration-200`.
-- **Cambio tema (v0.41.1):** Transizione CSS selettiva su `body` con `cubic-bezier(0.16, 1, 0.3, 1)` — Material Design "emphasized deceleration": partenza rapida, decelerazione che si addolcisce. I colori morphiano naturalmente senza overlay, clip-path o bordi geometrici. All'attivazione, `body` riceve classe `.theme-changing` che innesca animazione `theme-breath` (0.8s, damped spring bounce: 1→0.992→1.006→0.997→1 con `cubic-bezier(0.22, 1, 0.36, 1)`). Il leggero rimbalzo accompagna il cambio tema con un effetto elastico naturale. Le componenti (GlassCard, bottoni) usano le proprie transizioni naturali, creando uno stagger organico. Supportato sia per cambio manuale (Scuro/Chiaro/Sistema) che per cambio automatico OS (prefers-color-scheme).
+- **Cambio tema (v0.44.2):** Transizione CSS selettiva su `body` con `cubic-bezier(0.16, 1, 0.3, 1)` — Material Design "emphasized deceleration": partenza rapida, decelerazione che si addolcisce. I colori morphiano naturalmente senza overlay, clip-path o bordi geometrici, senza rimbalzo. Supportato sia per cambio manuale (Scuro/Chiaro/Sistema) che per cambio automatico OS (prefers-color-scheme).
 
 ### 2.5 Sidebar/Header Intersection (v0.41.1)
 - **Sidebar:** Colonna verticale fissa a sinistra (280px), superficie glass indipendente.

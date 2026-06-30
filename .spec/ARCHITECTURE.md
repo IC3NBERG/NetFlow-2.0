@@ -48,7 +48,7 @@ src/
 │   │   ├── ThemeProvider.tsx
 │   │   └── SyncProvider.tsx
 │   ├── router.tsx          # React Router config (public routes + ProtectedRoute)
-│   └── protectedRouteConfig.tsx  # Route definitions con lazy-loaded pages
+│   └── protectedRouteConfig.tsx  # Route definitions con eager-loaded pages
 ├── features/               # Feature modules
 │   ├── account/            # Profilo, logo upload, template fatture
 │   ├── auth/               # Login, register, onboarding

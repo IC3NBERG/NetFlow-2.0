@@ -1,20 +1,18 @@
-import { lazy } from 'react'
-
-const DashboardPage = lazy(() => import('../features/dashboard/pages/DashboardPage').then(m => ({ default: m.DashboardPage })))
-const JobsPage = lazy(() => import('../features/jobs/pages/JobsPage').then(m => ({ default: m.JobsPage })))
-const ClientsPage = lazy(() => import('../features/clients/pages/ClientsPage').then(m => ({ default: m.ClientsPage })))
-const InvoicingPage = lazy(() => import('../features/invoicing/pages/InvoicingPage').then(m => ({ default: m.InvoicingPage })))
-const RegisterPage = lazy(() => import('../features/register/pages/RegisterPage').then(m => ({ default: m.RegisterPage })))
-const ExpensesPage = lazy(() => import('../features/expenses/pages/ExpensesPage').then(m => ({ default: m.ExpensesPage })))
-const SettingsPage = lazy(() => import('../features/settings/pages/SettingsPage').then(m => ({ default: m.SettingsPage })))
-const CustomizationPage = lazy(() => import('../features/customization/pages/CustomizationPage').then(m => ({ default: m.CustomizationPage })))
-const HelpPage = lazy(() => import('../features/help/pages/HelpPage').then(m => ({ default: m.HelpPage })))
-const GuidePage = lazy(() => import('../features/guide/pages/GuidePage').then(m => ({ default: m.GuidePage })))
-const AccountPage = lazy(() => import('../features/account/pages/AccountPage').then(m => ({ default: m.AccountPage })))
-const LegalPage = lazy(() => import('../features/legal/pages/LegalPage').then(m => ({ default: m.LegalPage })))
-const QuotesPage = lazy(() => import('../features/quotes/pages/QuotesPage').then(m => ({ default: m.QuotesPage })))
-const CalendarPage = lazy(() => import('../features/calendar/pages/CalendarPage').then(m => ({ default: m.CalendarPage })))
-const NotificationsPage = lazy(() => import('../features/notifications/pages/NotificationsPage').then(m => ({ default: m.NotificationsPage })))
+import { DashboardPage } from '../features/dashboard/pages/DashboardPage'
+import { JobsPage } from '../features/jobs/pages/JobsPage'
+import { ClientsPage } from '../features/clients/pages/ClientsPage'
+import { InvoicingPage } from '../features/invoicing/pages/InvoicingPage'
+import { RegisterPage } from '../features/register/pages/RegisterPage'
+import { ExpensesPage } from '../features/expenses/pages/ExpensesPage'
+import { SettingsPage } from '../features/settings/pages/SettingsPage'
+import { CustomizationPage } from '../features/customization/pages/CustomizationPage'
+import { HelpPage } from '../features/help/pages/HelpPage'
+import { GuidePage } from '../features/guide/pages/GuidePage'
+import { AccountPage } from '../features/account/pages/AccountPage'
+import { LegalPage } from '../features/legal/pages/LegalPage'
+import { QuotesPage } from '../features/quotes/pages/QuotesPage'
+import { CalendarPage } from '../features/calendar/pages/CalendarPage'
+import { NotificationsPage } from '../features/notifications/pages/NotificationsPage'
 
 export const lazyPage = {
   DashboardPage,

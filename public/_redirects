@@ -1,2 +1,5 @@
+# ICS feed: handled by Cloudflare Pages Function (non reindirizzare a SPA)
+/ics/* /ics/:splat 200
+
 # SPA fallback per client-side routing
 /*    /index.html   200

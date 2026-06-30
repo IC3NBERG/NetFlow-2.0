@@ -8,6 +8,35 @@
 
 ---
 
+## [v0.44.5] - 2026-07-01
+### Eliminato loading spinner cambio pagina — import eager, no Suspense
+- **[PATCH] Rimossi React.lazy() e Suspense:** Tutte le pagine protette sono ora importate eager invece di `React.lazy()`. Eliminati i 14 `<Suspense fallback={<PageLoader />}>` dal router. Il cambio pagina è istantaneo — nessun loading spinner durante la navigazione.
+- **[PATCH] AuthGate loading → null:** Sostituito `<PageLoader />` con `null` negli stati `isLoading` di `AuthGate`, `OnboardingGuard` e `PublicRoute`. L'auth check iniziale è tipicamente <100ms.
+- **File modificati:** `src/app/protectedRouteConfig.tsx`, `src/app/router.tsx`, `.spec/UI_UX_SPEC.md`, `.spec/ARCHITECTURE.md`
+- **Build:** `npx tsc --noEmit` — 0 errori.
+
+## [v0.44.4] - 2026-07-01
+### Stato: Fix feed ICS calendario — RPC schema-qualify, CORS, Google Calendar URL
+- **[PATCH] Fix RPC `get_calendar_events_by_token`:** Con `SET search_path = ''`, i riferimenti a tabelle senza schema (es. `profiles`) non venivano risolti. Aggiunto prefisso `public.` a tutte le tabelle (`public.profiles`, `public.custom_events`, `public.jobs`, `public.invoices`) nella RPC.
+- **[PATCH] Nuova migration `20260624000005_fix_calendar_rpc_search_path.sql`:** `CREATE OR REPLACE FUNCTION` con riferimenti schema-qualificati.
+- **[PATCH] CORS nel Cloudflare Function:** Aggiunti header `Access-Control-Allow-Origin: *`, `Access-Control-Allow-Methods`, gestione OPTIONS preflight per compatibilità calendari esterni.
+- **[PATCH] Fix Google Calendar subscription URL:** Cambiato `webcal://` in `https://` nel parametro `cid` — Google Calendar non gestiva `webcal://` per la sottoscrizione.
+- **[PATCH] Fix `_redirects`:** Aggiunta regola esplicita `/ics/*` per evitare interferenze con il catch-all SPA.
+- **Nuovo file:** `supabase/migrations/20260624000005_fix_calendar_rpc_search_path.sql`
+- **File modificati:** `functions/ics/[token].ts`, `src/features/calendar/pages/CalendarPage.tsx`, `public/_redirects`, `package.json`, `.spec/CHANGELOG.md`
+- **Migration push:** `npx supabase db push` — ✓ applicata al remoto.
+
+## [v0.44.3] - 2026-07-01
+### Stato: Pagina Aiuto rinominata in Aiuto/Contatti
+- **[PATCH] Pagina Aiuto → Aiuto/Contatti:** Rinominata la pagina "Aiuto" in "Aiuto/Contatti" in Sidebar, BottomBar e titolo pagina per riflettere entrambe le sezioni (FAQ + Contatti).
+- **File modificati:** `src/shared/layouts/Sidebar.tsx`, `src/shared/layouts/BottomBar.tsx`, `src/features/help/pages/HelpPage.tsx`
+
+## [v0.44.2] - 2026-07-01
+### Stato: Rimosso rimbalzo (theme-breath) dal cambio tema
+- **[PATCH] Rimosso bounce animation sul cambio tema:** Eliminata l'animazione `theme-breath` (damped spring scale 1→0.992→1.006→0.997→1) e la classe `.theme-changing` da `ThemeProvider.tsx` e `index.css`. Il cambio tema ora morphia i colori senza rimbalzo.
+- **File modificati:** `src/app/providers/ThemeProvider.tsx`, `src/index.css`, `.spec/UI_UX_SPEC.md`
+- **Build:** `npx tsc --noEmit` — 0 errori.
+
 ## [v0.44.1] - 2026-07-01
 ### Stato: Fix posizione form creazione Lavori e Clienti — da Modal a SlideOver
 - **[PATCH] Fix form creazione Lavori:** `JobFormModal` ora usa `SlideOver` invece di `Modal` secondo UI_UX_SPEC 3.5a. Il pannello scorre da destra e mantiene il contesto della pagina sottostante visibile.

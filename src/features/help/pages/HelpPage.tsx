@@ -99,7 +99,7 @@ export function HelpPage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl md:text-3xl font-bold">
-          Centro Aiuto & FAQ
+          Aiuto / Contatti
         </h2>
         <p className="text-xs md:text-sm text-text-secondary">
           Ottieni risposte alle domande più frequenti o contatta direttamente il creatore dell'applicazione per supporto e consigli

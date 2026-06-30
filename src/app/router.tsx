@@ -1,8 +1,7 @@
-import { useEffect, Suspense, type ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { MainLayout } from '../shared/layouts/MainLayout'
 import { useAuth } from './providers/AuthProvider'
-import { PageLoader } from '../shared/ui/PageLoader'
 import { lazyPage } from './protectedRouteConfig'
 import { useCustomizationStore } from '../lib/stores/customization'
 import { LoginPage } from '../features/auth/pages/LoginPage'
@@ -25,7 +24,7 @@ function useHomeRoute(): string {
 
 function AuthGate({ children }: { children: ReactNode }) {
   const { user, isLoading } = useAuth()
-  if (isLoading) return <PageLoader />
+  if (isLoading) return null
   if (!user) return <Navigate to="/login" replace />
   if (needsOnboarding(user)) return <Navigate to="/onboarding" replace />
   return <MainLayout>{children}</MainLayout>
@@ -34,7 +33,7 @@ function AuthGate({ children }: { children: ReactNode }) {
 function OnboardingGuard({ children }: { children: ReactNode }) {
   const { user, isLoading } = useAuth()
   const homeRoute = useHomeRoute()
-  if (isLoading) return <PageLoader />
+  if (isLoading) return null
   if (!user) return <Navigate to="/login" replace />
   if (!needsOnboarding(user)) return <Navigate to={homeRoute} replace />
   return children
@@ -44,7 +43,7 @@ function PublicRoute({ children }: { children: ReactNode }) {
   const { user, isLoading, clearError } = useAuth()
   const homeRoute = useHomeRoute()
   useEffect(() => { clearError() }, [clearError])
-  if (isLoading) return <PageLoader />
+  if (isLoading) return null
   if (user) {
     if (needsOnboarding(user)) return <Navigate to="/onboarding" replace />
     return <Navigate to={homeRoute} replace />
@@ -80,21 +79,21 @@ export function AppRouter() {
         <Route path="/shared/:token" element={<SharedViewPage />} />
         <Route path="/" element={<HomeRedirect />} />
 
-        <Route path="/notifications" element={<AuthGate><Suspense fallback={<PageLoader />}><lazyPage.NotificationsPage /></Suspense></AuthGate>} />
-        <Route path="/dashboard" element={<AuthGate><Suspense fallback={<PageLoader />}><lazyPage.DashboardPage /></Suspense></AuthGate>} />
-        <Route path="/jobs" element={<AuthGate><Suspense fallback={<PageLoader />}><lazyPage.JobsPage /></Suspense></AuthGate>} />
-        <Route path="/quotes" element={<AuthGate><Suspense fallback={<PageLoader />}><lazyPage.QuotesPage /></Suspense></AuthGate>} />
-        <Route path="/clients" element={<AuthGate><Suspense fallback={<PageLoader />}><lazyPage.ClientsPage /></Suspense></AuthGate>} />
-        <Route path="/invoicing" element={<AuthGate><Suspense fallback={<PageLoader />}><lazyPage.InvoicingPage /></Suspense></AuthGate>} />
-        <Route path="/ledger" element={<AuthGate><Suspense fallback={<PageLoader />}><lazyPage.RegisterPage /></Suspense></AuthGate>} />
-        <Route path="/calendar" element={<AuthGate><Suspense fallback={<PageLoader />}><lazyPage.CalendarPage /></Suspense></AuthGate>} />
-        <Route path="/expenses" element={<AuthGate><Suspense fallback={<PageLoader />}><lazyPage.ExpensesPage /></Suspense></AuthGate>} />
-        <Route path="/settings" element={<AuthGate><Suspense fallback={<PageLoader />}><lazyPage.SettingsPage /></Suspense></AuthGate>} />
-        <Route path="/customization" element={<AuthGate><Suspense fallback={<PageLoader />}><lazyPage.CustomizationPage /></Suspense></AuthGate>} />
-        <Route path="/help" element={<AuthGate><Suspense fallback={<PageLoader />}><lazyPage.HelpPage /></Suspense></AuthGate>} />
-        <Route path="/guide" element={<AuthGate><Suspense fallback={<PageLoader />}><lazyPage.GuidePage /></Suspense></AuthGate>} />
-        <Route path="/account" element={<AuthGate><Suspense fallback={<PageLoader />}><lazyPage.AccountPage /></Suspense></AuthGate>} />
-        <Route path="/legal" element={<AuthGate><Suspense fallback={<PageLoader />}><lazyPage.LegalPage /></Suspense></AuthGate>} />
+        <Route path="/notifications" element={<AuthGate><lazyPage.NotificationsPage /></AuthGate>} />
+        <Route path="/dashboard" element={<AuthGate><lazyPage.DashboardPage /></AuthGate>} />
+        <Route path="/jobs" element={<AuthGate><lazyPage.JobsPage /></AuthGate>} />
+        <Route path="/quotes" element={<AuthGate><lazyPage.QuotesPage /></AuthGate>} />
+        <Route path="/clients" element={<AuthGate><lazyPage.ClientsPage /></AuthGate>} />
+        <Route path="/invoicing" element={<AuthGate><lazyPage.InvoicingPage /></AuthGate>} />
+        <Route path="/ledger" element={<AuthGate><lazyPage.RegisterPage /></AuthGate>} />
+        <Route path="/calendar" element={<AuthGate><lazyPage.CalendarPage /></AuthGate>} />
+        <Route path="/expenses" element={<AuthGate><lazyPage.ExpensesPage /></AuthGate>} />
+        <Route path="/settings" element={<AuthGate><lazyPage.SettingsPage /></AuthGate>} />
+        <Route path="/customization" element={<AuthGate><lazyPage.CustomizationPage /></AuthGate>} />
+        <Route path="/help" element={<AuthGate><lazyPage.HelpPage /></AuthGate>} />
+        <Route path="/guide" element={<AuthGate><lazyPage.GuidePage /></AuthGate>} />
+        <Route path="/account" element={<AuthGate><lazyPage.AccountPage /></AuthGate>} />
+        <Route path="/legal" element={<AuthGate><lazyPage.LegalPage /></AuthGate>} />
 
         <Route path="*" element={<NotFoundPage />} />
       </Routes>

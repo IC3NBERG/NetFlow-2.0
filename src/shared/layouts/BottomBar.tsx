@@ -14,7 +14,7 @@ const bottomNavItems = [
   { to: '/calendar', icon: CalendarDays, label: 'Calendario' },
   { to: '/ledger', icon: Archive, label: 'Registro' },
   { to: '/settings', icon: Settings, label: 'Impostazioni' },
-  { to: '/help', icon: LifeBuoy, label: 'Aiuto' },
+  { to: '/help', icon: LifeBuoy, label: 'Aiuto/Contatti' },
 ]
 
 export function BottomBar() {

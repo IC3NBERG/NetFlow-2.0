@@ -62,13 +62,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     localStorage.setItem('fintrack-theme', theme)
     applyThemeClass(theme)
-
-    document.body.classList.add('theme-changing')
-    const timer = setTimeout(
-      () => document.body.classList.remove('theme-changing'),
-      1300,
-    )
-    return () => clearTimeout(timer)
   }, [theme])
 
   useEffect(() => {
@@ -77,8 +70,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
     const handler = () => {
       applyThemeClass('system')
-      document.body.classList.add('theme-changing')
-      setTimeout(() => document.body.classList.remove('theme-changing'), 1300)
     }
 
     mediaQuery.addEventListener('change', handler)
