@@ -8,6 +8,13 @@
 
 ---
 
+## [v0.44.1] - 2026-07-01
+### Stato: Fix posizione form creazione Lavori e Clienti — da Modal a SlideOver
+- **[PATCH] Fix form creazione Lavori:** `JobFormModal` ora usa `SlideOver` invece di `Modal` secondo UI_UX_SPEC 3.5a. Il pannello scorre da destra e mantiene il contesto della pagina sottostante visibile.
+- **[PATCH] Fix form creazione Clienti:** Form in `ClientsPage` ora usa `SlideOver` invece di `Modal`. Pannello laterale fisso a destra con spring animation.
+- **File modificati:** `src/features/jobs/components/JobFormModal.tsx`, `src/features/clients/pages/ClientsPage.tsx`
+- **Build:** `npx tsc --noEmit` — 0 errori. `npm run build` — ✓
+
 ## [v0.44.0] - 2026-07-01
 ### Stato: Brand color cambiato da viola a giallo ocra caldo
 - **[MINOR] Brand Primary cambiato in #C5963A (Ocra Caldo):** Sostituito `--color-brand` in `index.css` (RGB: 108 92 231 → 197 150 58). Aggiornati tutti i riferimenti hardcoded: PWA manifest, theme-color meta, chart default colors, gradienti dashboard, palette colori clienti/eventi, glow effects sidebar/glasscard/shared, store default e localStorage migration.

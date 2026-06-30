@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { GlassCard } from '../../../shared/ui/GlassCard'
 import { Button } from '../../../shared/ui/Button'
 import { Input } from '../../../shared/ui/Input'
-import { Modal } from '../../../shared/ui/Modal'
+import { SlideOver } from '../../../shared/ui/SlideOver'
 import { Toast } from '../../../shared/ui/Toast'
 import { FormSection } from '../../../shared/ui/FormSection'
 import { EmptyState } from '../../../shared/ui/EmptyState'
@@ -264,9 +264,9 @@ export function ClientsPage() {
         </motion.div>
       )}
 
-      <Modal open={isFormOpen} onClose={resetForm} title={editingId ? 'Modifica cliente' : 'Nuovo cliente'}>
+      <SlideOver open={isFormOpen} onClose={resetForm} title={editingId ? 'Modifica cliente' : 'Nuovo cliente'}>
         {formFields}
-      </Modal>
+      </SlideOver>
 
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
     </div>
