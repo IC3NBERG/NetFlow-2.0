@@ -75,7 +75,7 @@ export function Sidebar() {
                   {isActive && (
                     <motion.div
                       layoutId="sidebar-active"
-                      className="absolute inset-0 rounded-full bg-brand shadow-[0_0_20px_rgba(108,92,231,0.35)]"
+                      className="absolute inset-0 rounded-full bg-brand shadow-[0_0_20px_rgba(197,150,58,0.35)]"
                       transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                     />
                   )}
@@ -104,7 +104,7 @@ export function Sidebar() {
               {isActive && (
                 <motion.div
                   layoutId="sidebar-active"
-                  className="absolute inset-0 rounded-full bg-brand shadow-[0_0_20px_rgba(108,92,231,0.35)]"
+                  className="absolute inset-0 rounded-full bg-brand shadow-[0_0_20px_rgba(197,150,58,0.35)]"
                   transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                 />
               )}
@@ -128,7 +128,7 @@ export function Sidebar() {
               {isActive && (
                 <motion.div
                   layoutId="sidebar-active"
-                  className="absolute inset-0 rounded-full bg-brand shadow-[0_0_20px_rgba(108,92,231,0.35)]"
+                  className="absolute inset-0 rounded-full bg-brand shadow-[0_0_20px_rgba(197,150,58,0.35)]"
                   transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                 />
               )}
@@ -152,7 +152,7 @@ export function Sidebar() {
               {isActive && (
                 <motion.div
                   layoutId="sidebar-active"
-                  className="absolute inset-0 rounded-full bg-brand shadow-[0_0_20px_rgba(108,92,231,0.35)]"
+                  className="absolute inset-0 rounded-full bg-brand shadow-[0_0_20px_rgba(197,150,58,0.35)]"
                   transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                 />
               )}

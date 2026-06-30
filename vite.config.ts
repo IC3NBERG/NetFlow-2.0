@@ -33,7 +33,7 @@ export default defineConfig({
         name: 'NetFlow',
         short_name: 'NetFlow',
         description: 'Tracciamento finanziario per professionisti',
-        theme_color: '#6C5CE7',
+        theme_color: '#C5963A',
         background_color: '#0F0F1A',
         display: 'standalone',
         icons: [

@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --color-brand: 108 92 231;
+    --color-brand: 197 150 58;
     --color-surface: 255 255 255;
     --color-surface-alt: 248 249 250;
     --color-text-primary: 26 26 46;
@@ -16,7 +16,7 @@
   }
 
   .dark {
-    --color-brand: 108 92 231;
+    --color-brand: 197 150 58;
     --color-surface: 26 26 46;
     --color-surface-alt: 15 15 26;
     --color-text-primary: 255 255 255;

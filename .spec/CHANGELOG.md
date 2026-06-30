@@ -8,6 +8,12 @@
 
 ---
 
+## [v0.44.0] - 2026-07-01
+### Stato: Brand color cambiato da viola a giallo ocra caldo
+- **[MINOR] Brand Primary cambiato in #C5963A (Ocra Caldo):** Sostituito `--color-brand` in `index.css` (RGB: 108 92 231 → 197 150 58). Aggiornati tutti i riferimenti hardcoded: PWA manifest, theme-color meta, chart default colors, gradienti dashboard, palette colori clienti/eventi, glow effects sidebar/glasscard/shared, store default e localStorage migration.
+- **[PATCH] Old default migration:** Aggiunto `'fintrack-color-brand': '#6c5ce7'` a `OLD_DEFAULTS` in `customization.ts` — se un utente ha ancora il vecchio viola in localStorage, viene automaticamente rimosso al prossimo avvio.
+- **Build:** `npx tsc --noEmit` — 0 errori.
+
 ## [v0.43.2] - 2026-07-01
 ### Stato: Migration fix — RPC esteso spostato in nuova migration (027)
 - **[PATCH] Nuova migration `20260624000004_extend_calendar_rpc.sql`:** La modifica a `get_calendar_events_by_token` (inclusione jobs e invoices nell'ICS feed) era stata applicata direttamente su `20260624000002_calendar_time_and_external.sql` DOPO che questa era già stata deployata sul DB remoto. Creata nuova migration separata contenente solo l'aggiornamento dell'RPC. Migration 025 ripristinata alla versione committed.

@@ -291,7 +291,7 @@ CREATE TABLE tags (
   id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id     uuid NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   name        text NOT NULL,
-  color       text NOT NULL DEFAULT '#6C5CE7',
+  color       text NOT NULL DEFAULT '#C5963A',
   created_at  timestamptz DEFAULT now()
 );
 
@@ -471,7 +471,7 @@ CREATE TABLE custom_events (
   date        date NOT NULL,
   start_time  time,
   end_time    time,
-  color       text NOT NULL DEFAULT '#6C5CE7',
+  color       text NOT NULL DEFAULT '#C5963A',
   created_at  timestamptz DEFAULT now()
 );
 

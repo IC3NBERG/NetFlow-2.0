@@ -43,7 +43,7 @@ export function CalendarPage() {
   const [showForm, setShowForm] = useState(false)
   const [eventTitle, setEventTitle] = useState('')
   const [eventDescription, setEventDescription] = useState('')
-  const [eventColor, setEventColor] = useState('#6C5CE7')
+  const [eventColor, setEventColor] = useState('#C5963A')
   const [eventStartTime, setEventStartTime] = useState('')
   const [eventEndTime, setEventEndTime] = useState('')
   const [calendarToken, setCalendarToken] = useState<string | null>(null)
@@ -165,7 +165,7 @@ export function CalendarPage() {
     })
     setEventTitle('')
     setEventDescription('')
-    setEventColor('#6C5CE7')
+    setEventColor('#C5963A')
     setEventStartTime('')
     setEventEndTime('')
     setShowForm(false)
@@ -507,7 +507,7 @@ export function CalendarPage() {
           <div>
             <label className="block text-sm text-text-secondary mb-1">Colore</label>
             <div className="flex gap-2 flex-wrap">
-              {['#6C5CE7', '#00D2FF', '#00B894', '#FDCB6E', '#FF6B6B', '#FF9FF3', '#54A0FF', '#5F27CD'].map((c) => (
+              {['#C5963A', '#00D2FF', '#00B894', '#FDCB6E', '#FF6B6B', '#FF9FF3', '#54A0FF', '#5F27CD'].map((c) => (
                 <button
                   key={c}
                   type="button"

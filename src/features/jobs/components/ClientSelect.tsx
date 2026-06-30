@@ -88,7 +88,7 @@ export function ClientSelect({ value, onChange, error }: ClientSelectProps) {
             <span className={selected ? 'text-text-primary flex items-center gap-2.5' : 'text-text-secondary/50'}>
               {selected ? (
                 <>
-                  <span className="h-3 w-3 rounded-full shrink-0" style={{ backgroundColor: selected.color ?? '#6C5CE7' }} />
+                  <span className="h-3 w-3 rounded-full shrink-0" style={{ backgroundColor: selected.color ?? '#C5963A' }} />
                   {selected.name}
                 </>
               ) : 'Seleziona cliente'}
@@ -118,7 +118,7 @@ export function ClientSelect({ value, onChange, error }: ClientSelectProps) {
                       <div className="flex items-center gap-2.5">
                         <div
                           className="h-3 w-3 shrink-0 rounded-full ring-2 ring-surface"
-                          style={{ backgroundColor: client.color ?? '#6C5CE7' }}
+                          style={{ backgroundColor: client.color ?? '#C5963A' }}
                         />
                         <div>
                           <p className="font-medium">{client.name}</p>

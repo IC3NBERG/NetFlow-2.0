@@ -97,7 +97,7 @@ function buildSegments(jobs: Job[], regime: TaxRegime, customIrpefRate?: number 
   const cashTotal = [...settled, ...pending].reduce((t, j) => t + j.amount_cash, 0)
 
   return [
-    { label: 'Netto', value: netSettled, color: '#6C5CE7' },
+    { label: 'Netto', value: netSettled, color: '#C5963A' },
     { label: 'Lordo', value: grossTotal, color: '#00D2FF' },
     { label: 'Cash', value: cashTotal, color: '#00B894' },
   ]

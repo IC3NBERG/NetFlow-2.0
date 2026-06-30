@@ -58,16 +58,16 @@ function DefaultIllustration() {
 
       <defs>
         <radialGradient id="blobGradient" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(100 100) rotate(90) scale(80)">
-          <stop stopColor="#6C5CE7" />
+          <stop stopColor="#C5963A" />
           <stop offset="1" stopColor="#00D2FF" stopOpacity="0" />
         </radialGradient>
         <linearGradient id="rectGradient1" x1="60" y1="70" x2="140" y2="120" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#6C5CE7" stopOpacity="0.3" />
+          <stop stopColor="#C5963A" stopOpacity="0.3" />
           <stop offset="1" stopColor="#00D2FF" stopOpacity="0.1" />
         </linearGradient>
         <linearGradient id="rectGradient2" x1="75" y1="90" x2="145" y2="150" gradientUnits="userSpaceOnUse">
           <stop stopColor="#00D2FF" stopOpacity="0.3" />
-          <stop offset="1" stopColor="#6C5CE7" stopOpacity="0.1" />
+          <stop offset="1" stopColor="#C5963A" stopOpacity="0.1" />
         </linearGradient>
       </defs>
     </svg>

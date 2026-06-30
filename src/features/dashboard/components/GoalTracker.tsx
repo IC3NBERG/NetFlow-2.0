@@ -163,7 +163,7 @@ export function GoalTracker({ target, current, metricLabel, goalMetric, segments
         <div className="h-3 w-full rounded-full bg-border overflow-hidden">
           <div
             className="h-full rounded-full transition-all duration-1000 ease-out"
-            style={{ width: `${progress * 100}%`, background: 'linear-gradient(90deg, #6C5CE7, #00D2FF)' }}
+            style={{ width: `${progress * 100}%`, background: 'linear-gradient(90deg, #C5963A, #00D2FF)' }}
           />
         </div>
         <div className="flex justify-between text-xs text-text-secondary">

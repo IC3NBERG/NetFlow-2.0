@@ -22,7 +22,7 @@ interface LineChartProps {
   color?: string
 }
 
-export function LineChart({ data, dataKey, label, color = '#6C5CE7' }: LineChartProps) {
+export function LineChart({ data, dataKey, label, color = '#C5963A' }: LineChartProps) {
   const colors = getChartColors()
 
   const chartData = {

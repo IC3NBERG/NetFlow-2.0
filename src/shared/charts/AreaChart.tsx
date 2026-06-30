@@ -28,9 +28,9 @@ export function AreaChart({ data }: AreaChartProps) {
       {
         label: 'Entrate',
         data: data.map((d) => d.income),
-        borderColor: '#6C5CE7',
+        borderColor: '#C5963A',
         backgroundColor: (ctx: { chart: { ctx: CanvasRenderingContext2D; chartArea: { top: number; bottom: number } } }) => {
-          if (!ctx.chart.chartArea) return '#6C5CE720'
+          if (!ctx.chart.chartArea) return '#C5963A20'
           const gradient = ctx.chart.ctx.createLinearGradient(0, ctx.chart.chartArea.top, 0, ctx.chart.chartArea.bottom)
           gradient.addColorStop(0, 'rgba(108, 92, 231, 0.4)')
           gradient.addColorStop(1, 'rgba(108, 92, 231, 0.02)')

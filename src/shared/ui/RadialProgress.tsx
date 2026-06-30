@@ -18,7 +18,7 @@ export function RadialProgress({
   max,
   size = 120,
   strokeWidth = 8,
-  color = '#6C5CE7',
+  color = '#C5963A',
   label,
   className,
   bgColor = 'var(--color-border)',

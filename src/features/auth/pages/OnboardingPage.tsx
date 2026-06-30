@@ -94,7 +94,7 @@ export function OnboardingPage() {
           target: data.financialGoal,
           metric: data.goalMetric,
           segments: [
-            { label: 'Netto', value: 0, color: '#6C5CE7' },
+            { label: 'Netto', value: 0, color: '#C5963A' },
             { label: 'Lordo', value: 0, color: '#00D2FF' },
             { label: 'Cash', value: 0, color: '#00B894' },
           ],
@@ -117,7 +117,7 @@ export function OnboardingPage() {
           target: data.financialGoal,
           metric: data.goalMetric,
           segments: [
-            { label: 'Netto', value: 0, color: '#6C5CE7' },
+            { label: 'Netto', value: 0, color: '#C5963A' },
             { label: 'Lordo', value: 0, color: '#00D2FF' },
             { label: 'Cash', value: 0, color: '#00B894' },
           ],

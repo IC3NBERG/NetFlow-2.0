@@ -28,7 +28,7 @@ export function ClientsPage() {
   const [fiscalCode, setFiscalCode] = useState('')
   const [address, setAddress] = useState('')
   const [notes, setNotes] = useState('')
-  const [color, setColor] = useState('#6C5CE7')
+  const [color, setColor] = useState('#C5963A')
 
   function resetForm() {
     setName('')
@@ -38,7 +38,7 @@ export function ClientsPage() {
     setFiscalCode('')
     setAddress('')
     setNotes('')
-    setColor('#6C5CE7')
+    setColor('#C5963A')
     setEditingId(null)
     setIsFormOpen(false)
   }
@@ -56,7 +56,7 @@ export function ClientsPage() {
     setFiscalCode(client.fiscal_code ?? '')
     setAddress(client.address ?? '')
     setNotes(client.notes ?? '')
-    setColor(client.color ?? '#6C5CE7')
+    setColor(client.color ?? '#C5963A')
     setEditingId(client.id)
     setIsFormOpen(true)
   }
@@ -144,7 +144,7 @@ export function ClientsPage() {
           <div>
             <label className="block text-sm text-text-secondary mb-1">Colore</label>
             <div className="flex flex-wrap gap-2">
-              {['#6C5CE7', '#00D2FF', '#00B894', '#FF6B6B', '#F59E0B', '#FD79A8', '#A29BFE', '#636E72'].map((c) => (
+              {['#C5963A', '#00D2FF', '#00B894', '#FF6B6B', '#F59E0B', '#FD79A8', '#A29BFE', '#636E72'].map((c) => (
                 <button
                   key={c}
                   type="button"
@@ -226,7 +226,7 @@ export function ClientsPage() {
                   <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
                     <div
                       className="flex h-8 w-8 md:h-10 md:w-10 shrink-0 items-center justify-center rounded-full font-bold text-xs md:text-sm text-white"
-                      style={{ backgroundColor: client.color ?? '#6C5CE7' }}
+                      style={{ backgroundColor: client.color ?? '#C5963A' }}
                     >
                       {client.name.charAt(0).toUpperCase()}
                     </div>

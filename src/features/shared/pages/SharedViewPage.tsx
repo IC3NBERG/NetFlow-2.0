@@ -78,7 +78,7 @@ function StatCard({ stat }: { stat: StatCard }) {
   return (
     <motion.div
       variants={itemVariants}
-      className="group relative overflow-hidden rounded-[1.5rem] bg-surface/60 backdrop-blur-3xl border border-border p-5 transition-all duration-300 hover:bg-surface/80 hover:scale-[1.02] hover:shadow-[0_8px_40px_rgba(108,92,231,0.08)]"
+      className="group relative overflow-hidden rounded-[1.5rem] bg-surface/60 backdrop-blur-3xl border border-border p-5 transition-all duration-300 hover:bg-surface/80 hover:scale-[1.02] hover:shadow-[0_8px_40px_rgba(197,150,58,0.08)]"
     >
       <div className={`absolute right-0 top-0 h-24 w-24 -translate-y-6 translate-x-6 rounded-full opacity-[0.08] transition-opacity duration-300 group-hover:opacity-[0.12] ${stat.bgColor}`} />
       <div className="relative">
@@ -139,7 +139,7 @@ function LoadingScreen() {
   return (
     <div className="relative flex min-h-screen items-center justify-center bg-surface-alt overflow-hidden">
       <div className="pointer-events-none fixed inset-0">
-        <div className="absolute -left-32 -top-32 h-[600px] w-[600px] rounded-full bg-[rgba(108,92,231,0.12)] blur-[120px] animate-pulse" />
+        <div className="absolute -left-32 -top-32 h-[600px] w-[600px] rounded-full bg-[rgba(197,150,58,0.12)] blur-[120px] animate-pulse" />
         <div className="absolute -bottom-32 -right-32 h-[500px] w-[500px] rounded-full bg-[rgba(0,210,255,0.06)] blur-[100px] animate-pulse" style={{ animationDelay: '1s' }} />
       </div>
       <div className="relative flex flex-col items-center gap-6">
@@ -300,9 +300,9 @@ export function SharedViewPage() {
     <div className="relative min-h-screen bg-surface-alt overflow-hidden">
       {/* Ambient light orbs */}
       <div className="pointer-events-none fixed inset-0">
-        <div className="absolute -left-48 -top-48 h-[700px] w-[700px] rounded-full bg-[rgba(108,92,231,0.1)] blur-[120px] animate-pulse" style={{ animationDuration: '8s' }} />
+        <div className="absolute -left-48 -top-48 h-[700px] w-[700px] rounded-full bg-[rgba(197,150,58,0.1)] blur-[120px] animate-pulse" style={{ animationDuration: '8s' }} />
         <div className="absolute -bottom-48 -right-48 h-[600px] w-[600px] rounded-full bg-[rgba(0,210,255,0.05)] blur-[100px] animate-pulse" style={{ animationDuration: '10s', animationDelay: '1s' }} />
-        <div className="absolute left-1/2 top-2/3 h-[400px] w-[400px] -translate-x-1/2 rounded-full bg-[rgba(108,92,231,0.03)] blur-[80px] animate-pulse" style={{ animationDuration: '6s', animationDelay: '2s' }} />
+        <div className="absolute left-1/2 top-2/3 h-[400px] w-[400px] -translate-x-1/2 rounded-full bg-[rgba(197,150,58,0.03)] blur-[80px] animate-pulse" style={{ animationDuration: '6s', animationDelay: '2s' }} />
       </div>
 
       {/* Header */}
