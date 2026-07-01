@@ -15,18 +15,12 @@ Cose da fare, rimandate a dopo.
 - Necessario per:
   - Email di conferma registrazione
   - Email di reset password
-  - Notifiche
+  - Notifiche email
 
 ## Deploy
 - Hosting attivo su Cloudflare Pages (auto-deploy da GitHub main)
 - Build: `npm run build` → `dist/`
 - PWA: Service Worker, manifest, caching funzionanti in produzione
-
-## SMTP
-- Da configurare su Supabase (Gmail / SendGrid / Mailtrap)
-- Necessario per:
-  - Email di conferma registrazione
-  - Email di reset password
 
 ## Test con utenti reali
 - Login email/password

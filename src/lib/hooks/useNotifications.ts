@@ -36,6 +36,8 @@ export function useUnreadNotificationCounts() {
     },
     staleTime: 1000 * 15,
     refetchInterval: 1000 * 30,
+    retry: 3,
+    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
   })
 }
 

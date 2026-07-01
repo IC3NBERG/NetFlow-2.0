@@ -8,6 +8,38 @@
 
 ---
 
+## [v0.44.14] - 2026-07-01
+
+### Docs — allineati tutti i .spec/ alla versione corrente
+- **[PATCH] README.md:** Versione 0.44.13, Tailwind CSS 3 (non 4), rotte complete con /customization, /help, /guide, /account, /legal, /notifications, comandi aggiornati, documentazione ampliata.
+- **[PATCH] ARCHITECTURE.md:** Rimosso tags/ dal project structure, aggiunti customization/, help/, notifications/. Hook note svecchiate (rimosso "Nuove hook (v0.40.1)"). Sezioni 3.6 duplicate rinumerate. Page transition aggiornata a eager-loaded. Theme transition aggiornata (rimosso rimbalzo v0.44.2). Section number 3.6, 3.6 → 3.8, 3.9. Stack Tailwind 4 → 3.
+- **[PATCH] PRD.md:** Rimossa sezione 4.9 Tag (funzionalità eliminata in v0.36.0).
+- **[PATCH] SCHEMA.md:** Rimossi tipi TypeScript Tag, JobTag, ExpenseTag (non più in codebase).
+- **[PATCH] PROCESS_AND_AGENTS.md:** Tabella priorità aggiornata con tutte le feature realizzate (notifiche, condivisione premium, personalizzazione, help, legal, ICS feed, retry esponenziale).
+- **[PATCH] COMMANDS.md:** Typo fix "Supabasenon" → "Supabase non".
+- **[PATCH] IN_ATTESA.md:** Rimosso blocco SMTP duplicato.
+
+### UI — animazione sidebar collapse/expand con spring physics
+- **[PATCH] Sidebar.tsx:** Sostituita transizione CSS width con `motion.aside` e spring physics (stiffness 280, damping 24) per animazione fluida della larghezza tra modalità full/icons/hidden.
+- **[PATCH] Sidebar.tsx:** Animate le label di tutti i nav item, logo "NetFlow", e label secondarie (Personalizza, Impostazioni, Aiuto/Contatti, Esci) con fade + width tramite `motion.span` durante il cambio modalità.
+- **[PATCH] Sidebar.tsx:** Aggiunta tooltip (`title`) ai nav item in modalità icone per migliorare usabilità.
+- **[PATCH] Sidebar.tsx:** Animato floating toggle button con `AnimatePresence` (spring fade + scale + slide).
+- **[PATCH] Sidebar.tsx:** Animata versione testuale ("NetFlow vX.X.X") con `AnimatePresence` fade + height.
+- **[PATCH] MainLayout.tsx:** Allineata transizione margine contenuto a `cubic-bezier(0.16,1,0.3,1)` per coerenza con specifica UI/UX (Material Design emphasized deceleration).
+- **[PATCH] Sidebar.tsx:** Rimosso import `AnimatePresence` inutilizzato (fix TSC).
+- **File modificati:** `README.md`, `.spec/ARCHITECTURE.md`, `.spec/PRD.md`, `.spec/SCHEMA.md`, `.spec/PROCESS_AND_AGENTS.md`, `.spec/COMMANDS.md`, `.spec/IN_ATTESA.md`, `.spec/CHANGELOG.md`, `src/shared/layouts/Sidebar.tsx`
+- **Build:** `npx tsc --noEmit` — 0 errori. `npm run build` — ✓
+
+## [v0.44.13] - 2026-07-01
+
+### Realtime — retry esponenziale su WebSocket fallito, silencing errori console
+- **[PATCH] useRealtimeSync / useRealtimeNotifications:** Aggiunto retry con backoff esponenziale (2s, 4s, 8s, … max 30s, fino a 10 tentativi) su fallimento WebSocket Supabase. Il warning console viene emesso solo al primo errore e alla rinuncia finale, non a ogni retry.
+- **[PATCH] useNotifications (useUnreadNotificationCounts):** Aggiunto `retry: 3` con backoff esponenziale alla query TanStack per evitare errori di rete temporanei.
+- **File modificati:** `src/lib/hooks/useRealtimeSync.ts`, `src/lib/hooks/useRealtimeNotifications.ts`, `src/lib/hooks/useNotifications.ts`
+- **Root cause:** Il client Supabase tentava la connessione WebSocket una volta sola; su fallimento (es. progetto in pausa o rete assente) generava warning a ogni tentativo fallito del socket sottostante. `useUnreadNotificationCounts` non ritentava.
+- **Scenari coperti:** 2.1 (sync offline), messaggi console puliti
+- **Build:** `npx tsc --noEmit` — verificare.
+
 ## [v0.44.12] - 2026-07-01
 
 ### Sidebar — toggle solo in basso (freccia), floating button in basso

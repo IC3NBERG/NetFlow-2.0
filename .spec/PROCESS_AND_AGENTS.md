@@ -87,24 +87,27 @@ Ogni volta che un agente completa un task di codifica, deve obbligatoriamente:
 | Priorità | Feature | Stato |
 |----------|---------|-------|
 | ✅ P0 | Auth (email/password) | Fatto |
+| ✅ P0 | Auth callback post-conferma (PKCE) | Fatto |
 | ✅ P0 | Onboarding wizard | Fatto |
 | ✅ P0 | Schema DB + migrazioni | Fatto |
 | ✅ P1 | Dashboard (KPI + ProgressRings + grafici) | Fatto |
 | ✅ P1 | Lavori CRUD con pagamento misto | Fatto |
 | ✅ P1 | Clienti (rubrica) | Fatto |
-| ✅ P2 | Preventivi (quotes) con auto-generazione | Fatto |
-| ✅ P2 | Fatturazione (raggruppa lavori) | Fatto |
+| ✅ P1 | Preventivi (quotes) con auto-generazione e calcolo fiscale | Fatto |
+| ✅ P2 | Fatturazione (raggruppa lavori, QR EPC, PDF con dati cliente) | Fatto |
 | ✅ P2 | Registro (ledger con statistiche) | Fatto |
 | ✅ P2 | Uscite (expenses) | Fatto |
-| ✅ P2 | Impostazioni (backup, sync, tema, audit) | Fatto |
+| ✅ P2 | Impostazioni (backup, sync, tema, audit, notifiche) | Fatto |
+| ✅ P2 | Personalizzazione sidebar, colori, tema | Fatto |
+| ✅ P2 | Centro Aiuto/FAQ con contatti | Fatto |
 | ✅ P3 | Guida Fiscale | Fatto |
 | ✅ P3 | PWA (offline, installabile) | Fatto |
-| ✅ P3 | Sync cross-device (Realtime) | Fatto |
-| ✅ P3 | Calendario eventi personalizzati | Fatto |
-| ✅ P3 | Tag per lavori/spese | Fatto |
-| ⬜ | Condivisione pubblica commercialista | Fatto |
+| ✅ P3 | Sync cross-device (Realtime + retry esponenziale) | Fatto |
+| ✅ P3 | Calendario eventi personalizzati (+ ICS feed esterno) | Fatto |
+| ✅ P3 | Notifiche (8 categorie, realtime, OS, suono, favicon badge) | Fatto |
+| ✅ P3 | Condivisione pubblica commercialista (premium) | Fatto |
+| ✅ P3 | Legal/GDPR pages | Fatto |
 | ⬜ | Google OAuth | In attesa |
-| ✅ | Fattura PDF export con QR e dati cliente | Fatto |
 
 ---
 

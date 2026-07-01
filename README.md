@@ -2,11 +2,11 @@
 
 Applicazione contabile PWA per professionisti. Traccia lavori, entrate/uscite, genera fatture/parcelle e fornisce una dashboard finanziaria con sincronizzazione offline-first.
 
-**Versione:** 0.33.x
+**Versione:** 0.44.13
 
 ## Tech Stack
 
-- **Frontend:** React 19 + TypeScript (strict), Vite 6, Tailwind CSS 4, Framer Motion
+- **Frontend:** React 19 + TypeScript (strict), Vite 6, Tailwind CSS 3, Framer Motion
 - **Backend:** Supabase (PostgreSQL, Auth, Realtime, Storage, RLS)
 - **State:** TanStack Query, Zustand, React Hook Form + Zod
 - **Design:** Futuristic Modular Glassmorphism
@@ -33,17 +33,20 @@ npm run dev
 | `npm run dev` | Server sviluppo (localhost:5173) |
 | `npm run build` | Build produzione |
 | `npm run preview` | Preview build produzione |
-| `npm run lint` | Linting |
+| `npm run lint` | Linting (include version check) |
 | `npx tsc --noEmit` | Type check |
 | `npm run test` | Test unitari (Vitest) |
+| `npm run test:watch` | Test unitari in watch mode |
 | `npm run test:e2e` | Test E2E (Playwright) |
-| `npm run deploy` | Deploy su Cloudflare Pages |
+| `npm run test:e2e:ui` | Test E2E con UI mode |
+| `npm run deploy` | Build + deploy su Cloudflare Pages |
 
 ## Rotta pubbliche
 
 | Percorso | Descrizione |
 |---|---|
-| `/` | Dashboard con KPI, grafici, stato attività |
+| `/` | Redirect alla home (prima voce sidebar) |
+| `/dashboard` | Dashboard con KPI, grafici, stato attività |
 | `/jobs` | Lavori (filtri per metodo/stato) |
 | `/clients` | Rubrica clienti |
 | `/quotes` | Preventivi con conversione 1-click in lavoro |
@@ -52,7 +55,14 @@ npm run dev
 | `/calendar` | Calendario eventi personalizzati |
 | `/ledger` | Registro contabile |
 | `/settings` | Impostazioni profilo, tema, backup |
+| `/customization` | Personalizzazione sidebar, colori, tema |
+| `/help` | Centro Aiuto con FAQ e contatti |
+| `/guide` | Guida fiscale informativa |
+| `/account` | Profilo, logo, template fatture |
+| `/legal` | Privacy, cookie policy, termini |
+| `/notifications` | Centro notifiche completo |
 | `/shared/:token` | Pagina pubblica read-only per commercialista |
+| `/auth/callback` | Callback post-conferma email |
 
 ## Documentazione
 
@@ -63,6 +73,7 @@ Tutta la documentazione di progetto è in `.spec/`:
 - [Schema DB](.spec/SCHEMA.md) — Database, RLS, tipi TypeScript
 - [UI/UX](.spec/UI_UX_SPEC.md) — Design system glassmorphism, responsive
 - [Processo](.spec/PROCESS_AND_AGENTS.md) — Multi-agent orchestration
+- [Comandi](.spec/COMMANDS.md) — Setup, test, deploy
 - [Debug & Repair](.spec/DEBUG_AND_REPAIR.md) — Manutenzione e recovery
 - [Changelog](.spec/CHANGELOG.md) — Storico versioni
 - [In attesa](.spec/IN_ATTESA.md) — Roadmap e backlog

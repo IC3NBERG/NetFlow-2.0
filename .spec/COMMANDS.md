@@ -49,7 +49,7 @@ VITE_SUPABASE_URL=https://zkbyuhxnrehybkuaezte.supabase.co  # URL progetto Supab
 VITE_SUPABASE_ANON_KEY=your-anon-key                         # Chiave anonima Supabase
 VITE_GOOGLE_CLIENT_ID=your-google-client-id                  # Client ID Google OAuth (non usato)
 ```
-> **Nota:** Le credenziali Supabasenon vanno mai committate. Il file `.env` è in `.gitignore`.
+> **Nota:** Le credenziali Supabase non vanno mai committate. Il file `.env` è in `.gitignore`.
 
 ## 7. Troubleshooting PWA
 Se la PWA mostra dati vecchi o non si aggiorna:

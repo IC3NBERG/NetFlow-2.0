@@ -79,7 +79,7 @@
 ### 2.4 Transizioni
 - **Cambio pagina (v0.44.5):** Tutte le pagine sono caricate eager (no `React.lazy()`). Il cambio pagina è istantaneo — il componente della nuova pagina è già in memoria. `key`-based `motion.div` con spring entrance (`initial: opacity 0 + y: 24 + scale: 0.97`, `animate: opacity 1 + y: 0 + scale: 1`). Effetto "sollevamento" premium. Nessuna exit animation — React smonta la vecchia pagina immediatamente e monta la nuova. Spring physics: `stiffness: 280, damping: 24, mass: 1.1`.
 - **Nessun loading spinner:** Non esiste più `PageLoader` come fallback di navigazione. Lo stato `isLoading` dell'auth check iniziale rende `null` per un brevissimo istante (tipicamente <100ms).
-- **Sidebar:** `transition-all duration-300 ease-out` + animazione spring con Framer Motion `layoutId` per il pill di navigazione attivo (`stiffness 380, damping 30`). Il pill (`bg-brand`) scivola fluidamente tra le voci al cambio tab.
+- **Sidebar:** `motion.aside` con spring physics (`stiffness: 280, damping: 24`) per l'animazione della larghezza tra modalità full (240px), icone (72px) e nascosta (0px). Label testuali animate con fade + width (`duration: 0.2s, ease: easeOut`). Active pill con Framer Motion `layoutId` (`stiffness 380, damping 30`). Il pill (`bg-brand`) scivola fluidamente tra le voci al cambio tab. Tooltip su ogni nav item in modalità icone.
 - **Sidebar active glow (v0.41.1):** `box-shadow: 0 0 20px rgba(197,150,58,0.35)` sul pill attivo per effetto glow che segue lo slide.
 - **Moduli Dashboard:** `initial={{ opacity: 0, scale: 0.9 }}` con Framer Motion per simulare caricamento OS futuristico.
 - **Dashboard ingresso pagina:** `fade + scale(0.97 → 1)` con titolo che scende dall'alto (`y: -8 → 0`, delay 0.05s).

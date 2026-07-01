@@ -61,19 +61,24 @@ export function Sidebar() {
     <>
       {/* Floating toggle when sidebar is hidden */}
       {isHidden && (
-        <button
+        <motion.button
+          initial={{ opacity: 0, scale: 0.8, x: -20 }}
+          animate={{ opacity: 1, scale: 1, x: 0 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 25 }}
           onClick={() => setSidebarMode('full')}
           className="fixed left-3 bottom-6 z-50 hidden md:flex items-center justify-center h-9 w-9 rounded-full bg-surface/80 backdrop-blur-xl border border-border text-text-secondary hover:text-text-primary hover:bg-surface transition-all shadow-lg"
           title="Espandi sidebar"
         >
           <ChevronRight className="h-5 w-5" />
-        </button>
+        </motion.button>
       )}
 
-      <aside
+      <motion.aside
+        animate={{ width: isHidden ? 0 : isIcons ? 72 : 240 }}
+        transition={{ type: 'spring', stiffness: 280, damping: 24, mass: 1 }}
         className={cn(
-          'fixed left-0 top-0 z-40 hidden h-screen flex-col bg-surface/60 backdrop-blur-xl transition-all duration-300 ease-out md:flex overflow-hidden',
-          isHidden ? 'w-0 border-r-0' : isIcons ? 'w-[72px] border-r border-border' : 'w-[240px] border-r border-border',
+          'fixed left-0 top-0 z-40 hidden h-screen flex-col bg-surface/60 backdrop-blur-xl md:flex overflow-hidden',
+          isHidden ? 'border-r-0' : 'border-r border-border',
         )}
       >
         <div className={cn(
@@ -86,7 +91,14 @@ export function Sidebar() {
           ) : (
             <div className="flex items-center gap-3">
               <Logo />
-              <span className="text-xl font-bold whitespace-nowrap">NetFlow</span>
+              <motion.span
+                initial={false}
+                animate={{ opacity: isIcons ? 0 : 1, width: isIcons ? 0 : 'auto' }}
+                transition={{ duration: 0.2, ease: 'easeOut' }}
+                className="text-xl font-bold overflow-hidden whitespace-nowrap"
+              >
+                NetFlow
+              </motion.span>
             </div>
           )}
         </div>
@@ -101,6 +113,7 @@ export function Sidebar() {
               <NavLink to={item.to} className="block">
                 {({ isActive }) => (
                   <div
+                    title={isIcons ? item.label : undefined}
                     className={cn(
                       'relative flex items-center rounded-full text-sm font-medium transition-colors duration-300',
                       isIcons ? 'justify-center p-2.5' : 'gap-3 px-4 py-3',
@@ -118,7 +131,14 @@ export function Sidebar() {
                     )}
                     <span className={cn('relative z-10 flex items-center', isIcons ? '' : 'gap-3')}>
                       <item.icon className="h-5 w-5 shrink-0" />
-                      {!isIcons && item.label}
+                      <motion.span
+                        initial={false}
+                        animate={{ opacity: isIcons ? 0 : 1, width: isIcons ? 0 : 'auto' }}
+                        transition={{ duration: 0.2, ease: 'easeOut' }}
+                        className="overflow-hidden whitespace-nowrap"
+                      >
+                        {item.label}
+                      </motion.span>
                     </span>
                   </div>
                 )}
@@ -133,6 +153,7 @@ export function Sidebar() {
               <NavLink to="/customization" className="block">
                 {({ isActive }) => (
                   <div
+                    title={isIcons ? 'Personalizza' : undefined}
                     className={cn(
                       'relative flex items-center rounded-full text-sm font-medium transition-colors duration-300',
                       isIcons ? 'justify-center p-2.5' : 'gap-3 px-4 py-3',
@@ -150,7 +171,14 @@ export function Sidebar() {
                     )}
                     <span className={cn('relative z-10 flex items-center', isIcons ? '' : 'gap-3')}>
                       <Sliders className="h-5 w-5 shrink-0" />
-                      {!isIcons && 'Personalizza'}
+                      <motion.span
+                        initial={false}
+                        animate={{ opacity: isIcons ? 0 : 1, width: isIcons ? 0 : 'auto' }}
+                        transition={{ duration: 0.2, ease: 'easeOut' }}
+                        className="overflow-hidden whitespace-nowrap"
+                      >
+                        Personalizza
+                      </motion.span>
                     </span>
                   </div>
                 )}
@@ -158,6 +186,7 @@ export function Sidebar() {
               <NavLink to="/settings" className="block">
                 {({ isActive }) => (
                   <div
+                    title={isIcons ? 'Impostazioni' : undefined}
                     className={cn(
                       'relative flex items-center rounded-full text-sm font-medium transition-colors duration-300',
                       isIcons ? 'justify-center p-2.5' : 'gap-3 px-4 py-3',
@@ -175,7 +204,14 @@ export function Sidebar() {
                     )}
                     <span className={cn('relative z-10 flex items-center', isIcons ? '' : 'gap-3')}>
                       <Settings className="h-5 w-5 shrink-0" />
-                      {!isIcons && 'Impostazioni'}
+                      <motion.span
+                        initial={false}
+                        animate={{ opacity: isIcons ? 0 : 1, width: isIcons ? 0 : 'auto' }}
+                        transition={{ duration: 0.2, ease: 'easeOut' }}
+                        className="overflow-hidden whitespace-nowrap"
+                      >
+                        Impostazioni
+                      </motion.span>
                     </span>
                   </div>
                 )}
@@ -183,6 +219,7 @@ export function Sidebar() {
               <NavLink to="/help" className="block">
                 {({ isActive }) => (
                   <div
+                    title={isIcons ? 'Aiuto/Contatti' : undefined}
                     className={cn(
                       'relative flex items-center rounded-full text-sm font-medium transition-colors duration-300',
                       isIcons ? 'justify-center p-2.5' : 'gap-3 px-4 py-3',
@@ -200,7 +237,14 @@ export function Sidebar() {
                     )}
                     <span className={cn('relative z-10 flex items-center', isIcons ? '' : 'gap-3')}>
                       <LifeBuoy className="h-5 w-5 shrink-0" />
-                      {!isIcons && 'Aiuto/Contatti'}
+                      <motion.span
+                        initial={false}
+                        animate={{ opacity: isIcons ? 0 : 1, width: isIcons ? 0 : 'auto' }}
+                        transition={{ duration: 0.2, ease: 'easeOut' }}
+                        className="overflow-hidden whitespace-nowrap"
+                      >
+                        Aiuto/Contatti
+                      </motion.span>
                     </span>
                   </div>
                 )}
@@ -215,9 +259,17 @@ export function Sidebar() {
                 'flex w-full items-center rounded-full text-sm font-medium text-text-secondary hover:bg-expense/10 hover:text-expense transition-all duration-200',
                 isIcons ? 'justify-center p-2.5' : 'gap-3 px-4 py-3',
               )}
+              title={isIcons ? 'Esci' : undefined}
             >
               <LogOut className="h-5 w-5 shrink-0" />
-              {!isIcons && 'Esci'}
+              <motion.span
+                initial={false}
+                animate={{ opacity: isIcons ? 0 : 1, width: isIcons ? 0 : 'auto' }}
+                transition={{ duration: 0.2, ease: 'easeOut' }}
+                className="overflow-hidden whitespace-nowrap"
+              >
+                Esci
+              </motion.span>
             </button>
           )}
 
@@ -235,10 +287,12 @@ export function Sidebar() {
           )}
 
           {!isHidden && !isIcons && (
-            <p className="px-4 text-xs text-text-secondary">NetFlow v{__APP_VERSION__}</p>
+            <p className="px-4 text-xs text-text-secondary">
+              NetFlow v{__APP_VERSION__}
+            </p>
           )}
         </div>
-      </aside>
+      </motion.aside>
     </>
   )
 }

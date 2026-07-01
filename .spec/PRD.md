@@ -108,12 +108,7 @@ balance         = net_settled - total_expenses
 - Statistiche in 5 KPI: Totale lavori, Totale incassato, Media per lavoro, in attesa, media tempi.
 - Filtri per data, metodo, stato. Paginazione.
 
-### 4.9 Tag
-- CRUD tag con nome e colore.
-- Associabili a lavori (job_tags) e spese (expense_tags).
-- Filtraggio per tag.
-
-### 4.10 Condivisione (Shared View — Premium)
+### 4.9 Condivisione (Shared View — Premium)
 - Pagina pubblica `/shared/:token` read-only per commercialista con design premium: ambient light orbs, animazioni stagger, glassmorphism, riepilogo finanziario.
 - Token temporaneo con scadenza configurabile (7/30/90 giorni o mai).
 - Protezione password opzionale con hash lato DB.
@@ -124,7 +119,7 @@ balance         = net_settled - total_expenses
 - Sezioni espandibili/collassabili con conteggio e "Mostra tutti" per oltre 5 items.
 - Mostra dashboard KPIs, riepilogo finanziario, lavori, fatture, preventivi, clienti, uscite.
 
-### 4.11 Guida Fiscale
+### 4.10 Guida Fiscale
 - Sezione informativa basata sul regime fiscale scelto.
 - Spiega aliquote, scadenze, adempimenti.
 

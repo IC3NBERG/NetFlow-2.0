@@ -50,7 +50,7 @@ export function MainLayout({ children }: { children?: ReactNode }) {
       <Sidebar />
       <div className={cn(
           sidebarMode === 'full' ? 'md:ml-[240px]' : sidebarMode === 'icons' ? 'md:ml-[72px]' : 'md:ml-0',
-          'ml-0 pb-20 md:pb-0 transition-all duration-300 ease-out',
+          'ml-0 pb-20 md:pb-0 transition-[margin-left] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]',
         )}>
         <header className="sticky top-0 z-30 flex items-center justify-between bg-gradient-to-b from-surface-alt via-surface-alt/70 to-surface-alt/0 backdrop-blur-xl px-4 md:px-6 lg:px-8 py-3 md:py-4 header-blur-edge">
           <div className="flex items-center gap-4">
