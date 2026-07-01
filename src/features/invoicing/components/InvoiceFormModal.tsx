@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { SlideOver } from '../../../shared/ui/SlideOver'
+import { Modal } from '../../../shared/ui/Modal'
 import { Input } from '../../../shared/ui/Input'
 import { FormSection } from '../../../shared/ui/FormSection'
 import { Button } from '../../../shared/ui/Button'
@@ -46,7 +46,7 @@ export function InvoiceFormModal({ open, onClose, selectedJobs, onSubmit, isSubm
   const netAmount = grossTotal - taxAmount
 
   return (
-    <SlideOver open={open} onClose={onClose} title="Nuova Fattura">
+    <Modal open={open} onClose={onClose} title="Nuova Fattura" className="max-w-lg">
       <form onSubmit={handleSubmit(onSubmit)} className="w-full">
         <FormSection title="Tipo Documento">
           <div>
@@ -136,6 +136,6 @@ export function InvoiceFormModal({ open, onClose, selectedJobs, onSubmit, isSubm
           </Button>
         </div>
       </form>
-    </SlideOver>
+    </Modal>
   )
 }

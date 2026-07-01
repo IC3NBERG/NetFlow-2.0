@@ -8,6 +8,23 @@
 
 ---
 
+## [v0.44.11] - 2026-07-01
+
+### Form fattura da SlideOver a Modal centrato
+- **[PATCH] InvoiceFormModal:** Sostituito `SlideOver` (pannello laterale) con `Modal` centrato — la creazione fattura ora appare al centro della pagina invece che scorrere da destra
+- **File modificati:** `src/features/invoicing/components/InvoiceFormModal.tsx`
+- **Build:** `npx tsc --noEmit` — 0 errori.
+
+### Sidebar a 3 stati — full / icone / nascosta
+- **[MINOR] Sidebar 3-state:** La sidebar ora può essere ciclata tra 3 modalità tramite pulsante toggle in fondo:
+  - **Full (280px):** layout normale con icone e label
+  - **Icone (72px):** solo icone, label nascoste, voci centrate
+  - **Nascosta (0px):** sidebar completamente nascosta, contenuto a tutto schermo
+- **[MINOR] useUIStore:** Nuovo store Zustand (`src/lib/stores/ui.ts`) con stato `sidebarMode` persistito su localStorage, con funzione `cycleSidebarMode()` che cicla full→icons→hidden→full
+- **[PATCH] MainLayout:** Margine sinistro dinamico in base a `sidebarMode` con transizione fluida
+- **File modificati:** `src/lib/stores/ui.ts` (nuovo), `src/shared/layouts/Sidebar.tsx`, `src/shared/layouts/MainLayout.tsx`
+- **Build:** `npx tsc --noEmit` — 0 errori. `npm run build` — OK.
+
 ## [v0.44.10] - 2026-07-01
 ### Ristrutturazione form lavori e preventivi — Dati Fiscali dinamici per contanti/misto
 - **[MINOR] JobFormModal:** Il form creazione lavori ora mostra i campi "Dati Fiscali" in base al metodo di pagamento:

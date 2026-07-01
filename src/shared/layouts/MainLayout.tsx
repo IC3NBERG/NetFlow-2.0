@@ -19,11 +19,13 @@ import { CommandPalette } from '../../shared/ui/CommandPalette'
 import { cn } from '../../lib/utils'
 import { Info, Search, Shield } from 'lucide-react'
 import type { ReactNode } from 'react'
+import { useUIStore } from '../../lib/stores/ui'
 
 export function MainLayout({ children }: { children?: ReactNode }) {
   const { isOnline, queueLength, isSyncing, syncStatus } = useSync()
   const navigate = useNavigate()
   const location = useLocation()
+  const sidebarMode = useUIStore((s) => s.sidebarMode)
   useRealtimeSync()
   useRealtimeNotifications()
   useNewNotificationTracker()
@@ -46,7 +48,10 @@ export function MainLayout({ children }: { children?: ReactNode }) {
       <SyncBanner />
       <BackupReminder />
       <Sidebar />
-      <div className="lg:ml-[280px] md:ml-[72px] ml-0 pb-20 md:pb-0">
+      <div className={cn(
+          sidebarMode === 'full' ? 'md:ml-[280px]' : sidebarMode === 'icons' ? 'md:ml-[72px]' : 'md:ml-0',
+          'ml-0 pb-20 md:pb-0 transition-all duration-300 ease-out',
+        )}>
         <header className="sticky top-0 z-30 flex items-center justify-between bg-gradient-to-b from-surface-alt via-surface-alt/70 to-surface-alt/0 backdrop-blur-xl px-4 md:px-6 lg:px-8 py-3 md:py-4 header-blur-edge">
           <div className="flex items-center gap-4">
             <div className="hidden md:block">
