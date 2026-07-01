@@ -11,6 +11,7 @@ const defaultNotificationPreferences: Record<NotificationCategory, boolean> = {
   quote: true,
   expense: true,
   system: true,
+  message: true,
 }
 
 export function useUserSettings() {

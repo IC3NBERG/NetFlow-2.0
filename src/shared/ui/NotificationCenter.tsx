@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Bell, AlertTriangle, Calendar, CheckCheck, X,
-  Download, RefreshCw, Goal, FileText, TrendingUp,
+  Download, RefreshCw, Goal, FileText, TrendingUp, MessageCircle,
 } from 'lucide-react'
 import { cn } from '../../lib/utils'
 import { useJobs } from '../../lib/hooks/useJobs'
@@ -31,6 +31,7 @@ const categoryConfig: Record<NotificationCategory, { icon: typeof Bell; color: s
   quote: { icon: FileText, color: 'text-brand/70', label: 'Preventivi' },
   expense: { icon: TrendingUp, color: 'text-expense', label: 'Spese' },
   system: { icon: Bell, color: 'text-text-secondary', label: 'Sistema' },
+  message: { icon: MessageCircle, color: 'text-brand', label: 'Messaggi' },
 }
 
 type FilterMode = 'all' | NotificationCategory
