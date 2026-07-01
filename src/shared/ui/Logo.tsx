@@ -18,9 +18,9 @@ export function Logo({ variant = 'icon', className }: LogoProps) {
 
   return (
     <img
-      src="/logo.jpg"
-      alt="NetFlow"
-      className={cn('h-10 w-10 object-contain rounded-xl', className)}
+        src="/logo-icon.png"
+        alt="NetFlow"
+        className={cn('h-10 w-10 object-contain rounded-xl', className)}
     />
   )
 }
