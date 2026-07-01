@@ -221,10 +221,6 @@ export function Sidebar() {
             </button>
           )}
 
-          {!isHidden && !isIcons && (
-            <p className="px-4 text-xs text-text-secondary">NetFlow v{__APP_VERSION__}</p>
-          )}
-
           {!isHidden && (
             <button
               onClick={cycleSidebarMode}
@@ -236,6 +232,10 @@ export function Sidebar() {
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
+          )}
+
+          {!isHidden && !isIcons && (
+            <p className="px-4 text-xs text-text-secondary">NetFlow v{__APP_VERSION__}</p>
           )}
         </div>
       </aside>
