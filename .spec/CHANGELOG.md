@@ -8,6 +8,14 @@
 
 ---
 
+## [v0.44.12] - 2026-07-01
+
+### Sidebar — toggle solo in basso (freccia), floating button in basso
+- **[PATCH] Sidebar:** Rimosso toggle dall'header (full mode). Il pulsante comprimi è ora sempre in basso, solo icona chevron (senza testo), sia in full che icons mode.
+- **[PATCH] Hidden mode:** Floating button spostato in basso a sinistra (`fixed left-3 bottom-6`), stile semplice (rounded-full con bordo).
+- **File modificati:** `src/shared/layouts/Sidebar.tsx`
+- **Build:** `npx tsc --noEmit` — 0 errori.
+
 ## [v0.44.11] - 2026-07-01
 
 ### Fix: 400 creazione fattura — due_date vuota

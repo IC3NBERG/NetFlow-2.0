@@ -63,10 +63,10 @@ export function Sidebar() {
       {isHidden && (
         <button
           onClick={() => setSidebarMode('full')}
-          className="fixed left-0 top-3 md:top-4 z-50 hidden md:flex items-center justify-center h-8 w-5 rounded-r-full bg-surface/80 backdrop-blur-xl border border-border border-l-0 text-text-secondary hover:text-text-primary hover:bg-surface transition-all shadow-lg"
+          className="fixed left-3 bottom-6 z-50 hidden md:flex items-center justify-center h-9 w-9 rounded-full bg-surface/80 backdrop-blur-xl border border-border text-text-secondary hover:text-text-primary hover:bg-surface transition-all shadow-lg"
           title="Espandi sidebar"
         >
-          <ChevronRight className="h-3.5 w-3.5" />
+          <ChevronRight className="h-5 w-5" />
         </button>
       )}
 
@@ -88,15 +88,6 @@ export function Sidebar() {
               <Logo />
               <span className="text-xl font-bold whitespace-nowrap">NetFlow</span>
             </div>
-          )}
-          {!isHidden && !isIcons && (
-            <button
-              onClick={cycleSidebarMode}
-              className="flex items-center justify-center h-7 w-7 rounded-full text-text-secondary hover:bg-surface/80 hover:text-text-primary transition-all"
-              title="Comprimi"
-            >
-              <ChevronLeft className="h-3.5 w-3.5" />
-            </button>
           )}
         </div>
 
@@ -238,13 +229,12 @@ export function Sidebar() {
             <button
               onClick={cycleSidebarMode}
               className={cn(
-                'flex w-full items-center rounded-full text-text-secondary hover:bg-surface/80 hover:text-text-primary transition-all duration-200',
-                isIcons ? 'justify-center p-2.5' : 'gap-2 px-4 py-2',
+                'flex w-full items-center justify-center rounded-full text-text-secondary hover:bg-surface/80 hover:text-text-primary transition-all duration-200',
+                isIcons ? 'p-2' : 'py-2',
               )}
               title="Comprimi"
             >
-              <ChevronLeft className="h-4 w-4 shrink-0" />
-              {!isIcons && <span className="text-xs font-medium">Comprimi</span>}
+              <ChevronLeft className="h-4 w-4" />
             </button>
           )}
         </div>
