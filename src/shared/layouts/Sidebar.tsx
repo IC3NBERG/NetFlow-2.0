@@ -63,10 +63,10 @@ export function Sidebar() {
       {isHidden && (
         <button
           onClick={() => setSidebarMode('full')}
-          className="fixed left-4 top-3 md:top-4 z-50 hidden md:flex items-center justify-center h-8 w-8 rounded-full bg-surface/80 backdrop-blur-xl border border-border text-text-secondary hover:text-text-primary hover:bg-surface transition-all shadow-lg"
+          className="fixed left-0 top-3 md:top-4 z-50 hidden md:flex items-center justify-center h-8 w-5 rounded-r-full bg-surface/80 backdrop-blur-xl border border-border border-l-0 text-text-secondary hover:text-text-primary hover:bg-surface transition-all shadow-lg"
           title="Espandi sidebar"
         >
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-3.5 w-3.5" />
         </button>
       )}
 
@@ -77,12 +77,12 @@ export function Sidebar() {
         )}
       >
         <div className={cn(
-          'flex items-center transition-all duration-300 shrink-0',
+          'flex items-center transition-all duration-300 shrink-0 relative',
           isHidden ? 'px-0' : isIcons ? 'justify-center' : 'justify-between px-6',
           'py-5',
         )}>
           {isHidden ? null : isIcons ? (
-            <Logo className="h-9 w-9" />
+            <Logo />
           ) : (
             <div className="flex items-center gap-3">
               <Logo />
@@ -92,8 +92,11 @@ export function Sidebar() {
           {!isHidden && (
             <button
               onClick={cycleSidebarMode}
-              className="flex items-center justify-center h-7 w-7 rounded-full text-text-secondary hover:bg-surface/80 hover:text-text-primary transition-all"
-              title={isIcons ? 'Comprimi' : 'Comprimi'}
+              className={cn(
+                'flex items-center justify-center h-7 w-7 rounded-full text-text-secondary hover:bg-surface/80 hover:text-text-primary transition-all',
+                isIcons ? 'absolute right-0.5 top-1/2 -translate-y-1/2' : '',
+              )}
+              title="Comprimi"
             >
               <ChevronLeft className="h-3.5 w-3.5" />
             </button>
