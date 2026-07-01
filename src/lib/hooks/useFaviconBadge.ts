@@ -14,7 +14,7 @@ export function useFaviconBadge() {
     const link = document.querySelector<HTMLLinkElement>('link[rel="icon"]')
     if (!link) return
     if (count === 0) {
-      link.href = '/logo-icon.svg'
+      link.href = '/favicon.png'
       return
     }
     if (!canvasRef.current) canvasRef.current = document.createElement('canvas')
@@ -41,6 +41,6 @@ export function useFaviconBadge() {
       link.href = canvas.toDataURL('image/png')
     }
     img.crossOrigin = 'anonymous'
-    img.src = '/logo-icon.svg'
+    img.src = '/favicon.png'
   }
 }

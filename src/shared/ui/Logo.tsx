@@ -9,7 +9,7 @@ export function Logo({ variant = 'icon', className }: LogoProps) {
   if (variant === 'full') {
     return (
       <img
-        src="/logo.jpg"
+        src="/logo-icon.png"
         alt="NetFlow"
         className={cn('h-14 w-14 object-contain rounded-2xl', className)}
       />

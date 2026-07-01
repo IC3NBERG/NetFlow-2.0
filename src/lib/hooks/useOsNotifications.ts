@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { useUserSettings } from './useUserSettings'
 import { useUnreadNotificationCounts } from './useNotifications'
 
-const NOTIFICATION_ICON = '/logo-icon.svg'
+const NOTIFICATION_ICON = '/logo-icon.png'
 
 export function useOsNotifications() {
   const { data: settings } = useUserSettings()

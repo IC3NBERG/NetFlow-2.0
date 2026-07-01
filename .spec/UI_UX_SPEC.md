@@ -184,7 +184,7 @@
 ### 3.7c Favicon Badge
 - Quando ci sono notifiche non lette, la favicon mostra un badge rosso con il conteggio (max `9+`).
 - Disegnato su Canvas: overlay cerchio rosso (posizione 26,6) + testo bianco sulla favicon base.
-- Zero notifiche → favicon normale (`logo-icon.svg`).
+- Zero notifiche → favicon normale (`/favicon.png`).
 
 ### 3.7d Suono Notifiche
 - Riproduzione via Web Audio API (oscillatore sinusoide 880→1108Hz, durata 300ms, volume 15%).
@@ -194,7 +194,7 @@
 ### 3.7e Notifiche OS (Browser Notification API)
 - Richiede permesso al mount.
 - Mostra notifica desktop nativa solo se l'app NON è in focus (`document.hasFocus()`).
-- Icona: `logo-icon.svg`. Tag: `netflow-notification` (raggruppa notifiche dello stesso tipo).
+- Icona: `/logo-icon.png`. Tag: `netflow-notification` (raggruppa notifiche dello stesso tipo).
 - Rispetta `notifications_enabled` globale.
 
 ### 3.7f Backup Reminder (Modal)

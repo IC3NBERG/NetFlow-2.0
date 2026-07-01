@@ -177,7 +177,7 @@ Il sistema notifiche è **persistente** e **categorizzato**, composto da:
 - **`useRealtimeNotifications`**: Sottoscrizione Supabase Realtime alla tabella `notifications` — invalidazione istantanea della cache TanStack Query all'insert/update.
 - **`useNewNotificationTracker`**: Traccia il cambio del conteggio notifiche non lette e dispatches un CustomEvent `new-notification` quando il documento non è in focus.
 - **`useOsNotifications`**: Richiede il permesso Notification API al mount e mostra notifiche OS-level (`new Notification(...)`) quando l'app è in background e arrivano nuove notifiche.
-- **`useFaviconBadge`**: Disegna un badge rosso con conteggio sulla favicon usando Canvas quando ci sono notifiche non lette.
+- **`useFaviconBadge`**: Disegna un badge rosso con conteggio sulla favicon (`/favicon.png`) usando Canvas quando ci sono notifiche non lette.
 - **`useNotificationSound`**: Riproduce un breve chime (Web Audio API, oscillatore 880→1108Hz) quando arriva una nuova notifica.
 - **`useNotificationCleanup`**: Chiama `cleanup_notifications(30)` all'avvio per eliminare notifiche dismissate da >30 giorni.
 - **`useGoalNotifications`**: Monitora `goalProgress` dalla dashboard e crea notifiche al 50%, 80%, 100% dell'obiettivo finanziario.

@@ -8,6 +8,15 @@
 
 ---
 
+## [v0.44.6] - 2026-07-01
+### Nuovo logo brand — Ocra Caldo, rimossi asset viola legacy
+- **[PATCH] Sostituiti tutti gli asset logo:** Rimosso il vecchio logo con gradiente viola (#5B4BD5→#8B7CF7). Nuovo logo: simbolo N-arrow su sfondo ocra `#C5963A` (primary brand color), con variante dark `#0F0F1A` e full logo orizzontale/verticale con scritta "NETFLOW".
+- **[PATCH] Generati nuovi PWA icons:** `icon-192.png`, `icon-512.png`, `icon-192-maskable.png`, `icon-512-maskable.png`, versioni dark per tema scuro.
+- **[PATCH] Nuovi asset:** `favicon.png` (32×32), `favicon-16.png` (16×16), `apple-touch-icon.png` (180×180), `logo-full.png` (orizzontale), `logo-vertical.png` (stacked), `logo-icon.png` (gold bg), `logo-icon-dark.png` (dark bg), `logo-symbol.png` (trasparente).
+- **[PATCH] Aggiornati riferimenti:** `vite.config.ts` (PWA manifest → png con maskable), `index.html` (favicon/apple-touch → png), `Logo.tsx` (logo.jpg → logo-icon.png), `useFaviconBadge.ts` (logo-icon.svg → favicon.png), `useOsNotifications.ts` (logo-icon.svg → logo-icon.png).
+- **[PATCH] Rimossi vecchi asset viola:** `logo-full.svg`, `logo-icon.svg`, `logo.jpg`, `icons/icon-192.{svg,jpg}`, `icons/icon-512.{svg,jpg}`.
+- **Build:** `npx tsc --noEmit` — 0 errori.
+
 ## [v0.44.5] - 2026-07-01
 ### Eliminato loading spinner cambio pagina — import eager, no Suspense
 - **[PATCH] Rimossi React.lazy() e Suspense:** Tutte le pagine protette sono ora importate eager invece di `React.lazy()`. Eliminati i 14 `<Suspense fallback={<PageLoader />}>` dal router. Il cambio pagina è istantaneo — nessun loading spinner durante la navigazione.
