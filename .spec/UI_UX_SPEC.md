@@ -60,8 +60,8 @@
 ## 2. Layout & Navigation
 
 ### 2.1 Desktop (>= 1024px)
-- **Sidebar:** Fissa a sinistra, larga `280px`. Sfondo glass `bg-surface/60 backdrop-blur-xl` con bordo destro `border-border`.
-- **Main content:** `ml-[280px]`, padding `p-8`.
+- **Sidebar:** Fissa a sinistra, larga `240px`. Sfondo glass `bg-surface/60 backdrop-blur-xl` con bordo destro `border-border`.
+- **Main content:** `ml-[240px]`, padding `p-8`.
 - **Header:** Barra superiore con titolo pagina, avatar utente, indicatori di sync.
 - **Dashboard Grid:** Griglia modulare a 3 colonne. Ogni modulo (KPI group, Tracker, Grafici, Registro rapido) è ridimensionabile e riordinabile.
 
@@ -218,10 +218,10 @@
 
 | Elemento | Desktop (>=1024px) | Tablet (768-1023px) | Mobile (<768px) |
 |----------|-------------------|---------------------|-----------------|
-| **Sidebar** | Visibile fissa, `w-[280px]`, `hidden md:flex`, sfondo glass, bordo destro | Collassabile a `w-[72px]` (solo icone), expand su hover con `transition-all duration-300` | Nascosto, sostituito da BottomBar. Drawer laterale attivabile da hamburger menu |
+| **Sidebar** | Visibile fissa, `w-[240px]`, `hidden md:flex`, sfondo glass, bordo destro. 3 stati: full (240px), icone (72px), nascosta (0px), ciclabili da pulsante | Collassabile a `w-[72px]` (solo icone), expand su hover con `transition-all duration-300` | Nascosto, sostituito da BottomBar. Drawer laterale attivabile da hamburger menu |
 | **Bottom Bar** | Nascosta (`md:hidden`) | Nascosta | Visibile fissa in basso, `fixed bottom-0 left-0 right-0`, z-40, 5 voci con icona+label, padding `py-2 px-4` |
 | **Header** | `sticky top-0 z-30`, padding `px-8 py-4`, mostra titolo pagina, avatar, sync indicator, NotificationCenter, FiscalYearSelector, info-guide button | Padding `px-6 py-3`, nascondi testo descrittivo lungo, mantieni icone | Padding `px-4 py-3`, mostra solo titolo abbreviato e hamburger menu. NotificationCenter e sync indicator collassati in icona singola |
-| **Main Content (offset)** | `lg:ml-[280px]` | `md:ml-[72px]` | `ml-0`, padding `pb-20` per BottomBar |
+| **Main Content (offset)** | `md:ml-[240px]` (full), `md:ml-[72px]` (icone), `md:ml-0` (nascosta) | `md:ml-[72px]` | `ml-0`, padding `pb-20` per BottomBar |
 | **Main Content (padding)** | `p-8` | `p-6` | `p-4` |
 | **FiscalYearSelector** | Chevron + anno, `text-base` | Chevron + anno, `text-sm` | Solo anno corrente, nessuna navigazione |
 | **Sync Indicator (header)** | Testo stato + contatore coda + icona | Icona + contatore (badge numerico) | Solo icona con dot colorato (verde/rosso) |

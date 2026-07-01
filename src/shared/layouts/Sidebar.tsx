@@ -73,7 +73,7 @@ export function Sidebar() {
       <aside
         className={cn(
           'fixed left-0 top-0 z-40 hidden h-screen flex-col bg-surface/60 backdrop-blur-xl transition-all duration-300 ease-out md:flex overflow-hidden',
-          isHidden ? 'w-0 border-r-0' : isIcons ? 'w-[72px] border-r border-border' : 'w-[280px] border-r border-border',
+          isHidden ? 'w-0 border-r-0' : isIcons ? 'w-[72px] border-r border-border' : 'w-[240px] border-r border-border',
         )}
       >
         <div className={cn(
@@ -89,13 +89,10 @@ export function Sidebar() {
               <span className="text-xl font-bold whitespace-nowrap">NetFlow</span>
             </div>
           )}
-          {!isHidden && (
+          {!isHidden && !isIcons && (
             <button
               onClick={cycleSidebarMode}
-              className={cn(
-                'flex items-center justify-center h-7 w-7 rounded-full text-text-secondary hover:bg-surface/80 hover:text-text-primary transition-all',
-                isIcons ? 'absolute right-0.5 top-1/2 -translate-y-1/2' : '',
-              )}
+              className="flex items-center justify-center h-7 w-7 rounded-full text-text-secondary hover:bg-surface/80 hover:text-text-primary transition-all"
               title="Comprimi"
             >
               <ChevronLeft className="h-3.5 w-3.5" />
@@ -235,6 +232,20 @@ export function Sidebar() {
 
           {!isHidden && !isIcons && (
             <p className="px-4 text-xs text-text-secondary">NetFlow v{__APP_VERSION__}</p>
+          )}
+
+          {!isHidden && (
+            <button
+              onClick={cycleSidebarMode}
+              className={cn(
+                'flex w-full items-center rounded-full text-text-secondary hover:bg-surface/80 hover:text-text-primary transition-all duration-200',
+                isIcons ? 'justify-center p-2.5' : 'gap-2 px-4 py-2',
+              )}
+              title="Comprimi"
+            >
+              <ChevronLeft className="h-4 w-4 shrink-0" />
+              {!isIcons && <span className="text-xs font-medium">Comprimi</span>}
+            </button>
           )}
         </div>
       </aside>

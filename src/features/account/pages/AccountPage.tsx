@@ -93,7 +93,7 @@ export function AccountPage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl md:text-3xl font-bold">Account</h2>
-        <p className="text-xs md:text-sm text-text-secondary">Il tuo profilo e le tue preferenze</p>
+        <p className="text-xs md:text-sm text-text-secondary">Il tuo profilo e le tue notifiche</p>
       </div>
 
       <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">

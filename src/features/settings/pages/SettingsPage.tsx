@@ -18,7 +18,7 @@ import { supabase } from '../../../lib/supabase'
 import { SharesManager } from '../components/SharesManager'
 import { AuditLogViewer } from '../components/AuditLogViewer'
 import {
-  User, Moon, RefreshCw, Download, Upload, Bell, Database,
+  User, RefreshCw, Download, Upload, Bell, Database,
   FileText, Save, AlertTriangle, Calendar, Share2, History, Goal, TrendingUp,
   Trash2,
 } from 'lucide-react'
@@ -30,13 +30,13 @@ import { hardResetPwa } from '../../../lib/pwaReset'
 import { cn } from '../../../lib/utils'
 
 type ToastState = { message: string; type: 'success' | 'error' | 'info' } | null
-type SettingsTab = 'profile' | 'preferences' | 'invoices' | 'backup' | 'sharing' | 'audit'
+type SettingsTab = 'profile' | 'notifications' | 'invoices' | 'backup' | 'sharing' | 'audit'
 
 
 
 const tabs: { id: SettingsTab; label: string; icon: typeof User }[] = [
   { id: 'profile', label: 'Profilo', icon: User },
-  { id: 'preferences', label: 'Preferenze', icon: Moon },
+  { id: 'notifications', label: 'Notifiche', icon: Bell },
   { id: 'invoices', label: 'Fatture', icon: FileText },
   { id: 'backup', label: 'Backup', icon: Database },
   { id: 'sharing', label: 'Condivisione', icon: Share2 },
@@ -342,7 +342,7 @@ export function SettingsPage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl md:text-3xl font-bold">Centro Impostazioni</h2>
-        <p className="text-xs md:text-sm text-text-secondary">Gestisci profilo, preferenze e impostazioni</p>
+        <p className="text-xs md:text-sm text-text-secondary">Gestisci profilo, notifiche e impostazioni</p>
       </div>
 
       <div className="flex gap-1 md:gap-2 overflow-x-auto pb-2 -mx-4 md:mx-0 px-4 md:px-0">
@@ -505,7 +505,7 @@ export function SettingsPage() {
         </motion.div>
       )}
 
-      {activeTab === 'preferences' && (
+      {activeTab === 'notifications' && (
         <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
 
 
@@ -539,7 +539,7 @@ export function SettingsPage() {
             <GlassCard className="p-4 md:p-6 space-y-3 md:space-y-4">
               <div className="flex items-center gap-3">
                 <Bell className="h-4 md:h-5 w-4 md:w-5 text-pending" />
-                <h3 className="text-base md:text-lg font-semibold">Notifiche e preferenze</h3>
+                <h3 className="text-base md:text-lg font-semibold">Notifiche</h3>
               </div>
               {settingsLoading ? (
                 <p className="text-sm text-text-secondary">Caricamento...</p>

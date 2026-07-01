@@ -140,7 +140,7 @@ balance         = net_settled - total_expenses
   - Master toggle globale on/off.
   - Per-categoria on/off: Scadenze lavori, Fatture scadute, Backup, Sincronizzazione, Obiettivi finanziari, Preventivi, Spese elevate, Sistema.
   - Intervallo promemoria backup configurabile (1/3/7/14/30 giorni).
-  - Le preferenze sono salvate in `user_settings.notification_preferences` (JSONB).
+  - Le notifiche sono salvate in `user_settings.notification_preferences` (JSONB).
 
 ### 5.2 Account
 - **Profilo:** Modifica dati personali/aziendali, logo.

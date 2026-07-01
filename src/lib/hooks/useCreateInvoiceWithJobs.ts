@@ -50,7 +50,7 @@ export function useCreateInvoiceWithJobs() {
         net_amount: netAmount,
         status: 'draft' as const,
         issued_date,
-        due_date: due_date ?? null,
+        due_date: due_date || null,
         paid_date: null,
         pdf_url: null,
         __job_ids: jobs.map((j) => j.id),

@@ -10,6 +10,17 @@
 
 ## [v0.44.11] - 2026-07-01
 
+### Fix: 400 creazione fattura — due_date vuota
+- **[PATCH] useCreateInvoiceWithJobs:** `due_date` vuoto (`''`) inviato a colonna `date` di Supabase causava errore 400. Cambiato `due_date ?? null` in `due_date || null` per convertire stringa vuota in `null`.
+- **File modificati:** `src/lib/hooks/useCreateInvoiceWithJobs.ts`
+- **Build:** `npx tsc --noEmit` + `npm run build` — 0 errori.
+
+### Sezione Preferenze rinominata in Notifiche
+- **[PATCH] SettingsPage:** Tab "Preferenze" rinominato in "Notifiche" (id: `preferences` → `notifications`, icona: Moon → Bell); intestazione "Notifiche e preferenze" → "Notifiche"; subtitle "Gestisci profilo, preferenze e impostazioni" → "Gestisci profilo, notifiche e impostazioni"
+- **[PATCH] AccountPage:** Subtitle "Il tuo profilo e le tue preferenze" → "Il tuo profilo e le tue notifiche"
+- **[PATCH] .spec:** Allineati PRD.md e ARCHITECTURE.md
+- **File modificati:** `src/features/settings/pages/SettingsPage.tsx`, `src/features/account/pages/AccountPage.tsx`, `.spec/PRD.md`, `.spec/ARCHITECTURE.md`
+
 ### Form fattura da SlideOver a Modal centrato
 - **[PATCH] InvoiceFormModal:** Sostituito `SlideOver` (pannello laterale) con `Modal` centrato — la creazione fattura ora appare al centro della pagina invece che scorrere da destra
 - **File modificati:** `src/features/invoicing/components/InvoiceFormModal.tsx`

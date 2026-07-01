@@ -49,7 +49,7 @@ export function MainLayout({ children }: { children?: ReactNode }) {
       <BackupReminder />
       <Sidebar />
       <div className={cn(
-          sidebarMode === 'full' ? 'md:ml-[280px]' : sidebarMode === 'icons' ? 'md:ml-[72px]' : 'md:ml-0',
+          sidebarMode === 'full' ? 'md:ml-[240px]' : sidebarMode === 'icons' ? 'md:ml-[72px]' : 'md:ml-0',
           'ml-0 pb-20 md:pb-0 transition-all duration-300 ease-out',
         )}>
         <header className="sticky top-0 z-30 flex items-center justify-between bg-gradient-to-b from-surface-alt via-surface-alt/70 to-surface-alt/0 backdrop-blur-xl px-4 md:px-6 lg:px-8 py-3 md:py-4 header-blur-edge">

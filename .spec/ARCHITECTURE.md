@@ -159,7 +159,7 @@ Il sistema notifiche è **persistente** e **categorizzato**, composto da:
 2. **RPC PostgreSQL**: `mark_notification_read`, `dismiss_notification`, `mark_all_notifications_read`, `cleanup_notifications`, `get_unread_notification_counts`.
 3. **Hook `useNotifications`**: TanStack Query con `refetchInterval: 60s` per polling automatico. Hook derivati: `useUnreadNotificationCounts`, `useMarkNotificationRead`, `useDismissNotification`, `useMarkAllNotificationsRead`, `useCreateNotification`.
 4. **`notificationService.ts`**: Factory di notifiche con funzioni `checkAndCreateDeadlineNotifications`, `checkAndCreateInvoiceNotifications`, `checkAndCreateBackupNotification` — chiamate all'avvio del `NotificationCenter`.
-5. **Preferenze per-categoria**: `user_settings.notification_preferences` (JSONB) con toggle per ognuna delle 8 categorie, più `backup_reminder_interval_days`.
+5. **Notifiche per-categoria**: `user_settings.notification_preferences` (JSONB) con toggle per ognuna delle 8 categorie, più `backup_reminder_interval_days`.
 
 **Categorie notifiche:**
 | Categoria | Icona | Trigger |
