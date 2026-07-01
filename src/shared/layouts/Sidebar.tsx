@@ -38,6 +38,7 @@ export function Sidebar() {
   const navigate = useNavigate()
   const sidebarOrder = useCustomizationStore((s) => s.sidebarOrder)
   const sidebarMode = useUIStore((s) => s.sidebarMode)
+  const setSidebarMode = useUIStore((s) => s.setSidebarMode)
   const cycleSidebarMode = useUIStore((s) => s.cycleSidebarMode)
 
   const isIcons = sidebarMode === 'icons'
@@ -57,175 +58,183 @@ export function Sidebar() {
   }
 
   return (
-    <aside
-      className={cn(
-        'fixed left-0 top-0 z-40 hidden h-screen flex-col bg-surface/60 backdrop-blur-xl transition-all duration-300 ease-out md:flex overflow-hidden',
-        isHidden ? 'w-0 border-r-0' : isIcons ? 'w-[72px] border-r border-border' : 'w-[280px] border-r border-border',
-      )}
-    >
-      <div className={cn('flex items-center py-6 transition-all duration-300', isHidden ? 'px-0' : isIcons ? 'justify-center px-0' : 'gap-3 px-6')}>
-        <div className={cn('shrink-0', isHidden && 'hidden')}>
-          <Logo />
-        </div>
-        {!isIcons && !isHidden && (
-          <span className="text-xl font-bold whitespace-nowrap">NetFlow</span>
-        )}
-      </div>
-
-      <nav className={cn('flex-1 space-y-1 py-4', isHidden ? 'px-0' : isIcons ? 'px-2' : 'px-3')}>
-        {orderedNavItems.map((item) => (
-          <motion.div
-            key={item.to}
-            layout
-            transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-          >
-            <NavLink to={item.to} className="block">
-              {({ isActive }) => (
-                <div
-                  className={cn(
-                    'relative flex items-center rounded-full text-sm font-medium transition-colors duration-300',
-                    isIcons ? 'justify-center p-2.5' : 'gap-3 px-4 py-3',
-                    isActive
-                      ? 'text-white'
-                      : 'text-text-secondary hover:bg-surface/80 hover:text-text-primary',
-                  )}
-                >
-                  {isActive && (
-                    <motion.div
-                      layoutId="sidebar-active"
-                      className="absolute inset-0 rounded-full bg-brand shadow-[0_0_20px_rgba(197,150,58,0.35)]"
-                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                    />
-                  )}
-                  <span className={cn('relative z-10 flex items-center', isIcons ? '' : 'gap-3')}>
-                    <item.icon className="h-5 w-5 shrink-0" />
-                    {!isIcons && item.label}
-                  </span>
-                </div>
-              )}
-            </NavLink>
-          </motion.div>
-        ))}
-      </nav>
-
-      <div className={cn('space-y-2 py-3', isHidden ? 'px-0' : isIcons ? 'px-2' : 'px-3')}>
-        {!isHidden && (
-          <>
-            <NavLink to="/customization" className="block">
-              {({ isActive }) => (
-                <div
-                  className={cn(
-                    'relative flex items-center rounded-full text-sm font-medium transition-colors duration-300',
-                    isIcons ? 'justify-center p-2.5' : 'gap-3 px-4 py-3',
-                    isActive
-                      ? 'text-white'
-                      : 'text-text-secondary hover:bg-surface/80 hover:text-text-primary',
-                  )}
-                >
-                  {isActive && (
-                    <motion.div
-                      layoutId="sidebar-active"
-                      className="absolute inset-0 rounded-full bg-brand shadow-[0_0_20px_rgba(197,150,58,0.35)]"
-                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                    />
-                  )}
-                  <span className={cn('relative z-10 flex items-center', isIcons ? '' : 'gap-3')}>
-                    <Sliders className="h-5 w-5 shrink-0" />
-                    {!isIcons && 'Personalizza'}
-                  </span>
-                </div>
-              )}
-            </NavLink>
-            <NavLink to="/settings" className="block">
-              {({ isActive }) => (
-                <div
-                  className={cn(
-                    'relative flex items-center rounded-full text-sm font-medium transition-colors duration-300',
-                    isIcons ? 'justify-center p-2.5' : 'gap-3 px-4 py-3',
-                    isActive
-                      ? 'text-white'
-                      : 'text-text-secondary hover:bg-surface/80 hover:text-text-primary',
-                  )}
-                >
-                  {isActive && (
-                    <motion.div
-                      layoutId="sidebar-active"
-                      className="absolute inset-0 rounded-full bg-brand shadow-[0_0_20px_rgba(197,150,58,0.35)]"
-                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                    />
-                  )}
-                  <span className={cn('relative z-10 flex items-center', isIcons ? '' : 'gap-3')}>
-                    <Settings className="h-5 w-5 shrink-0" />
-                    {!isIcons && 'Impostazioni'}
-                  </span>
-                </div>
-              )}
-            </NavLink>
-            <NavLink to="/help" className="block">
-              {({ isActive }) => (
-                <div
-                  className={cn(
-                    'relative flex items-center rounded-full text-sm font-medium transition-colors duration-300',
-                    isIcons ? 'justify-center p-2.5' : 'gap-3 px-4 py-3',
-                    isActive
-                      ? 'text-white'
-                      : 'text-text-secondary hover:bg-surface/80 hover:text-text-primary',
-                  )}
-                >
-                  {isActive && (
-                    <motion.div
-                      layoutId="sidebar-active"
-                      className="absolute inset-0 rounded-full bg-brand shadow-[0_0_20px_rgba(197,150,58,0.35)]"
-                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                    />
-                  )}
-                  <span className={cn('relative z-10 flex items-center', isIcons ? '' : 'gap-3')}>
-                    <LifeBuoy className="h-5 w-5 shrink-0" />
-                    {!isIcons && 'Aiuto/Contatti'}
-                  </span>
-                </div>
-              )}
-            </NavLink>
-          </>
-        )}
-
-        {!isHidden && (
-          <button
-            onClick={handleLogout}
-            className={cn(
-              'flex w-full items-center rounded-full text-sm font-medium text-text-secondary hover:bg-expense/10 hover:text-expense transition-all duration-200',
-              isIcons ? 'justify-center p-2.5' : 'gap-3 px-4 py-3',
-            )}
-          >
-            <LogOut className="h-5 w-5 shrink-0" />
-            {!isIcons && 'Esci'}
-          </button>
-        )}
-
-        {!isHidden && !isIcons && (
-          <p className="px-4 text-xs text-text-secondary">NetFlow v{__APP_VERSION__}</p>
-        )}
-
+    <>
+      {/* Floating toggle when sidebar is hidden */}
+      {isHidden && (
         <button
-          onClick={cycleSidebarMode}
-          className={cn(
-            'flex w-full items-center justify-center rounded-full text-text-secondary hover:bg-surface/80 hover:text-text-primary transition-all duration-200',
-            isIcons ? 'p-2.5' : 'px-4 py-3 gap-3',
-          )}
-          title={isHidden ? 'Espandi sidebar' : isIcons ? 'Mostra etichette' : 'Comprimi sidebar'}
+          onClick={() => setSidebarMode('full')}
+          className="fixed left-3 top-3 z-50 hidden md:flex items-center justify-center h-9 w-9 rounded-full bg-surface/80 backdrop-blur-xl border border-border text-text-secondary hover:text-text-primary hover:bg-surface transition-all shadow-lg"
+          title="Espandi sidebar"
         >
-          {isHidden ? (
-            <ChevronRight className="h-5 w-5" />
-          ) : isIcons ? (
-            <ChevronRight className="h-5 w-5" />
-          ) : (
+          <ChevronRight className="h-5 w-5" />
+        </button>
+      )}
+
+      <aside
+        className={cn(
+          'fixed left-0 top-0 z-40 hidden h-screen flex-col bg-surface/60 backdrop-blur-xl transition-all duration-300 ease-out md:flex overflow-hidden',
+          isHidden ? 'w-0 border-r-0' : isIcons ? 'w-[72px] border-r border-border' : 'w-[280px] border-r border-border',
+        )}
+      >
+        <div className={cn(
+          'flex items-center transition-all duration-300 shrink-0',
+          isHidden ? 'px-0' : isIcons ? 'justify-center px-0' : 'justify-between px-6',
+          isIcons ? 'py-6' : 'py-6',
+        )}>
+          <div className={cn('flex items-center', isIcons ? '' : 'gap-3')}>
+            <div className={cn('shrink-0', isHidden && 'hidden')}>
+              <Logo />
+            </div>
+            {!isIcons && !isHidden && (
+              <span className="text-xl font-bold whitespace-nowrap">NetFlow</span>
+            )}
+          </div>
+          {!isHidden && (
+            <button
+              onClick={cycleSidebarMode}
+              className="flex items-center justify-center h-8 w-8 rounded-full text-text-secondary hover:bg-surface/80 hover:text-text-primary transition-all -mr-1"
+              title={isIcons ? 'Mostra etichette' : 'Comprimi sidebar'}
+            >
+              {isIcons ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+            </button>
+          )}
+        </div>
+
+        <nav className={cn('flex-1 space-y-1 py-4', isHidden ? 'px-0' : isIcons ? 'px-2' : 'px-3')}>
+          {orderedNavItems.map((item) => (
+            <motion.div
+              key={item.to}
+              layout
+              transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+            >
+              <NavLink to={item.to} className="block">
+                {({ isActive }) => (
+                  <div
+                    className={cn(
+                      'relative flex items-center rounded-full text-sm font-medium transition-colors duration-300',
+                      isIcons ? 'justify-center p-2.5' : 'gap-3 px-4 py-3',
+                      isActive
+                        ? 'text-white'
+                        : 'text-text-secondary hover:bg-surface/80 hover:text-text-primary',
+                    )}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="sidebar-active"
+                        className="absolute inset-0 rounded-full bg-brand shadow-[0_0_20px_rgba(197,150,58,0.35)]"
+                        transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                      />
+                    )}
+                    <span className={cn('relative z-10 flex items-center', isIcons ? '' : 'gap-3')}>
+                      <item.icon className="h-5 w-5 shrink-0" />
+                      {!isIcons && item.label}
+                    </span>
+                  </div>
+                )}
+              </NavLink>
+            </motion.div>
+          ))}
+        </nav>
+
+        <div className={cn('space-y-2 py-3', isHidden ? 'px-0' : isIcons ? 'px-2' : 'px-3')}>
+          {!isHidden && (
             <>
-              <ChevronLeft className="h-5 w-5 shrink-0" />
-              <span className="text-sm font-medium">Comprimi</span>
+              <NavLink to="/customization" className="block">
+                {({ isActive }) => (
+                  <div
+                    className={cn(
+                      'relative flex items-center rounded-full text-sm font-medium transition-colors duration-300',
+                      isIcons ? 'justify-center p-2.5' : 'gap-3 px-4 py-3',
+                      isActive
+                        ? 'text-white'
+                        : 'text-text-secondary hover:bg-surface/80 hover:text-text-primary',
+                    )}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="sidebar-active"
+                        className="absolute inset-0 rounded-full bg-brand shadow-[0_0_20px_rgba(197,150,58,0.35)]"
+                        transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                      />
+                    )}
+                    <span className={cn('relative z-10 flex items-center', isIcons ? '' : 'gap-3')}>
+                      <Sliders className="h-5 w-5 shrink-0" />
+                      {!isIcons && 'Personalizza'}
+                    </span>
+                  </div>
+                )}
+              </NavLink>
+              <NavLink to="/settings" className="block">
+                {({ isActive }) => (
+                  <div
+                    className={cn(
+                      'relative flex items-center rounded-full text-sm font-medium transition-colors duration-300',
+                      isIcons ? 'justify-center p-2.5' : 'gap-3 px-4 py-3',
+                      isActive
+                        ? 'text-white'
+                        : 'text-text-secondary hover:bg-surface/80 hover:text-text-primary',
+                    )}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="sidebar-active"
+                        className="absolute inset-0 rounded-full bg-brand shadow-[0_0_20px_rgba(197,150,58,0.35)]"
+                        transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                      />
+                    )}
+                    <span className={cn('relative z-10 flex items-center', isIcons ? '' : 'gap-3')}>
+                      <Settings className="h-5 w-5 shrink-0" />
+                      {!isIcons && 'Impostazioni'}
+                    </span>
+                  </div>
+                )}
+              </NavLink>
+              <NavLink to="/help" className="block">
+                {({ isActive }) => (
+                  <div
+                    className={cn(
+                      'relative flex items-center rounded-full text-sm font-medium transition-colors duration-300',
+                      isIcons ? 'justify-center p-2.5' : 'gap-3 px-4 py-3',
+                      isActive
+                        ? 'text-white'
+                        : 'text-text-secondary hover:bg-surface/80 hover:text-text-primary',
+                    )}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="sidebar-active"
+                        className="absolute inset-0 rounded-full bg-brand shadow-[0_0_20px_rgba(197,150,58,0.35)]"
+                        transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                      />
+                    )}
+                    <span className={cn('relative z-10 flex items-center', isIcons ? '' : 'gap-3')}>
+                      <LifeBuoy className="h-5 w-5 shrink-0" />
+                      {!isIcons && 'Aiuto/Contatti'}
+                    </span>
+                  </div>
+                )}
+              </NavLink>
             </>
           )}
-        </button>
-      </div>
-    </aside>
+
+          {!isHidden && (
+            <button
+              onClick={handleLogout}
+              className={cn(
+                'flex w-full items-center rounded-full text-sm font-medium text-text-secondary hover:bg-expense/10 hover:text-expense transition-all duration-200',
+                isIcons ? 'justify-center p-2.5' : 'gap-3 px-4 py-3',
+              )}
+            >
+              <LogOut className="h-5 w-5 shrink-0" />
+              {!isIcons && 'Esci'}
+            </button>
+          )}
+
+          {!isHidden && !isIcons && (
+            <p className="px-4 text-xs text-text-secondary">NetFlow v{__APP_VERSION__}</p>
+          )}
+        </div>
+      </aside>
+    </>
   )
 }
