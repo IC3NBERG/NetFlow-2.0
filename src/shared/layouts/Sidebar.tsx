@@ -63,10 +63,10 @@ export function Sidebar() {
       {isHidden && (
         <button
           onClick={() => setSidebarMode('full')}
-          className="fixed left-3 top-3 z-50 hidden md:flex items-center justify-center h-9 w-9 rounded-full bg-surface/80 backdrop-blur-xl border border-border text-text-secondary hover:text-text-primary hover:bg-surface transition-all shadow-lg"
+          className="fixed left-4 top-3 md:top-4 z-50 hidden md:flex items-center justify-center h-8 w-8 rounded-full bg-surface/80 backdrop-blur-xl border border-border text-text-secondary hover:text-text-primary hover:bg-surface transition-all shadow-lg"
           title="Espandi sidebar"
         >
-          <ChevronRight className="h-5 w-5" />
+          <ChevronRight className="h-4 w-4" />
         </button>
       )}
 
@@ -78,24 +78,24 @@ export function Sidebar() {
       >
         <div className={cn(
           'flex items-center transition-all duration-300 shrink-0',
-          isHidden ? 'px-0' : isIcons ? 'justify-center px-0' : 'justify-between px-6',
-          isIcons ? 'py-6' : 'py-6',
+          isHidden ? 'px-0' : isIcons ? 'justify-center' : 'justify-between px-6',
+          'py-5',
         )}>
-          <div className={cn('flex items-center', isIcons ? '' : 'gap-3')}>
-            <div className={cn('shrink-0', isHidden && 'hidden')}>
+          {isHidden ? null : isIcons ? (
+            <Logo className="h-9 w-9" />
+          ) : (
+            <div className="flex items-center gap-3">
               <Logo />
-            </div>
-            {!isIcons && !isHidden && (
               <span className="text-xl font-bold whitespace-nowrap">NetFlow</span>
-            )}
-          </div>
+            </div>
+          )}
           {!isHidden && (
             <button
               onClick={cycleSidebarMode}
-              className="flex items-center justify-center h-8 w-8 rounded-full text-text-secondary hover:bg-surface/80 hover:text-text-primary transition-all -mr-1"
-              title={isIcons ? 'Mostra etichette' : 'Comprimi sidebar'}
+              className="flex items-center justify-center h-7 w-7 rounded-full text-text-secondary hover:bg-surface/80 hover:text-text-primary transition-all"
+              title={isIcons ? 'Comprimi' : 'Comprimi'}
             >
-              {isIcons ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+              <ChevronLeft className="h-3.5 w-3.5" />
             </button>
           )}
         </div>
