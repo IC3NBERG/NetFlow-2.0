@@ -12,6 +12,7 @@
     --color-success: 16 185 129;
     --color-expense: 255 45 45;
     --color-pending: 50 55 60;
+    --color-warning: 245 158 11;
     --color-border: 0 0 0 0.1;
   }
 
@@ -24,6 +25,7 @@
     --color-success: 16 185 129;
     --color-expense: 255 45 45;
     --color-pending: 253 245 220;
+    --color-warning: 245 158 11;
     --color-border: 255 255 255 0.1;
   }
 
@@ -72,6 +74,15 @@
 
   .btn-ghost:hover {
     background-color: rgba(var(--color-text-primary), 0.1);
+  }
+
+  .main-content-offset {
+    margin-left: 0;
+  }
+  @media (min-width: 768px) {
+    .main-content-offset {
+      margin-left: var(--sidebar-w, 0px);
+    }
   }
 
   .header-blur-edge {

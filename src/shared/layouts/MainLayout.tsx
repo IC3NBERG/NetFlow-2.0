@@ -1,5 +1,5 @@
 import { useNavigate, Outlet, useLocation } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Sidebar } from './Sidebar'
 import { BottomBar } from './BottomBar'
 import { useSync } from '../../app/providers/SyncProvider'
@@ -26,6 +26,7 @@ export function MainLayout({ children }: { children?: ReactNode }) {
   const navigate = useNavigate()
   const location = useLocation()
   const sidebarMode = useUIStore((s) => s.sidebarMode)
+  const sidebarDragWidth = useUIStore((s) => s.sidebarDragWidth)
   useRealtimeSync()
   useRealtimeNotifications()
   useNewNotificationTracker()
@@ -48,10 +49,17 @@ export function MainLayout({ children }: { children?: ReactNode }) {
       <SyncBanner />
       <BackupReminder />
       <Sidebar />
-      <div className={cn(
-          sidebarMode === 'full' ? 'md:ml-[240px]' : sidebarMode === 'icons' ? 'md:ml-[72px]' : 'md:ml-0',
-          'ml-0 pb-20 md:pb-0 transition-[margin-left] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]',
-        )}>
+      <div
+        className={cn(
+          'pb-20 md:pb-0 main-content-offset',
+          sidebarDragWidth === null && 'md:transition-[margin-left] md:duration-300 md:ease-[cubic-bezier(0.16,1,0.3,1)]',
+        )}
+        style={{
+          ['--sidebar-w' as string]: `${
+            sidebarDragWidth ?? (sidebarMode === 'full' ? 240 : sidebarMode === 'icons' ? 72 : 0)
+          }px`,
+        }}
+      >
         <header className="sticky top-0 z-30 flex items-center justify-between bg-gradient-to-b from-surface-alt via-surface-alt/70 to-surface-alt/0 backdrop-blur-xl px-4 md:px-6 lg:px-8 py-3 md:py-4 header-blur-edge">
           <div className="flex items-center gap-4">
             <div className="hidden md:block">
@@ -110,14 +118,17 @@ export function MainLayout({ children }: { children?: ReactNode }) {
           </div>
         </header>
         <main className="p-4 md:p-6 lg:p-8">
-          <motion.div
-            key={location.pathname}
-            initial={{ opacity: 0, y: 24, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ type: 'spring', stiffness: 280, damping: 24, mass: 1.1 }}
-          >
-            {children ?? <Outlet />}
-          </motion.div>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+            >
+              {children ?? <Outlet />}
+            </motion.div>
+          </AnimatePresence>
         </main>
       </div>
       <BottomBar />

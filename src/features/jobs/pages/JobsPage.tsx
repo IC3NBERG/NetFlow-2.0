@@ -12,7 +12,7 @@ import { QueryLoading, QueryError } from '../../../shared/ui/QueryState'
 import { isOfflineQueued, isOfflineSyncDisabled } from '../../../lib/syncExecute'
 import { cn } from '../../../lib/utils'
 import type { Job } from '../../../types/database'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 
 const tabs = [
   { id: 'general' as const, label: 'Generali' },
@@ -139,6 +139,14 @@ export function JobsPage() {
   if (isLoading) return <QueryLoading message="Caricamento lavori..." />
   if (isError) return <QueryError message={error?.message} onRetry={() => refetch()} />
 
+  // Handle suggested action query param
+  const queryParams = new URLSearchParams(window.location.search)
+  if (queryParams.get('action') === 'new' && !isFormOpen) {
+    // Clear the query parameter so it doesn't reopen on subsequent renders
+    window.history.replaceState({}, document.title, window.location.pathname)
+    openForm()
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -203,20 +211,26 @@ export function JobsPage() {
           }
         />
       ) : (
-        <motion.div
-          layout
-          className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
-        >
-          {filtered.map((job) => (
-            <JobCard
-              key={job.id}
-              job={job}
-              onEdit={(j) => openForm(j.id)}
-              onDelete={handleDelete}
-              onStatusChange={handleStatusChange}
-            />
-          ))}
-        </motion.div>
+        <AnimatePresence mode="popLayout">
+          <motion.div
+            key={activeFilter + activeTab}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
+          >
+            {filtered.map((job) => (
+              <JobCard
+                key={job.id}
+                job={job}
+                onEdit={(j) => openForm(j.id)}
+                onDelete={handleDelete}
+                onStatusChange={handleStatusChange}
+              />
+            ))}
+          </motion.div>
+        </AnimatePresence>
       )}
 
       <JobFormModal

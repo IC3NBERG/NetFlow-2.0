@@ -14,6 +14,7 @@ export default {
         success: 'rgb(var(--color-success) / <alpha-value>)',
         pending: 'rgb(var(--color-pending) / <alpha-value>)',
         expense: 'rgb(var(--color-expense) / <alpha-value>)',
+        warning: 'rgb(var(--color-warning) / <alpha-value>)',
         text: {
           primary: 'rgb(var(--color-text-primary) / <alpha-value>)',
           secondary: 'rgb(var(--color-text-secondary) / <alpha-value>)',

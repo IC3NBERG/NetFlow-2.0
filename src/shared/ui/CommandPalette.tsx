@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { createPortal } from 'react-dom'
-import { Search, Briefcase, Users, FileText, Receipt, ArrowRight, Loader2 } from 'lucide-react'
+import { Search, Briefcase, Users, FileText, Receipt, ArrowRight, Loader2, FileSpreadsheet } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../app/providers/AuthProvider'
@@ -10,7 +10,7 @@ interface SearchResult {
   id: string
   label: string
   description: string
-  type: 'job' | 'client' | 'invoice' | 'expense'
+  type: 'job' | 'client' | 'invoice' | 'expense' | 'quote'
   route: string
 }
 
@@ -53,19 +53,51 @@ export function CommandPalette() {
     setLoading(true)
     const term = `%${q}%`
     try {
-      const [jobsRes, clientsRes, invoicesRes, expensesRes] = await Promise.all([
-        supabase.from('jobs').select('id, title, client_id').eq('user_id', user.id).ilike('title', term).limit(5),
-        supabase.from('clients').select('id, name').eq('user_id', user.id).ilike('name', term).limit(5),
-        supabase.from('invoices').select('id, invoice_number, type').eq('user_id', user.id).ilike('invoice_number', term).limit(5),
-        supabase.from('expenses').select('id, title, amount').eq('user_id', user.id).ilike('title', term).limit(5),
+      const [jobsRes, clientsRes, invoicesRes, expensesRes, quotesRes] = await Promise.all([
+        supabase.from('jobs').select('id, title, clients(name)').eq('user_id', user.id).ilike('title', term).limit(5),
+        supabase.from('clients').select('id, name, vat_number').eq('user_id', user.id).ilike('name', term).limit(5),
+        supabase.from('invoices').select('id, invoice_number, type, gross_amount').eq('user_id', user.id).ilike('invoice_number', term).limit(5),
+        supabase.from('expenses').select('id, title, amount, category').eq('user_id', user.id).ilike('title', term).limit(5),
+        supabase.from('quotes').select('id, title, quote_number, clients(name)').eq('user_id', user.id).ilike('title', term).limit(5),
       ])
 
       const r: SearchResult[] = []
-      jobsRes.data?.forEach((j) => r.push({ id: j.id, label: j.title, description: 'Lavoro', type: 'job', route: '/jobs' }))
-      clientsRes.data?.forEach((c) => r.push({ id: c.id, label: c.name, description: 'Cliente', type: 'client', route: '/clients' }))
-      invoicesRes.data?.forEach((inv) => r.push({ id: inv.id, label: `${inv.invoice_number} (${inv.type})`, description: 'Fattura', type: 'invoice', route: '/invoicing' }))
-      expensesRes.data?.forEach((e) => r.push({ id: e.id, label: e.title, description: 'Spesa', type: 'expense', route: '/expenses' }))
+      
+      // Jobs
+      jobsRes.data?.forEach((j: any) => {
+        const clientName = j.clients?.name ? ` • ${j.clients.name}` : ''
+        r.push({ id: j.id, label: j.title, description: `Lavoro${clientName}`, type: 'job' as const, route: '/jobs' })
+      })
+
+      // Clients
+      clientsRes.data?.forEach((c: any) => {
+        const vat = c.vat_number ? ` • P.IVA: ${c.vat_number}` : ''
+        r.push({ id: c.id, label: c.name, description: `Cliente${vat}`, type: 'client' as const, route: '/clients' })
+      })
+
+      // Invoices
+      invoicesRes.data?.forEach((inv: any) => {
+        const typeStr = inv.type === 'parcella' ? 'Parcella' : 'Fattura'
+        const amountStr = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(inv.gross_amount)
+        r.push({ id: inv.id, label: `${inv.invoice_number}`, description: `${typeStr} • Lordo: ${amountStr}`, type: 'invoice' as const, route: '/invoicing' })
+      })
+
+      // Expenses
+      expensesRes.data?.forEach((e: any) => {
+        const amountStr = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(e.amount)
+        const catStr = e.category ? ` • ${e.category}` : ''
+        r.push({ id: e.id, label: e.title, description: `Spesa • ${amountStr}${catStr}`, type: 'expense' as const, route: '/expenses' })
+      })
+
+      // Quotes (Preventivi)
+      quotesRes.data?.forEach((q: any) => {
+        const clientName = q.clients?.name ? ` • ${q.clients.name}` : ''
+        r.push({ id: q.id, label: `${q.quote_number} - ${q.title}`, description: `Preventivo${clientName}`, type: 'quote' as const, route: '/quotes' })
+      })
+
       setResults(r)
+    } catch (err) {
+      console.error('Search failed:', err)
     } finally {
       setLoading(false)
     }
@@ -93,7 +125,7 @@ export function CommandPalette() {
     }
   }
 
-  const iconMap = { job: Briefcase, client: Users, invoice: FileText, expense: Receipt } as const
+  const iconMap = { job: Briefcase, client: Users, invoice: FileText, expense: Receipt, quote: FileSpreadsheet } as const
 
   if (!open) return null
 
@@ -151,11 +183,38 @@ export function CommandPalette() {
             </div>
           )}
           {!query && !loading && (
-            <div className="py-8 text-center">
-              <p className="text-sm text-text-secondary">Digita per cercare in tutta l'app</p>
-              <div className="flex items-center justify-center gap-2 mt-3">
-                <kbd className="rounded-md border border-border px-2 py-0.5 text-xs text-text-secondary">⌘K</kbd>
-                <span className="text-xs text-text-secondary">per aprire</span>
+            <div className="py-2">
+              <div className="px-3 py-2 text-xs font-semibold text-text-secondary uppercase tracking-wider">
+                Azioni Suggerite
+              </div>
+              <div className="space-y-0.5">
+                {[
+                  { label: 'Vai alla Dashboard', route: '/dashboard', desc: 'Panoramica economica', type: 'job' as const, icon: iconMap.job },
+                  { label: 'Nuovo Lavoro', route: '/jobs?action=new', desc: 'Avvia una nuova prestazione', type: 'job' as const, icon: iconMap.job },
+                  { label: 'Nuovo Preventivo', route: '/quotes?action=new', desc: 'Crea una bozza preventivo', type: 'quote' as const, icon: iconMap.quote },
+                  { label: 'Nuova Spesa (Uscita)', route: '/expenses?action=new', desc: 'Registra un pagamento/acquisto', type: 'expense' as const, icon: iconMap.expense },
+                  { label: 'Aggiungi Cliente', route: '/clients?action=new', desc: 'Registra un nuovo contatto', type: 'client' as const, icon: iconMap.client },
+                ].map((act, i) => (
+                  <button
+                    key={act.route}
+                    onClick={() => {
+                      setOpen(false)
+                      // If the route has an action query parameter, we can handle it or let the target page handle it
+                      navigate(act.route)
+                    }}
+                    className={cn(
+                      'flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left transition-colors',
+                      i === selectedIndex ? 'bg-brand/20 text-text-primary' : 'text-text-secondary hover:bg-surface/80 hover:text-text-primary',
+                    )}
+                  >
+                    <act.icon className="h-4 w-4 shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{act.label}</p>
+                      <p className="text-xs text-text-secondary">{act.desc}</p>
+                    </div>
+                    <ArrowRight className="h-4 w-4 shrink-0 opacity-50" />
+                  </button>
+                ))}
               </div>
             </div>
           )}

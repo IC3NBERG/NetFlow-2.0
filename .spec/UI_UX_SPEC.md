@@ -37,6 +37,7 @@
 | Surface Glass | `rgba(26,26,46,0.6)` | `rgba(255,255,255,0.7)` | Cards con backdrop-blur |
 | Success (Incassato) | `#10B981` (Smeraldo) | `#10B981` | Badge incassato, KPIs positive, anelli progresso |
 | Pending | `#32373C` (Grigio Scuro) | `#32373C` | Badge in attesa, anelli parziali |
+| Warning | `#F59E0B` (Ambra) | `#F59E0B` | Tab preventivi, stato in attesa pagamento |
 | Expenses | `#E32400` (Rosso) | `#E32400` | Uscite, alert, saldo negativo |
 | Text Primary | `#FFFFFF` | `#1A1A2E` | Titoli, corpo |
 | Text Secondary | `#A0A0B8` | `#636E72` | Sottotitoli, label |
@@ -60,7 +61,7 @@
 ## 2. Layout & Navigation
 
 ### 2.1 Desktop (>= 1024px)
-- **Sidebar:** Fissa a sinistra, larga `240px`. Sfondo glass `bg-surface/60 backdrop-blur-xl` con bordo destro `border-border`.
+- **Sidebar:** Fissa a sinistra, larga `240px`. Sfondo glass `bg-surface/60 backdrop-blur-xl` con bordo destro `border-border`. Tre stati (full 240px, icone 72px, nascosta 0px) raggiungibili tramite drag del bordo destro (handle `cursor-col-resize`). In modalità nascosta un'area invisibile di 1.5px al bordo sinistro permette di riaprire la sidebar con click/drag.
 - **Main content:** `ml-[240px]`, padding `p-8`.
 - **Header:** Barra superiore con titolo pagina, avatar utente, indicatori di sync.
 - **Dashboard Grid:** Griglia modulare a 3 colonne. Ogni modulo (KPI group, Tracker, Grafici, Registro rapido) è ridimensionabile e riordinabile.
@@ -77,9 +78,9 @@
 - **Header:** Semplificato, solo titolo e hamburger menu per drawer laterale.
 
 ### 2.4 Transizioni
-- **Cambio pagina (v0.44.5):** Tutte le pagine sono caricate eager (no `React.lazy()`). Il cambio pagina è istantaneo — il componente della nuova pagina è già in memoria. `key`-based `motion.div` con spring entrance (`initial: opacity 0 + y: 24 + scale: 0.97`, `animate: opacity 1 + y: 0 + scale: 1`). Effetto "sollevamento" premium. Nessuna exit animation — React smonta la vecchia pagina immediatamente e monta la nuova. Spring physics: `stiffness: 280, damping: 24, mass: 1.1`.
+- **Cambio pagina (v0.44.5):** Tutte le pagine sono caricate eager (no `React.lazy()`). Il cambio pagina è istantaneo — il componente della nuova pagina è già in memoria. `key`-based `motion.div` con entrance fluido (`initial: opacity 0 + y: 24 + scale: 0.97`, `animate: opacity 1 + y: 0 + scale: 1`). Effetto "sollevamento" premium senza bouncing. Nessuna exit animation — React smonta la vecchia pagina immediatamente e monta la nuova. Transizione `easeOut` con durata 0.25s (nessun overshoot).
 - **Nessun loading spinner:** Non esiste più `PageLoader` come fallback di navigazione. Lo stato `isLoading` dell'auth check iniziale rende `null` per un brevissimo istante (tipicamente <100ms).
-- **Sidebar:** `motion.aside` con spring physics (`stiffness: 280, damping: 24`) per l'animazione della larghezza tra modalità full (240px), icone (72px) e nascosta (0px). Label testuali animate con fade + width (`duration: 0.2s, ease: easeOut`). Active pill con Framer Motion `layoutId` (`stiffness 380, damping 30`). Il pill (`bg-brand`) scivola fluidamente tra le voci al cambio tab. Tooltip su ogni nav item in modalità icone.
+- **Sidebar:** `motion.aside` con spring physics (`stiffness: 280, damping: 24`) per l'animazione della larghezza tra modalità full (240px), icone (72px) e nascosta (0px). Ridimensionabile tramite drag del bordo destro (handle `cursor-col-resize`). Durante il drag la transizione è istantanea; al rilascio snap spring allo stato più vicino. Label testuali animate con fade + width (`duration: 0.2s, ease: easeOut`). Active pill con Framer Motion `layoutId` (`stiffness 380, damping 30`). Il pill (`bg-brand`) scivola fluidamente tra le voci al cambio tab. Tooltip su ogni nav item in modalità icone. In modalità nascosta (0px) un'area invisibile di 1.5px al bordo sinistro permette click per riespandere o drag per ridimensionare.
 - **Sidebar active glow (v0.41.1):** `box-shadow: 0 0 20px rgba(197,150,58,0.35)` sul pill attivo per effetto glow che segue lo slide.
 - **Moduli Dashboard:** `initial={{ opacity: 0, scale: 0.9 }}` con Framer Motion per simulare caricamento OS futuristico.
 - **Dashboard ingresso pagina:** `fade + scale(0.97 → 1)` con titolo che scende dall'alto (`y: -8 → 0`, delay 0.05s).
@@ -218,10 +219,10 @@
 
 | Elemento | Desktop (>=1024px) | Tablet (768-1023px) | Mobile (<768px) |
 |----------|-------------------|---------------------|-----------------|
-| **Sidebar** | Visibile fissa, `w-[240px]`, `hidden md:flex`, sfondo glass, bordo destro. 3 stati: full (240px), icone (72px), nascosta (0px), ciclabili da pulsante | Collassabile a `w-[72px]` (solo icone), expand su hover con `transition-all duration-300` | Nascosto, sostituito da BottomBar. Drawer laterale attivabile da hamburger menu |
+| **Sidebar** | Visibile fissa, `w-[240px]`, `hidden md:flex`, sfondo glass, bordo destro. 3 stati: full (240px), icone (72px), nascosta (0px), controllati tramite drag del bordo destro (handle `cursor-col-resize`). Snap spring ai punti di ancoraggio. In modalità nascosta area invisibile di 1.5px al bordo sinistro per click/drag di riapertura | Collassabile a `w-[72px]` (solo icone), expand su hover con `transition-all duration-300` | Nascosto, sostituito da BottomBar. Drawer laterale attivabile da hamburger menu |
 | **Bottom Bar** | Nascosta (`md:hidden`) | Nascosta | Visibile fissa in basso, `fixed bottom-0 left-0 right-0`, z-40, 5 voci con icona+label, padding `py-2 px-4` |
 | **Header** | `sticky top-0 z-30`, padding `px-8 py-4`, mostra titolo pagina, avatar, sync indicator, NotificationCenter, FiscalYearSelector, info-guide button | Padding `px-6 py-3`, nascondi testo descrittivo lungo, mantieni icone | Padding `px-4 py-3`, mostra solo titolo abbreviato e hamburger menu. NotificationCenter e sync indicator collassati in icona singola |
-| **Main Content (offset)** | `md:ml-[240px]` (full), `md:ml-[72px]` (icone), `md:ml-0` (nascosta) | `md:ml-[72px]` | `ml-0`, padding `pb-20` per BottomBar |
+| **Main Content (offset)** | `md:ml-[240px]` (full), `md:ml-[72px]` (icone), `md:ml-0` (nascosta). Dinamico durante il drag tramite CSS variable `--sidebar-w` | `md:ml-[72px]` | `ml-0`, padding `pb-20` per BottomBar |
 | **Main Content (padding)** | `p-8` | `p-6` | `p-4` |
 | **FiscalYearSelector** | Chevron + anno, `text-base` | Chevron + anno, `text-sm` | Solo anno corrente, nessuna navigazione |
 | **Sync Indicator (header)** | Testo stato + contatore coda + icona | Icona + contatore (badge numerico) | Solo icona con dot colorato (verde/rosso) |

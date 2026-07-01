@@ -418,20 +418,22 @@ CREATE POLICY "audit_log_delete" ON audit_log
 ### 2.12 shares
 ```sql
 CREATE TABLE shares (
-  id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id       uuid NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
-  token         text NOT NULL UNIQUE DEFAULT encode(extensions.gen_random_bytes(32), 'hex'),
-  access_level  text NOT NULL DEFAULT 'view' CHECK (access_level IN ('view', 'export')),
-  description   text,
-  name          text,
-  is_active     boolean NOT NULL DEFAULT true,
-  password_hash text,
-  max_views     integer,
-  view_count    integer NOT NULL DEFAULT 0,
-  sections      jsonb NOT NULL DEFAULT '["jobs","clients","invoices","expenses","quotes"]'::jsonb,
-  expires_at    timestamptz,
-  last_accessed timestamptz,
-  created_at    timestamptz DEFAULT now()
+  id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id         uuid NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  token           text NOT NULL UNIQUE DEFAULT encode(extensions.gen_random_bytes(32), 'hex'),
+  access_level    text NOT NULL DEFAULT 'view' CHECK (access_level IN ('view', 'export')),
+  description     text,
+  name            text,
+  is_active       boolean NOT NULL DEFAULT true,
+  password_hash   text,
+  max_views       integer,
+  view_count      integer NOT NULL DEFAULT 0,
+  sections        jsonb NOT NULL DEFAULT '["jobs","clients","invoices","expenses","quotes"]'::jsonb,
+  failed_attempts integer NOT NULL DEFAULT 0,
+  locked_until    timestamptz,
+  expires_at      timestamptz,
+  last_accessed   timestamptz,
+  created_at      timestamptz DEFAULT now()
 );
 
 CREATE INDEX idx_shares_user ON shares(user_id);
@@ -440,25 +442,33 @@ CREATE INDEX idx_shares_token ON shares(token);
 ALTER TABLE shares ENABLE ROW LEVEL SECURITY;
 
 -- Combined SELECT: owner sees own shares; unauthenticated (anon) sees by token
-CREATE POLICY "shares_select" ON public.shares
-  FOR SELECT
-  USING (
-    (select auth.uid()) = user_id
-    OR (select auth.uid()) IS NULL
-  );
+-- 🔐 FIX v0.44.20: rimosso IS NULL che permetteva SELECT anon su TUTTA la tabella
+CREATE POLICY "shares_select_authenticated" ON public.shares
+  FOR SELECT TO authenticated
+  USING ((select auth.uid()) = user_id);
 
-CREATE POLICY "shares_insert" ON public.shares
+CREATE POLICY "shares_insert_authenticated" ON public.shares
   FOR INSERT TO authenticated
   WITH CHECK ((select auth.uid()) = user_id);
 
-CREATE POLICY "shares_update" ON public.shares
+CREATE POLICY "shares_update_authenticated" ON public.shares
   FOR UPDATE TO authenticated
   USING ((select auth.uid()) = user_id)
   WITH CHECK ((select auth.uid()) = user_id);
 
-CREATE POLICY "shares_delete" ON public.shares
+CREATE POLICY "shares_delete_authenticated" ON public.shares
   FOR DELETE TO authenticated
   USING ((select auth.uid()) = user_id);
+
+-- Trigger: hash automatico della password prima dello storage (bcrypt)
+CREATE TRIGGER on_share_password_hash
+  BEFORE INSERT OR UPDATE OF password_hash ON public.shares
+  FOR EACH ROW
+  EXECUTE FUNCTION public.hash_share_password();
+
+-- Rate limiting: colonne per tracciare tentativi falliti
+-- failed_attempts integer NOT NULL DEFAULT 0
+-- locked_until timestamptz
 ```
 
 ### 2.13 custom_events

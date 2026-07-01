@@ -32,6 +32,7 @@ export function useCreateShare() {
       password?: string
       max_views?: number
       sections?: ShareSection[]
+      client_id?: string
     }) => {
       const payload: Record<string, unknown> = {
         ...share,
@@ -54,11 +55,13 @@ export function useCreateShare() {
   })
 }
 
+
 export function useUpdateShare() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async ({
       id,
+      password,
       ...data
     }: {
       id: string
@@ -69,10 +72,15 @@ export function useUpdateShare() {
       expires_at?: string | null
       max_views?: number | null
       sections?: ShareSection[]
+      password?: string
     }) => {
+      const payload: Record<string, unknown> = { ...data }
+      if (password) {
+        payload.password_hash = password
+      }
       const { error } = await supabase
         .from('shares')
-        .update(data)
+        .update(payload)
         .eq('id', id)
       if (error) throw error
     },

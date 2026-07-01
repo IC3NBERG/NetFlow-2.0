@@ -8,6 +8,68 @@
 
 ---
 
+## [v0.44.20] - 2026-07-01
+
+### 🔐 EMERGENZA SICUREZZA — Fix critici RLS, password hashing, XSS, CORS, CSP/HSTS
+
+- **[CRITICAL] supabase/migrations/20260625000001_emergency_security_fix.sql:** Nuova migration di emergenza che corregge 3 vulnerabilità critiche:
+  - **Fix RLS shares_select:** Rimossa condizione `OR (select auth.uid()) IS NULL` che permetteva SELECT anon su TUTTA la tabella `shares`, esponendo token e password di condivisione di ogni utente.
+  - **Trigger password hashing:** Aggiunto trigger `hash_share_password` che hasha automaticamente le password con bcrypt prima dello storage in `shares.password_hash`. Risolve il salvataggio in chiaro.
+  - **Rate limiting check_share_password:** Blocco dopo 5 tentativi falliti per 15 minuti (colonne `failed_attempts`, `locked_until`).
+  - **Nuova RPC `get_shared_data_by_token`:** Sostituisce `get_shared_data` per accesso pubblico via token, sicura perché i token non sono più enumerabili.
+  - **REVOKE permessi anon:** Rimosso `GRANT TO anon` da `get_shared_data` e `get_share_info`. Solo `get_shared_data_by_token` e `check_share_password` rimangono accessibili ad anon (necessari per la condivisione pubblica).
+- **[HIGH] useSharedData.ts:** Cambiato RPC da `get_shared_data` a `get_shared_data_by_token` per usare la nuova funzione pubblica sicura.
+- **[HIGH] InvoiceQRCode.tsx:** Rimosso `dangerouslySetInnerHTML` — sostituito con `<img src="data:image/svg+xml;base64,...">` per prevenire XSS tramite SVG malformato contenente dati utente (IBAN, numero fattura).
+- **[HIGH] .env.example:** Sostituite chiavi Supabase reali con placeholder generici (`your-project-ref.supabase.co`, `your-anon-key-here`).
+- **[HIGH] functions/ics/[token].ts:** Fix CORS — rimosso `Access-Control-Allow-Origin: *` e `Access-Control-Allow-Headers: *`. Ora usa whitelist dinamica: solo `https://netflow-v3.pages.dev` e `http://localhost:5173`. Header ristretto a `Content-Type`.
+- **[HIGH] public/_headers:** Aggiunti `Content-Security-Policy` (default-src 'self', font da Google Fonts CDN, connect a Supabase, frame-ancestors 'none') e `Strict-Transport-Security` (max-age=31536000, includeSubDomains, preload).
+- **[PATCH] package.json:** Bump versione a 0.44.20.
+
+### Tooling — seed dati demo per account avanzato
+- **[PATCH] scripts/seed-demo.mjs:** Script standalone che genera dati realistici e vari: 18 clienti (alcuni senza email/P.IVA/indirizzo per diversità), 35 lavori (10 attivi, 10 da incassare, 15 incassati) con/senza descrizione e tag, 14 preventivi (alcuni senza cliente), 8 fatture, 15 spese, 4 link condivisione (attivi/inattivi, con password o scadenza), 10 voci audit log, 8 eventi calendario, fiscal_setup 2026. Usa Supabase admin client con service_role key. Per pulire: `SELECT clean_user_data();` nella SQL Editor. Accetta `--user-id` e `--service-key` come argomenti CLI.
+- **[PATCH] package.json:** Aggiunto script `"seed": "node scripts/seed-demo.mjs"`.
+- **Nuovo file:** `scripts/seed-demo.mjs`
+- **File modificati:** `package.json`, `.spec/CHANGELOG.md`
+
+## [v0.44.19] - 2026-07-01
+
+### UI — Sidebar drag-to-resize, hidden strip, rimossa freccia
+
+- **[PATCH] Sidebar.tsx:** Rimossa freccia `ChevronLeft` (ciclo full/icons/hidden) e floating button `ChevronRight` (ristoro da hidden). Aggiunto handle di resize verticale sul bordo destro (`cursor-col-resize`) per drag con snap ai 3 stati standard (full 240px, icone 72px, nascosta 0px). In modalità nascosta un'area invisibile di 1.5px al bordo sinistro dello schermo permette di riaprire la sidebar con click/drag. Movimenti spring durante lo snap, istantanei durante il drag.
+- **[PATCH] MainLayout.tsx:** Margin-left dinamico tramite CSS variable `--sidebar-w` aggiornata in tempo reale durante il drag. Transizione disattivata durante il drag per reattività, riattivata allo snap.
+- **[PATCH] ui.ts:** Sostituito `cycleSidebarMode` con `sidebarDragWidth` — stato condiviso tra Sidebar e MainLayout per aggiornare il margine in tempo reale.
+- **[PATCH] index.css:** Aggiunta regola `.main-content-offset` con `margin-left: var(--sidebar-w, 0px)` su `md+`.
+- **File modificati:** `src/shared/layouts/Sidebar.tsx`, `src/shared/layouts/MainLayout.tsx`, `src/lib/stores/ui.ts`, `src/index.css`, `package.json`, `.spec/CHANGELOG.md`
+
+## [v0.44.18] - 2026-07-01
+
+### UI — colore tab preventivi nelle schermate condivise
+- **[PATCH] Aggiunto colore `warning` (#F59E0B):** Le schermate condivise usavano `text-warning`/`bg-warning` per il tab Preventivi e lo stato `completed_pending`, ma il colore non era definito né in `index.css` né in `tailwind.config.ts`. Aggiunta variabile `--color-warning` (245 158 11) in entrambi i temi e mapping Tailwind `warning`.
+- **File modificati:** `src/index.css`, `tailwind.config.ts`, `.spec/UI_UX_SPEC.md`
+
+## [v0.44.17] - 2026-07-01
+
+### UI — chart andamento economico ridisegnato in stile borsa
+- **[PATCH] AreaChart.tsx:** Il grafico "Andamento Economico" ora sembra un chart della borsa (TradingView-style). Il saldo è la linea principale (spessa 2.5px, fill gradient brand, tensione 0.35). Entrate e uscite sono overlay sottili tratteggiati come indicatori. Crosshair plugin con linee verticale/orizzontale tratteggiate su hover. Tooltip premium con formato valuta, palette scura, font JetBrains Mono per i numeri. Legenda spostata in basso. Asse Y compatto (k€). Etichette mesi abbreviate (es. "G 26").
+- **File modificati:** `src/shared/charts/AreaChart.tsx`
+
+## [v0.44.16] - 2026-07-01
+
+### UI — card documenti generati quadrate, piu piccole, uniformi
+- **[PATCH] InvoiceList.tsx:** Card nella sezione "Documenti generati" ora sono `aspect-square` (quadrate), padding ridotto a `p-3`, testo e bottoni piu compatti. Griglia cambiata da `md:grid-cols-2` a `md:grid-cols-2 lg:grid-cols-3` come da UI_UX_SPEC §4.6. QR code mostrato come overlay assoluto per non rompere l'aspect ratio.
+- **File modificati:** `src/features/invoicing/components/InvoiceList.tsx`
+
+## [v0.44.15] - 2026-07-01
+
+### UI — modali sempre centrati (fix fuori schermo)
+
+- **[PATCH] Modal.tsx:** Modificato allineamento da `items-start pt-[5vh] md:items-center md:pt-0` a `items-center` su tutte le dimensioni. I modali ora sono sempre centrati orizzontalmente e verticalmente come da UI_UX_SPEC §3.5 ("Posizione: Sempre centrati orizzontalmente e verticalmente"). Risolve il problema dei form creazione/modifica lavori e clienti che talvolta apparivano fuori schermo.
+- **File modificati:** `src/shared/ui/Modal.tsx`
+
+### UI — numerino percentuale "Stato Attivita" nero
+- **[PATCH] ProgressRings.tsx:** Il numerino della percentuale in alto a destra della card "Stato Attivita" passa da `text-brand` a `text-text-primary` (nero).
+- **File modificati:** `src/features/dashboard/components/ProgressRings.tsx`
+
 ## [v0.44.14] - 2026-07-01
 
 ### Docs — allineati tutti i .spec/ alla versione corrente
@@ -27,6 +89,11 @@
 - **[PATCH] Sidebar.tsx:** Animata versione testuale ("NetFlow vX.X.X") con `AnimatePresence` fade + height.
 - **[PATCH] MainLayout.tsx:** Allineata transizione margine contenuto a `cubic-bezier(0.16,1,0.3,1)` per coerenza con specifica UI/UX (Material Design emphasized deceleration).
 - **[PATCH] Sidebar.tsx:** Rimosso import `AnimatePresence` inutilizzato (fix TSC).
+
+### UI — fix page transition bouncing e modal posizione
+- **[PATCH] MainLayout.tsx:** Sostituita spring transition (stiffness 280, damping 24, mass 1.1) con `easeOut` 0.25s per eliminare il bouncing fastidioso al cambio pagina.
+- **[PATCH] Modal.tsx:** Modificato allineamento da `items-center` a `items-start pt-[5vh] md:items-center md:pt-0` per evitare che il form creazione lavori appaia fuori schermo su viewport piccoli.
+- **[PATCH] UI_UX_SPEC.md §2.4:** Aggiornata descrizione cambio pagina (da spring a easeOut, nessun overshoot).
 - **File modificati:** `README.md`, `.spec/ARCHITECTURE.md`, `.spec/PRD.md`, `.spec/SCHEMA.md`, `.spec/PROCESS_AND_AGENTS.md`, `.spec/COMMANDS.md`, `.spec/IN_ATTESA.md`, `.spec/CHANGELOG.md`, `src/shared/layouts/Sidebar.tsx`
 - **Build:** `npx tsc --noEmit` — 0 errori. `npm run build` — ✓
 

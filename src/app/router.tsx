@@ -12,6 +12,7 @@ import { AuthCallbackPage } from '../features/auth/pages/AuthCallbackPage'
 import { OnboardingPage } from '../features/auth/pages/OnboardingPage'
 import { NotFoundPage } from '../features/not-found/pages/NotFoundPage'
 import { SharedViewPage } from '../features/shared/pages/SharedViewPage'
+import { ClientPortalPage } from '../features/shared/pages/ClientPortalPage'
 
 function needsOnboarding(user: { full_name: string | null; tax_regime: string | null }): boolean {
   return !user.full_name || user.full_name.length < 2
@@ -77,6 +78,7 @@ export function AppRouter() {
         <Route path="/auth/callback" element={<AuthCallbackPage />} />
         <Route path="/onboarding" element={<OnboardingGuard><OnboardingPage /></OnboardingGuard>} />
         <Route path="/shared/:token" element={<SharedViewPage />} />
+        <Route path="/client-portal/:token" element={<ClientPortalPage />} />
         <Route path="/" element={<HomeRedirect />} />
 
         <Route path="/notifications" element={<AuthGate><lazyPage.NotificationsPage /></AuthGate>} />

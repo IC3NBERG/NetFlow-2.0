@@ -99,6 +99,7 @@ export interface Transaction {
 export interface Invoice {
   id: string
   user_id: string
+  client_id: string | null
   invoice_number: string
   type: InvoiceType
   gross_amount: number
@@ -132,7 +133,7 @@ export interface FiscalSetup {
   updated_at: string
 }
 
-export type NotificationCategory = 'deadline' | 'invoice' | 'backup' | 'sync' | 'goal' | 'quote' | 'expense' | 'system'
+export type NotificationCategory = 'deadline' | 'invoice' | 'backup' | 'sync' | 'goal' | 'quote' | 'expense' | 'system' | 'message'
 
 export interface Notification {
   id: string
@@ -234,6 +235,17 @@ export interface Share {
   sections: ShareSection[]
   expires_at: string | null
   last_accessed: string | null
+  client_id: string | null
+  created_at: string
+}
+
+export interface ShareMessage {
+  id: string
+  share_id: string
+  sender: 'owner' | 'client'
+  sender_name: string | null
+  content: string
+  read_at: string | null
   created_at: string
 }
 

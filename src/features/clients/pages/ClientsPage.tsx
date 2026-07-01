@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { GlassCard } from '../../../shared/ui/GlassCard'
 import { Button } from '../../../shared/ui/Button'
@@ -8,8 +8,9 @@ import { Toast } from '../../../shared/ui/Toast'
 import { FormSection } from '../../../shared/ui/FormSection'
 import { EmptyState } from '../../../shared/ui/EmptyState'
 import { useClients, useCreateClient, useUpdateClient, useDeleteClient } from '../../../lib/hooks/useClients'
+import { useCreateShare } from '../../../lib/hooks/useShares'
 import { isOfflineQueued } from '../../../lib/syncBridge'
-import { Plus, Pencil, Trash2, Check, Mail, Phone, Building2, CreditCard, Info } from 'lucide-react'
+import { Plus, Pencil, Trash2, Check, Mail, Phone, Building2, CreditCard, Info, ExternalLink, Loader2 } from 'lucide-react'
 import { ClientHistoryModal } from '../components/ClientHistoryModal'
 
 type ToastState = { message: string; type: 'success' | 'error' | 'info' } | null
@@ -31,6 +32,8 @@ export function ClientsPage() {
   const [notes, setNotes] = useState('')
   const [color, setColor] = useState('#C5963A')
   const [historyClientId, setHistoryClientId] = useState<string | null>(null)
+  const [portalLoadingId, setPortalLoadingId] = useState<string | null>(null)
+  const createShare = useCreateShare()
 
   function resetForm() {
     setName('')
@@ -44,6 +47,15 @@ export function ClientsPage() {
     setEditingId(null)
     setIsFormOpen(false)
   }
+
+  // Handle suggested action query param
+  useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search)
+    if (queryParams.get('action') === 'new') {
+      window.history.replaceState({}, document.title, window.location.pathname)
+      openCreate()
+    }
+  }, [])
 
   function openCreate() {
     resetForm()
@@ -102,6 +114,25 @@ export function ClientsPage() {
         console.error('[ClientsPage] Save error:', err)
         setToast({ message: msg, type: 'error' })
       }
+    }
+  }
+
+  async function handleCreatePortal(clientId: string, clientName: string) {
+    setPortalLoadingId(clientId)
+    try {
+      const share = await createShare.mutateAsync({
+        access_level: 'view',
+        name: `Portale ${clientName}`,
+        client_id: clientId,
+        expires_at: new Date(Date.now() + 365 * 86400000).toISOString(), // 1 year
+      })
+      const url = `${window.location.origin}/client-portal/${(share as any).token}`
+      await navigator.clipboard.writeText(url)
+      setToast({ message: `Portale creato! Link copiato: ${clientName}`, type: 'success' })
+    } catch {
+      setToast({ message: 'Errore nella creazione del portale', type: 'error' })
+    } finally {
+      setPortalLoadingId(null)
     }
   }
 
@@ -222,51 +253,81 @@ export function ClientsPage() {
       ) : (
         <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {clients.map((client) => (
-            <motion.div key={client.id} variants={itemAnim}>
-              <GlassCard className="p-4 md:p-5 space-y-3 group">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
-                    <div
-                      className="flex h-8 w-8 md:h-10 md:w-10 shrink-0 items-center justify-center rounded-full font-bold text-xs md:text-sm text-white"
-                      style={{ backgroundColor: client.color ?? '#C5963A' }}
-                    >
-                      {client.name.charAt(0).toUpperCase()}
-                    </div>
-                    <div className="min-w-0">
-                      <p className="font-semibold text-sm md:text-base truncate">{client.name}</p>
-                      {client.email && (
-                        <p className="text-[10px] md:text-xs text-text-secondary flex items-center gap-1 mt-0.5 truncate">
+            <motion.div key={client.id} variants={itemAnim} className="h-full">
+              <GlassCard className="p-4 md:p-5 flex flex-col justify-between h-full space-y-4 group">
+                <div className="space-y-3">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
+                      <div
+                        className="flex h-8 w-8 md:h-10 md:w-10 shrink-0 items-center justify-center rounded-full font-bold text-xs md:text-sm text-white"
+                        style={{ backgroundColor: client.color ?? '#C5963A' }}
+                      >
+                        {client.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-semibold text-sm md:text-base truncate">{client.name}</p>
+                        <p className="text-[10px] md:text-xs text-text-secondary flex items-center gap-1 mt-0.5 truncate min-h-[1.25rem]">
                           <Mail className="h-2.5 md:h-3 w-2.5 md:w-3 shrink-0" />
-                          {client.email}
+                          {client.email || <span className="opacity-50">Nessuna email</span>}
                         </p>
-                      )}
+                      </div>
+                    </div>
+                    <div className="flex gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity shrink-0">
+                      <button
+                        onClick={() => setHistoryClientId(client.id)}
+                        className="rounded-full p-1.5 text-text-secondary hover:bg-surface/80 hover:text-brand min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0"
+                        aria-label="Storico cliente"
+                      >
+                        <Info className="h-3.5 md:h-4 w-3.5 md:w-4" />
+                      </button>
+                      <button
+                        onClick={() => handleCreatePortal(client.id, client.name)}
+                        className="rounded-full p-1.5 text-text-secondary hover:bg-surface/80 hover:text-brand min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0"
+                        aria-label="Crea portale cliente"
+                        title="Crea portale cliente e copia link"
+                        disabled={portalLoadingId === client.id}
+                      >
+                        {portalLoadingId === client.id
+                          ? <Loader2 className="h-3.5 md:h-4 w-3.5 md:w-4 animate-spin" />
+                          : <ExternalLink className="h-3.5 md:h-4 w-3.5 md:w-4" />
+                        }
+                      </button>
+                      <button onClick={() => openEdit(client)} className="rounded-full p-1.5 text-text-secondary hover:bg-surface/80 hover:text-brand min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0">
+                        <Pencil className="h-3.5 md:h-4 w-3.5 md:w-4" />
+                      </button>
+                      <button onClick={() => handleDelete(client.id)} className="rounded-full p-1.5 text-text-secondary hover:bg-surface/80 hover:text-expense min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0">
+                        <Trash2 className="h-3.5 md:h-4 w-3.5 md:w-4" />
+                      </button>
                     </div>
                   </div>
-                  <div className="flex gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity shrink-0">
-                    <button
-                      onClick={() => setHistoryClientId(client.id)}
-                      className="rounded-full p-1.5 text-text-secondary hover:bg-surface/80 hover:text-brand min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0"
-                      aria-label="Storico cliente"
-                    >
-                      <Info className="h-3.5 md:h-4 w-3.5 md:w-4" />
-                    </button>
-                    <button onClick={() => openEdit(client)} className="rounded-full p-1.5 text-text-secondary hover:bg-surface/80 hover:text-brand min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0">
-                      <Pencil className="h-3.5 md:h-4 w-3.5 md:w-4" />
-                    </button>
-                    <button onClick={() => handleDelete(client.id)} className="rounded-full p-1.5 text-text-secondary hover:bg-surface/80 hover:text-expense min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0">
-                      <Trash2 className="h-3.5 md:h-4 w-3.5 md:w-4" />
-                    </button>
+
+                  <div className="space-y-1.5 text-[10px] md:text-xs text-text-secondary border-t border-border/40 pt-3">
+                    <p className="flex items-center gap-1.5 truncate">
+                      <Phone className="h-3 w-3 shrink-0 opacity-70" />
+                      <span className="opacity-75">Tel:</span>
+                      <span className="font-medium text-text-primary">{client.phone || '—'}</span>
+                    </p>
+                    <p className="flex items-center gap-1.5 truncate">
+                      <Building2 className="h-3 w-3 shrink-0 opacity-70" />
+                      <span className="opacity-75">P.IVA:</span>
+                      <span className="font-medium text-text-primary">{client.vat_number || '—'}</span>
+                    </p>
+                    <p className="flex items-center gap-1.5 truncate">
+                      <CreditCard className="h-3 w-3 shrink-0 opacity-70" />
+                      <span className="opacity-75">C.F.:</span>
+                      <span className="font-medium text-text-primary">{client.fiscal_code || '—'}</span>
+                    </p>
+                    <p className="truncate text-text-secondary/90 min-h-[1.25rem]">
+                      Indirizzo: <span className="text-text-primary font-medium">{client.address || '—'}</span>
+                    </p>
                   </div>
                 </div>
-                <div className="space-y-1 text-[10px] md:text-xs text-text-secondary">
-                  {client.phone && <p className="flex items-center gap-1 truncate"><Phone className="h-2.5 md:h-3 w-2.5 md:w-3 shrink-0" />{client.phone}</p>}
-                  {client.vat_number && <p className="flex items-center gap-1 truncate"><Building2 className="h-2.5 md:h-3 w-2.5 md:w-3 shrink-0" />IVA: {client.vat_number}</p>}
-                  {client.fiscal_code && <p className="flex items-center gap-1 truncate"><CreditCard className="h-2.5 md:h-3 w-2.5 md:w-3 shrink-0" />CF: {client.fiscal_code}</p>}
-                  {client.address && <p className="truncate">{client.address}</p>}
+
+                <div className="border-t border-border/40 pt-2 min-h-[2.5rem] flex items-center">
+                  <p className="text-[10px] md:text-xs text-text-secondary italic truncate w-full">
+                    {client.notes ? `Note: ${client.notes}` : <span className="opacity-50">Nessuna nota aggiuntiva</span>}
+                  </p>
                 </div>
-                {client.notes && (
-                  <p className="text-[10px] md:text-xs text-text-secondary italic border-t border-border/50 pt-2 truncate">{client.notes}</p>
-                )}
               </GlassCard>
             </motion.div>
           ))}

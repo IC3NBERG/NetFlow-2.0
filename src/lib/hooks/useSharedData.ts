@@ -23,7 +23,7 @@ export function useSharedData(token: string | undefined) {
   return useQuery({
     queryKey: ['shared_data', token],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc('get_shared_data', { token })
+      const { data, error } = await supabase.rpc('get_shared_data_by_token', { p_token: token })
       if (error) throw error
       return data as unknown as SharedData
     },

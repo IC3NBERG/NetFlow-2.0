@@ -55,9 +55,10 @@ export function InvoiceQRCode({ invoiceNumber, grossAmount, iban, creditorName }
   return (
     <div className="flex flex-col items-center gap-2">
       {svg ? (
-        <div
-          className="rounded-xl bg-white p-2 w-[180px] h-[180px] flex items-center justify-center"
-          dangerouslySetInnerHTML={{ __html: svg }}
+        <img
+          src={`data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svg)))}`}
+          alt="QR Code fattura"
+          className="rounded-xl bg-white p-2 w-[180px] h-[180px]"
         />
       ) : error ? (
         <div className="w-[180px] h-[180px] rounded-xl bg-white/10 flex items-center justify-center text-xs text-red-400 text-center px-2">

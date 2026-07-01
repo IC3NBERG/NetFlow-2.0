@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Check, X, ArrowRight, FileText, Trash2, Loader2, Banknote, CreditCard, ArrowLeftRight } from 'lucide-react'
 import { GlassCard } from '../../../shared/ui/GlassCard'
 import { Button } from '../../../shared/ui/Button'
@@ -13,6 +13,7 @@ import { useClients } from '../../../lib/hooks/useClients'
 import { useFiscalSetup } from '../../../lib/hooks/useFiscalSetup'
 import { useAuth } from '../../../app/providers/AuthProvider'
 import { netToGross, grossToNet, computeJobNetAmount } from '../../../lib/tax'
+import { cn } from '../../../lib/utils'
 import type { Quote, QuoteStatus, PaymentMethod, TaxRegime } from '../../../types/database'
 
 type ToastState = { message: string; type: 'success' | 'error' | 'info' } | null
@@ -51,6 +52,15 @@ const regimeLabels: Record<TaxRegime, string> = {
   vat_standard: 'Ordinario',
 }
 
+const filters = [
+  { id: 'all' as const, label: 'Tutti' },
+  { id: 'draft' as const, label: 'Bozze' },
+  { id: 'sent' as const, label: 'Inviati' },
+  { id: 'accepted' as const, label: 'Accettati' },
+  { id: 'rejected' as const, label: 'Rifiutati' },
+  { id: 'converted' as const, label: 'Convertiti' },
+]
+
 export function QuotesPage() {
   const { data: quotes, isLoading, error } = useQuotes()
   const { data: clients } = useClients()
@@ -62,6 +72,7 @@ export function QuotesPage() {
   const deleteQuote = useDeleteQuote()
   const [showForm, setShowForm] = useState(false)
   const [toast, setToast] = useState<ToastState>(null)
+  const [activeFilter, setActiveFilter] = useState<'all' | QuoteStatus>('all')
   const [formData, setFormData] = useState({
     client_id: '',
     title: '',
@@ -102,6 +113,15 @@ export function QuotesPage() {
       })
     }
   }, [showForm])
+
+  // Handle suggested action query param
+  useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search)
+    if (queryParams.get('action') === 'new') {
+      window.history.replaceState({}, document.title, window.location.pathname)
+      setShowForm(true)
+    }
+  }, [])
 
   function handleNetChange(value: number) {
     if (syncing.current) return
@@ -302,6 +322,11 @@ export function QuotesPage() {
   if (isLoading) return <QueryLoading />
   if (error) return <QueryError message="Errore caricamento preventivi" />
 
+  const filteredQuotes = (quotes || []).filter((q) => {
+    if (activeFilter !== 'all' && q.status !== activeFilter) return false
+    return true
+  })
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -318,77 +343,148 @@ export function QuotesPage() {
         )}
       </div>
 
+      <div className="flex gap-2 overflow-x-auto pb-1">
+        {filters.map((filter) => (
+          <button
+            key={filter.id}
+            onClick={() => setActiveFilter(filter.id)}
+            className={cn(
+              'rounded-full px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-medium transition-all border shrink-0',
+              activeFilter === filter.id
+                ? 'border-brand bg-brand/10 text-brand'
+                : 'border-border bg-surface text-text-secondary hover:border-brand/50 hover:text-text-primary',
+            )}
+          >
+            {filter.label}
+          </button>
+        ))}
+      </div>
+
       {(!quotes || quotes.length === 0) ? (
         <EmptyState
           title="Nessun preventivo"
           description="Crea il tuo primo preventivo da inviare ai clienti"
         />
+      ) : filteredQuotes.length === 0 ? (
+        <EmptyState
+          title="Nessun preventivo trovato"
+          description="Nessun preventivo corrisponde allo stato selezionato."
+        />
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {quotes.map((quote, i) => {
-            const PaymentIcon = paymentMethodIcons[quote.payment_method]
-            return (
-              <motion.div
-                key={quote.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3, delay: i * 0.05 }}
-              >
-                <GlassCard className="p-5 space-y-4">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <p className="text-xs text-text-secondary">{quote.quote_number}</p>
-                      <h3 className="text-lg font-medium mt-1">{quote.title}</h3>
-                      <p className="text-sm text-text-secondary mt-1">{quote.clients?.name || '\u00A0'}</p>
+        <AnimatePresence mode="popLayout">
+          <motion.div
+            key={activeFilter}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+          >
+            {filteredQuotes.map((quote) => {
+              const PaymentIcon = paymentMethodIcons[quote.payment_method]
+              return (
+                <motion.div
+                  key={quote.id}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.25 }}
+                  className="h-full"
+                >
+                <GlassCard className="p-4 md:p-5 flex flex-col justify-between h-full space-y-4">
+                  {/* Top Header */}
+                  <div className="space-y-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="text-[10px] md:text-xs text-text-secondary font-mono tracking-tight">{quote.quote_number}</p>
+                        <h3 className="text-base md:text-lg font-bold mt-0.5 line-clamp-1">{quote.title}</h3>
+                        <p className="text-xs text-text-secondary font-medium mt-0.5 truncate">
+                          Cliente: <span className="text-text-primary">{quote.clients?.name || '—'}</span>
+                        </p>
+                      </div>
+                      <Badge variant={statusBadge[quote.status]} className="shrink-0 text-[10px] md:text-xs px-2.5 py-0.5 uppercase tracking-wide">
+                        {statusLabels[quote.status]}
+                      </Badge>
                     </div>
-                    <Badge variant={statusBadge[quote.status]}>{statusLabels[quote.status]}</Badge>
+
+                    <div>
+                      <p className="text-xs text-text-secondary line-clamp-2 mt-1 min-h-[2rem]">
+                        {quote.description || <span className="italic opacity-60">Nessun dettaglio aggiuntivo</span>}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-semibold font-mono tabular-nums">
-                      {new Intl.NumberFormat('it-IT', { style: 'currency', currency: quote.currency || 'EUR' }).format(quote.gross_amount)}
-                    </span>
+
+                  {/* Financial Details */}
+                  <div className="grid grid-cols-2 gap-4 border-t border-b border-border/50 py-3 my-1">
+                    <div>
+                      <p className="text-[10px] text-text-secondary uppercase font-semibold tracking-wider">Lordo</p>
+                      <p className="text-lg md:text-xl font-bold font-mono mt-0.5 text-text-primary">
+                        {new Intl.NumberFormat('it-IT', { style: 'currency', currency: quote.currency || 'EUR' }).format(quote.gross_amount)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-text-secondary uppercase font-semibold tracking-wider">Netto</p>
+                      <p className="text-lg md:text-xl font-bold font-mono mt-0.5 text-text-primary">
+                        {quote.net_amount > 0 
+                          ? new Intl.NumberFormat('it-IT', { style: 'currency', currency: quote.currency || 'EUR' }).format(quote.net_amount)
+                          : '—'
+                        }
+                      </p>
+                    </div>
                   </div>
-                  {quote.net_amount > 0 && (
-                    <p className="text-xs text-text-secondary">
-                      Netto: {new Intl.NumberFormat('it-IT', { style: 'currency', currency: quote.currency || 'EUR' }).format(quote.net_amount)}
-                    </p>
-                  )}
-                  <div className="flex items-center gap-2 text-xs text-text-secondary">
-                    <PaymentIcon className="h-3.5 w-3.5" />
-                    <span>{paymentMethodLabels[quote.payment_method]}</span>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {quote.status === 'draft' && (
-                      <Button size="sm" variant="secondary" onClick={() => updateStatus.mutate({ quoteId: quote.id, status: 'sent' })}>
-                        <Check className="h-3.5 w-3.5" /> Invia
-                      </Button>
-                    )}
-                    {quote.status === 'sent' && (
-                      <>
-                        <Button size="sm" variant="secondary" onClick={() => updateStatus.mutate({ quoteId: quote.id, status: 'accepted' })}>
-                          <Check className="h-3.5 w-3.5" /> Accetta
+
+                  {/* Payment Details & Actions */}
+                  <div className="flex items-center justify-between gap-2 min-h-[2.25rem]">
+                    <div className="flex items-center gap-1.5 text-text-secondary text-[11px]">
+                      <PaymentIcon className="h-3.5 w-3.5" />
+                      <span className="capitalize">{paymentMethodLabels[quote.payment_method]}</span>
+                    </div>
+
+                    <div className="flex flex-wrap gap-1.5 justify-end">
+                      {quote.status === 'draft' && (
+                        <Button size="sm" variant="secondary" className="text-xs px-2.5 h-8" onClick={() => updateStatus.mutate({ quoteId: quote.id, status: 'sent' })}>
+                          <Check className="h-3.5 w-3.5 mr-1" /> Invia
                         </Button>
-                        <Button size="sm" variant="danger" onClick={() => updateStatus.mutate({ quoteId: quote.id, status: 'rejected' })}>
-                          <X className="h-3.5 w-3.5" /> Rifiuta
+                      )}
+                      {quote.status === 'sent' && (
+                        <>
+                          <Button size="sm" variant="secondary" className="text-xs px-2.5 h-8" onClick={() => updateStatus.mutate({ quoteId: quote.id, status: 'accepted' })}>
+                            <Check className="h-3.5 w-3.5 mr-1" /> Accetta
+                          </Button>
+                          <Button size="sm" variant="danger" className="text-xs px-2.5 h-8" onClick={() => updateStatus.mutate({ quoteId: quote.id, status: 'rejected' })}>
+                            <X className="h-3.5 w-3.5 mr-1" /> Rifiuta
+                          </Button>
+                        </>
+                      )}
+                      {quote.status === 'accepted' && (
+                        <Button size="sm" className="text-xs px-3 h-8 shadow-sm" onClick={() => handleConvert(quote)}>
+                          <ArrowRight className="h-3.5 w-3.5 mr-1" /> Crea Lavoro
                         </Button>
-                      </>
-                    )}
-                    {quote.status === 'accepted' && (
-                      <Button size="sm" onClick={() => handleConvert(quote)}>
-                        <ArrowRight className="h-3.5 w-3.5" /> Crea Lavoro
-                      </Button>
-                    )}
-                    {(quote.status === 'draft' || quote.status === 'rejected') && (
-                      <Button size="sm" variant="danger" onClick={() => deleteQuote.mutate(quote.id)}>
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
-                    )}
+                      )}
+                      {quote.status === 'converted' && (
+                        <div className="flex items-center gap-1 text-warning bg-warning/10 px-3 py-1.5 rounded-full text-xs font-semibold">
+                          <Check className="h-3.5 w-3.5" />
+                          <span>Convertito</span>
+                        </div>
+                      )}
+                      {quote.status === 'rejected' && (
+                        <div className="flex items-center gap-1 text-expense bg-expense/10 px-3 py-1.5 rounded-full text-xs font-semibold">
+                          <X className="h-3.5 w-3.5" />
+                          <span>Rifiutato</span>
+                        </div>
+                      )}
+                      {(quote.status === 'draft' || quote.status === 'rejected') && (
+                        <Button size="sm" variant="danger" className="text-xs p-1.5 h-8 w-8 flex items-center justify-center" onClick={() => deleteQuote.mutate(quote.id)}>
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </GlassCard>
               </motion.div>
-            )
-          })}
-        </div>
+              )
+            })}
+          </motion.div>
+        </AnimatePresence>
       )}
 
       <Modal open={showForm} onClose={() => setShowForm(false)} title="Nuovo Preventivo">

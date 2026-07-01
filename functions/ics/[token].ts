@@ -67,14 +67,25 @@ function generateIcs(events: Array<{
   return lines.join('\r\n')
 }
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, OPTIONS',
-  'Access-Control-Allow-Headers': '*',
+function getCorsHeaders(request: Request) {
+  const allowedOrigins = [
+    'https://netflow-v3.pages.dev',
+    'http://localhost:5173',
+  ]
+  const origin = request.headers.get('Origin') || ''
+  const allowedOrigin = allowedOrigins.includes(origin) ? origin : 'https://netflow-v3.pages.dev'
+
+  return {
+    'Access-Control-Allow-Origin': allowedOrigin,
+    'Vary': 'Origin',
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+  }
 }
 
 export async function onRequest(context) {
   const { token } = context.params
+  const CORS_HEADERS = getCorsHeaders(context.request)
   const supabaseUrl = context.env.VITE_SUPABASE_URL
   const supabaseKey = context.env.VITE_SUPABASE_ANON_KEY
 

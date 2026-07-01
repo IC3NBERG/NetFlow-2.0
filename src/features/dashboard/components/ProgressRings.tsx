@@ -91,7 +91,7 @@ export function ProgressRings({
     <GlassCard className="p-4 h-full flex flex-col">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-base font-semibold">Stato Attivita</h3>
-        <span className="text-sm font-bold font-mono text-brand">{goalPercent}%</span>
+        <span className="text-sm font-bold font-mono text-text-primary">{goalPercent}%</span>
       </div>
 
       <div className="flex gap-3 items-center pb-3 border-b border-border">

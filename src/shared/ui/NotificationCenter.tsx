@@ -199,20 +199,25 @@ export function NotificationCenter() {
                     <div
                       key={n.id}
                       className={cn(
-                        'group flex items-start gap-3 border-b border-border/50 px-4 py-3 text-sm transition-colors',
-                        !n.is_read && 'bg-brand/[0.02]',
+                        'group flex items-start gap-3 border-b border-border/40 px-4 py-3.5 text-sm transition-all duration-300 relative overflow-hidden',
+                        !n.is_read && 'bg-brand/[0.015] border-l-2 border-l-brand',
                         'hover:bg-surface/80',
                       )}
                     >
                       <div className="flex flex-1 items-start gap-3 min-w-0">
-                        {!n.is_read && (
-                          <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-brand" />
-                        )}
-                        {n.is_read && (
-                          <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-transparent" />
-                        )}
-                        <Icon className={cn('mt-0.5 h-4 w-4 shrink-0', cfg.color)} />
+                        <div className={cn('rounded-lg p-2 shrink-0 transition-transform duration-300 group-hover:scale-105', `${cfg.color.replace('text-', 'bg-')}/8`)}>
+                          <Icon className={cn('h-4.5 w-4.5', cfg.color)} />
+                        </div>
                         <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="text-[9px] uppercase font-bold tracking-wider text-text-secondary">{cfg.label}</span>
+                            <span className="text-[9px] text-text-secondary opacity-75 font-medium">
+                              {formatRelativeTime(n.created_at)}
+                            </span>
+                            {!n.is_read && (
+                              <span className="rounded-full bg-brand/10 text-brand px-1.5 py-0.25 text-[8px] font-bold uppercase tracking-wide">Nuovo</span>
+                            )}
+                          </div>
                           {n.link ? (
                             <Link
                               to={n.link}
@@ -220,20 +225,17 @@ export function NotificationCenter() {
                                 handleMarkRead(n)
                                 setIsOpen(false)
                               }}
-                              className="block"
+                              className="block mt-1 group/link"
                             >
-                              <p className="text-xs text-text-secondary font-medium">{n.title}</p>
-                              <p className="text-text-primary text-xs mt-0.5 line-clamp-2">{n.message}</p>
+                              <p className="text-xs font-semibold text-text-primary group-hover/link:text-brand transition-colors">{n.title}</p>
+                              <p className="text-text-secondary text-xs mt-0.5 line-clamp-2 leading-relaxed">{n.message}</p>
                             </Link>
                           ) : (
-                            <>
-                              <p className="text-xs text-text-secondary font-medium">{n.title}</p>
-                              <p className="text-text-primary text-xs mt-0.5 line-clamp-2">{n.message}</p>
-                            </>
+                            <div className="mt-1">
+                              <p className="text-xs font-semibold text-text-primary">{n.title}</p>
+                              <p className="text-text-secondary text-xs mt-0.5 line-clamp-2 leading-relaxed">{n.message}</p>
+                            </div>
                           )}
-                          <p className="text-[10px] text-text-secondary mt-1">
-                            {formatRelativeTime(n.created_at)}
-                          </p>
                         </div>
                       </div>
                       <div className="flex shrink-0 gap-1 opacity-0 group-hover:opacity-100 transition-opacity">

@@ -71,8 +71,15 @@ export function SettingsPage() {
   const [fiscalGoalMetric, setFiscalGoalMetric] = useState<GoalMetric>(fiscalSetup?.goal_metric ?? user?.goal_metric ?? 'net_settled')
   const [customIrpefRate, setCustomIrpefRate] = useState(fiscalSetup?.custom_irpef_rate ?? null)
 
+  // Populate local states when user changes
   useEffect(() => {
     if (user) {
+      setFullName(user.full_name ?? '')
+      setBusinessName(user.business_name ?? '')
+      setVatNumber(user.vat_number ?? '')
+      setFiscalCode(user.fiscal_code ?? '')
+      setAddress(user.address ?? '')
+      setTaxRegime(user.tax_regime ?? 'occasional')
       setInvoiceHeader(user.business_name ?? '')
       const footer = user.goal_data && typeof user.goal_data === 'object' && 'invoice_footer' in user.goal_data
         ? String((user.goal_data as { invoice_footer?: string }).invoice_footer ?? '')
@@ -81,13 +88,48 @@ export function SettingsPage() {
     }
   }, [user])
 
+  // Populate local states when year/fiscalSetup changes (for year-isolated fields)
   useEffect(() => {
     if (fiscalSetup) {
       setFiscalGoal(fiscalSetup.financial_goal)
       setFiscalGoalMetric(fiscalSetup.goal_metric)
       setCustomIrpefRate(fiscalSetup.custom_irpef_rate)
+    } else {
+      setFiscalGoal(user?.financial_goal ?? 0)
+      setFiscalGoalMetric(user?.goal_metric ?? 'net_settled')
+      setCustomIrpefRate(null)
     }
-  }, [fiscalSetup])
+  }, [fiscalSetup, fiscalYear, user])
+
+  // Autosave profile and fiscal values on change (debounced)
+  useEffect(() => {
+    if (!user) return
+    const timer = setTimeout(async () => {
+      try {
+        await updateProfile.mutateAsync({
+          id: user.id,
+          full_name: fullName || null,
+          business_name: businessName || null,
+          vat_number: vatNumber || null,
+          fiscal_code: fiscalCode || null,
+          address: address || null,
+          tax_regime: taxRegime,
+        })
+        
+        await upsertFiscalSetup.mutateAsync({
+          year: fiscalYear,
+          tax_regime: taxRegime,
+          financial_goal: fiscalGoal,
+          goal_metric: fiscalGoalMetric,
+          custom_irpef_rate: customIrpefRate,
+        })
+      } catch (err) {
+        console.error('Autosave failed:', err)
+      }
+    }, 800)
+
+    return () => clearTimeout(timer)
+  }, [fullName, businessName, vatNumber, fiscalCode, address, taxRegime, fiscalGoal, fiscalGoalMetric, customIrpefRate, fiscalYear, user])
 
   async function handleSaveInvoiceTemplate() {
     if (!user) return
@@ -145,36 +187,7 @@ export function SettingsPage() {
     await hardResetPwa(queryClient)
   }
 
-  async function handleSaveProfile() {
-    if (!user) return
-    setIsSubmitting(true)
-    try {
-      await updateProfile.mutateAsync({
-        id: user.id,
-        full_name: fullName || null,
-        business_name: businessName || null,
-        vat_number: vatNumber || null,
-        fiscal_code: fiscalCode || null,
-        address: address || null,
-        tax_regime: taxRegime,
-      })
 
-      await upsertFiscalSetup.mutateAsync({
-        year: fiscalYear,
-        tax_regime: taxRegime,
-        financial_goal: fiscalGoal,
-        goal_metric: fiscalGoalMetric,
-        custom_irpef_rate: customIrpefRate,
-      })
-
-      await refreshProfile()
-      setToast({ message: 'Profilo aggiornato con successo', type: 'success' })
-    } catch {
-      setToast({ message: 'Errore durante il salvataggio', type: 'error' })
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
 
   async function handleToggleSetting(key: string, value: boolean | number) {
     try {
@@ -444,11 +457,11 @@ export function SettingsPage() {
                   L'obiettivo è isolato per anno fiscale. La modifica non influisce sui periodi passati.
                 </p>
               </div>
-              <div className="flex items-center gap-3 pt-2">
-                <Button onClick={handleSaveProfile} disabled={isSubmitting} className="text-xs md:text-sm">
-                  <Save className="mr-1 md:mr-2 h-3.5 md:h-4 w-3.5 md:w-4" />
-                  {isSubmitting ? 'Salvataggio...' : 'Salva profilo'}
-                </Button>
+              <div className="flex items-center justify-between border-t border-border pt-4">
+                <p className="text-xs text-text-secondary flex items-center gap-1.5">
+                  <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
+                  Salvataggio automatico attivo. I dati si salvano man mano che digiti.
+                </p>
               </div>
             </GlassCard>
           </motion.div>

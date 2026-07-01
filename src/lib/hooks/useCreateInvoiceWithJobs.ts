@@ -41,6 +41,9 @@ export function useCreateInvoiceWithJobs() {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session?.user) throw new Error('Not authenticated')
 
+      // Derive client_id from first job that has one
+      const clientId = jobs.find((j) => j.client_id)?.client_id ?? null
+
       const payload = {
         user_id: session.user.id,
         invoice_number: invoiceNumber,
@@ -53,6 +56,7 @@ export function useCreateInvoiceWithJobs() {
         due_date: due_date || null,
         paid_date: null,
         pdf_url: null,
+        client_id: clientId,
         __job_ids: jobs.map((j) => j.id),
       }
 

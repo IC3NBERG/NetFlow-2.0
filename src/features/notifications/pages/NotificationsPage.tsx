@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import {
   Bell, Calendar, AlertTriangle, Download, RefreshCw, Goal, FileText, TrendingUp,
-  CheckCheck, X, ArrowLeft, Trash2, Filter,
+  CheckCheck, X, ArrowLeft, Trash2, Filter, MessageCircle,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { GlassCard } from '../../../shared/ui/GlassCard'
@@ -26,9 +26,10 @@ const categoryConfig: Record<NotificationCategory, { icon: typeof Bell; color: s
   quote: { icon: FileText, color: 'text-brand/70', label: 'Preventivi' },
   expense: { icon: TrendingUp, color: 'text-expense', label: 'Spese' },
   system: { icon: Bell, color: 'text-text-secondary', label: 'Sistema' },
+  message: { icon: MessageCircle, color: 'text-brand', label: 'Messaggi' },
 }
 
-const allCategories: NotificationCategory[] = ['deadline', 'invoice', 'backup', 'sync', 'goal', 'quote', 'expense', 'system']
+const allCategories: NotificationCategory[] = ['deadline', 'invoice', 'backup', 'sync', 'goal', 'quote', 'expense', 'system', 'message']
 
 export function NotificationsPage() {
   const [activeCategory, setActiveCategory] = useState<NotificationCategory | 'all'>('all')
@@ -167,47 +168,44 @@ export function NotificationsPage() {
               <motion.div key={n.id} variants={itemAnim}>
                 <GlassCard
                   className={cn(
-                    'p-3 md:p-4 transition-colors',
-                    !n.is_read && !n.is_dismissed ? 'border-brand/20' : '',
-                    n.is_dismissed ? 'opacity-50' : '',
+                    'p-4 md:p-5 transition-all duration-300 relative overflow-hidden group',
+                    !n.is_read && !n.is_dismissed 
+                      ? 'border-brand/35 bg-brand/[0.015] shadow-[0_0_15px_rgba(197,150,58,0.05)]' 
+                      : 'border-border/60 hover:border-brand/30',
+                    n.is_dismissed ? 'opacity-40' : '',
                   )}
                 >
                   <div className="flex items-start gap-3 md:gap-4">
-                    <div className="flex items-start gap-3 flex-1 min-w-0">
-                      {!n.is_read && !n.is_dismissed && (
-                        <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-brand" />
-                      )}
-                      <div className={cn('rounded-full p-2 shrink-0', `${cfg.color.replace('text-', 'bg-')}/10`)}>
-                        <Icon className={cn('h-4 w-4 md:h-5 md:w-5', cfg.color)} />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-xs text-text-secondary">{cfg.label}</span>
-                          <span className="text-[10px] text-text-secondary">
-                            {formatRelativeTime(n.created_at)}
-                          </span>
+                      <div className="flex items-start gap-3 flex-1 min-w-0">
+                        <div className={cn('rounded-xl p-2.5 shrink-0 transition-transform duration-300 group-hover:scale-105', `${cfg.color.replace('text-', 'bg-')}/8`)}>
+                          <Icon className={cn('h-5 w-5', cfg.color)} />
                         </div>
-                        <p className="text-sm font-medium mt-0.5">{n.title}</p>
-                        <p className="text-xs md:text-sm text-text-secondary mt-0.5">{n.message}</p>
-                        {n.link && (
-                          <Link
-                            to={n.link}
-                            onClick={() => {
-                              if (!n.is_read) markRead.mutate(n.id)
-                            }}
-                            className="inline-flex items-center gap-1 text-xs text-brand hover:underline mt-2"
-                          >
-                            <ArrowLeft className="h-3 w-3 rotate-180" />
-                            Vedi
-                          </Link>
-                        )}
-                        {n.metadata && (
-                          <p className="text-[10px] text-text-secondary mt-1 font-mono opacity-50">
-                            {JSON.stringify(n.metadata).slice(0, 80)}
-                          </p>
-                        )}
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-[10px] uppercase font-bold tracking-wider text-text-secondary">{cfg.label}</span>
+                            <span className="text-[10px] text-text-secondary opacity-75 font-medium">
+                              {formatRelativeTime(n.created_at)}
+                            </span>
+                            {!n.is_read && !n.is_dismissed && (
+                              <span className="rounded-full bg-brand/10 text-brand px-2 py-0.25 text-[9px] font-bold uppercase tracking-wide">Nuovo</span>
+                            )}
+                          </div>
+                          <p className="text-sm font-semibold text-text-primary mt-1">{n.title}</p>
+                          <p className="text-xs text-text-secondary mt-1 leading-relaxed">{n.message}</p>
+                          {n.link && (
+                            <Link
+                              to={n.link}
+                              onClick={() => {
+                                if (!n.is_read) markRead.mutate(n.id)
+                              }}
+                              className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand hover:text-brand/80 transition-colors mt-2.5"
+                            >
+                              <span>Visualizza</span>
+                              <ArrowLeft className="h-3 w-3 rotate-180 transition-transform group-hover:translate-x-0.5" />
+                            </Link>
+                          )}
+                        </div>
                       </div>
-                    </div>
                     <div className="flex gap-1 shrink-0">
                       {!n.is_read && !n.is_dismissed && (
                         <button

@@ -24,8 +24,8 @@ const jobSchema = z.object({
   status: z.enum(['active', 'completed_pending', 'completed_settled']),
   client_id: z.string().nullable(),
   start_date: z.string().min(1, 'Data richiesta'),
-  pending_date: z.string().nullable(),
-  end_date: z.string().nullable(),
+  pending_date: z.string().nullable().optional(),
+  end_date: z.string().nullable().optional(),
   attachment_urls: z.array(z.string()).default([]),
   currency: z.string().default('EUR'),
 })
@@ -129,16 +129,82 @@ export function JobFormModal({ open, onClose, onSubmit, initialData, isSubmittin
   const pendingDate = watch('pending_date')
   const grossTotal = amountCard + amountCash
 
+  const currency = watch('currency')
+  const prevCurrency = useRef(currency)
+
+  // Real-time Currency Conversion
   useEffect(() => {
-    if (initialData) return
-    if (endDate) {
-      setValue('status', 'completed_settled')
-    } else if (pendingDate) {
-      setValue('status', 'completed_pending')
-    } else {
-      setValue('status', 'active')
+    if (prevCurrency.current === currency) return
+    const from = prevCurrency.current
+    prevCurrency.current = currency
+
+    async function convert() {
+      if (netAmount <= 0 && amountCard <= 0 && amountCash <= 0) return
+      try {
+        const { getExchangeRate } = await import('../../../lib/exchangeRate')
+        // Get rates for both currencies to convert between them
+        const rateFrom = await getExchangeRate(from)
+        const rateTo = await getExchangeRate(currency)
+        
+        // Convert to EUR first, then to the target currency
+        const convertVal = (val: number) => {
+          const inEur = from === 'EUR' ? val : val / rateFrom
+          return currency === 'EUR' ? inEur : inEur * rateTo
+        }
+
+        setValue('net_amount', Math.round(convertVal(netAmount) * 100) / 100)
+        setValue('amount_card', Math.round(convertVal(amountCard) * 100) / 100)
+        setValue('amount_cash', Math.round(convertVal(amountCash) * 100) / 100)
+      } catch (err) {
+        console.error('Real-time currency conversion failed:', err)
+      }
     }
-  }, [endDate, pendingDate, initialData, setValue])
+    convert()
+  }, [currency, setValue, netAmount, amountCard, amountCash])
+
+  // Bidirectional state and date synchronization
+  const status = watch('status')
+  const prevStatus = useRef(status)
+
+  // 1. Sync from Status to Date
+  useEffect(() => {
+    if (prevStatus.current === status) return
+    prevStatus.current = status
+
+    const today = new Date().toISOString().split('T')[0]
+    if (status === 'completed_settled') {
+      setValue('end_date', today)
+      if (!pendingDate) {
+        setValue('pending_date', today)
+      }
+    } else if (status === 'completed_pending') {
+      setValue('end_date', undefined)
+      setValue('pending_date', today)
+    } else if (status === 'active') {
+      setValue('end_date', undefined)
+      setValue('pending_date', undefined)
+    }
+  }, [status, setValue, pendingDate])
+
+  // 2. Sync from Date to Status
+  useEffect(() => {
+    if (endDate) {
+      if (status !== 'completed_settled') {
+        setValue('status', 'completed_settled')
+        prevStatus.current = 'completed_settled'
+      }
+    } else if (pendingDate) {
+      if (status !== 'completed_pending') {
+        setValue('status', 'completed_pending')
+        prevStatus.current = 'completed_pending'
+      }
+    } else {
+      if (status !== 'active') {
+        setValue('status', 'active')
+        prevStatus.current = 'active'
+      }
+    }
+  }, [endDate, pendingDate, setValue])
 
   const prevIncludeCash = useRef(includeCash)
 
@@ -516,26 +582,24 @@ export function JobFormModal({ open, onClose, onSubmit, initialData, isSubmittin
         <CurrencySelect value={watch('currency')} onChange={(v) => setValue('currency', v)} />
       </FormSection>
 
-      {initialData && (
-        <FormSection title="Stato Avanzamento">
-          <div className="grid grid-cols-3 gap-2">
-            {(['active', 'completed_pending', 'completed_settled'] as const).map((s) => (
-              <button
-                key={s}
-                type="button"
-                onClick={() => setValue('status', s)}
-                className={`rounded-full border py-3 text-sm font-medium transition-all ${
-                  watch('status') === s
-                    ? 'border-brand bg-brand/10 text-brand'
-                    : 'border-border bg-surface text-text-secondary hover:border-brand/50'
-                }`}
-              >
-                {s === 'active' ? 'Attivo' : s === 'completed_pending' ? 'Da incassare' : 'Incassato'}
-              </button>
-            ))}
-          </div>
-        </FormSection>
-      )}
+      <FormSection title="Stato Avanzamento">
+        <div className="grid grid-cols-3 gap-2">
+          {(['active', 'completed_pending', 'completed_settled'] as const).map((s) => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => setValue('status', s)}
+              className={`rounded-full border py-3 text-sm font-medium transition-all ${
+                watch('status') === s
+                  ? 'border-brand bg-brand/10 text-brand'
+                  : 'border-border bg-surface text-text-secondary hover:border-brand/50'
+              }`}
+            >
+              {s === 'active' ? 'Attivo' : s === 'completed_pending' ? 'Da incassare' : 'Incassato'}
+            </button>
+          ))}
+        </div>
+      </FormSection>
 
       <div className="flex justify-end gap-3 pt-4">
         <Button variant="ghost" type="button" onClick={onClose} className="rounded-full">Annulla</Button>

@@ -4,8 +4,9 @@ export type SidebarMode = 'full' | 'icons' | 'hidden'
 
 interface UIStore {
   sidebarMode: SidebarMode
+  sidebarDragWidth: number | null
   setSidebarMode: (mode: SidebarMode) => void
-  cycleSidebarMode: () => void
+  setSidebarDragWidth: (width: number | null) => void
 }
 
 export const useUIStore = create<UIStore>((set) => {
@@ -15,16 +16,11 @@ export const useUIStore = create<UIStore>((set) => {
 
   return {
     sidebarMode: initialMode,
+    sidebarDragWidth: null,
     setSidebarMode: (mode) => {
       localStorage.setItem('fintrack-sidebar-mode', mode)
       set({ sidebarMode: mode })
     },
-    cycleSidebarMode: () => {
-      set((state) => {
-        const next = state.sidebarMode === 'full' ? 'icons' : state.sidebarMode === 'icons' ? 'hidden' : 'full'
-        localStorage.setItem('fintrack-sidebar-mode', next)
-        return { sidebarMode: next }
-      })
-    },
+    setSidebarDragWidth: (width) => set({ sidebarDragWidth: width }),
   }
 })

@@ -13,14 +13,14 @@ import {
   CalendarDays,
   Sliders,
   LifeBuoy,
-  ChevronLeft,
-  ChevronRight,
 } from 'lucide-react'
 import { cn } from '../../lib/utils'
 import { useAuth } from '../../app/providers/AuthProvider'
 import { Logo } from '../ui/Logo'
 import { useCustomizationStore } from '../../lib/stores/customization'
 import { useUIStore } from '../../lib/stores/ui'
+import { useRef, useState } from 'react'
+import type { SidebarMode } from '../../lib/stores/ui'
 
 const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -33,16 +33,68 @@ const navItems = [
   { to: '/ledger', icon: Archive, label: 'Registro' },
 ]
 
+const HIDDEN_WIDTH = 0
+const ICONS_WIDTH = 72
+const FULL_WIDTH = 240
+const MAX_WIDTH = 400
+
+function snapMode(width: number): SidebarMode {
+  if (width < (HIDDEN_WIDTH + ICONS_WIDTH) / 2) return 'hidden'
+  if (width < (ICONS_WIDTH + FULL_WIDTH) / 2) return 'icons'
+  return 'full'
+}
+
 export function Sidebar() {
   const { signOut } = useAuth()
   const navigate = useNavigate()
   const sidebarOrder = useCustomizationStore((s) => s.sidebarOrder)
   const sidebarMode = useUIStore((s) => s.sidebarMode)
   const setSidebarMode = useUIStore((s) => s.setSidebarMode)
-  const cycleSidebarMode = useUIStore((s) => s.cycleSidebarMode)
+  const setSidebarDragWidth = useUIStore((s) => s.setSidebarDragWidth)
 
   const isIcons = sidebarMode === 'icons'
   const isHidden = sidebarMode === 'hidden'
+
+  const [dragWidth, setDragWidth] = useState<number | null>(null)
+  const isDragging = dragWidth !== null
+
+  const baseWidth = isHidden ? HIDDEN_WIDTH : isIcons ? ICONS_WIDTH : FULL_WIDTH
+  const displayWidth = dragWidth ?? baseWidth
+
+  const resizeRef = useRef({ startX: 0, startWidth: 0 })
+
+  function handleResizeStart(e: React.MouseEvent) {
+    e.preventDefault()
+    resizeRef.current = { startX: e.clientX, startWidth: displayWidth }
+
+    function onMove(e: MouseEvent) {
+      const { startX, startWidth } = resizeRef.current
+      const newWidth = Math.max(HIDDEN_WIDTH, Math.min(MAX_WIDTH, startWidth + e.clientX - startX))
+      setDragWidth(newWidth)
+      setSidebarDragWidth(newWidth)
+    }
+
+    function onUp() {
+      document.removeEventListener('mousemove', onMove)
+      document.removeEventListener('mouseup', onUp)
+      document.body.style.cursor = ''
+      document.body.style.userSelect = ''
+
+      setDragWidth((current) => {
+        if (current !== null) {
+          const mode = snapMode(current)
+          setSidebarMode(mode)
+        }
+        setSidebarDragWidth(null)
+        return null
+      })
+    }
+
+    document.body.style.cursor = 'col-resize'
+    document.body.style.userSelect = 'none'
+    document.addEventListener('mousemove', onMove)
+    document.addEventListener('mouseup', onUp)
+  }
 
   const orderedNavItems = [...navItems].sort((a, b) => {
     const idxA = sidebarOrder.indexOf(a.to)
@@ -59,30 +111,28 @@ export function Sidebar() {
 
   return (
     <>
-      {/* Floating toggle when sidebar is hidden */}
+      {/* Invisible grab handle at left edge when sidebar is hidden */}
       {isHidden && (
-        <motion.button
-          initial={{ opacity: 0, scale: 0.8, x: -20 }}
-          animate={{ opacity: 1, scale: 1, x: 0 }}
-          transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+        <div
+          className="fixed left-0 top-0 bottom-0 z-50 w-1.5 cursor-col-resize hover:bg-brand/20 transition-colors"
+          onMouseDown={handleResizeStart}
           onClick={() => setSidebarMode('full')}
-          className="fixed left-3 bottom-6 z-50 hidden md:flex items-center justify-center h-9 w-9 rounded-full bg-surface/80 backdrop-blur-xl border border-border text-text-secondary hover:text-text-primary hover:bg-surface transition-all shadow-lg"
-          title="Espandi sidebar"
-        >
-          <ChevronRight className="h-5 w-5" />
-        </motion.button>
+        />
       )}
 
       <motion.aside
-        animate={{ width: isHidden ? 0 : isIcons ? 72 : 240 }}
-        transition={{ type: 'spring', stiffness: 280, damping: 24, mass: 1 }}
+        animate={{ width: displayWidth }}
+        transition={
+          isDragging
+            ? { duration: 0 }
+            : { type: 'spring', stiffness: 280, damping: 24, mass: 1 }
+        }
         className={cn(
-          'fixed left-0 top-0 z-40 hidden h-screen flex-col bg-surface/60 backdrop-blur-xl md:flex overflow-hidden',
-          isHidden ? 'border-r-0' : 'border-r border-border',
+          'fixed left-0 top-0 z-40 hidden h-screen flex-col bg-surface/60 backdrop-blur-xl md:flex overflow-hidden border-r border-border',
         )}
       >
         <div className={cn(
-          'flex items-center transition-all duration-300 shrink-0 relative',
+          'flex items-center shrink-0 relative',
           isHidden ? 'px-0' : isIcons ? 'justify-center' : 'justify-between px-6',
           'py-5',
         )}>
@@ -105,11 +155,7 @@ export function Sidebar() {
 
         <nav className={cn('flex-1 space-y-1 py-4', isHidden ? 'px-0' : isIcons ? 'px-2' : 'px-3')}>
           {orderedNavItems.map((item) => (
-            <motion.div
-              key={item.to}
-              layout
-              transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-            >
+            <div key={item.to}>
               <NavLink to={item.to} className="block">
                 {({ isActive }) => (
                   <div
@@ -126,7 +172,7 @@ export function Sidebar() {
                       <motion.div
                         layoutId="sidebar-active"
                         className="absolute inset-0 rounded-full bg-brand shadow-[0_0_20px_rgba(197,150,58,0.35)]"
-                        transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                        transition={{ type: 'spring', stiffness: 300, damping: 34, mass: 0.8 }}
                       />
                     )}
                     <span className={cn('relative z-10 flex items-center', isIcons ? '' : 'gap-3')}>
@@ -143,7 +189,7 @@ export function Sidebar() {
                   </div>
                 )}
               </NavLink>
-            </motion.div>
+            </div>
           ))}
         </nav>
 
@@ -166,7 +212,7 @@ export function Sidebar() {
                       <motion.div
                         layoutId="sidebar-active"
                         className="absolute inset-0 rounded-full bg-brand shadow-[0_0_20px_rgba(197,150,58,0.35)]"
-                        transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                        transition={{ type: 'spring', stiffness: 300, damping: 34, mass: 0.8 }}
                       />
                     )}
                     <span className={cn('relative z-10 flex items-center', isIcons ? '' : 'gap-3')}>
@@ -199,7 +245,7 @@ export function Sidebar() {
                       <motion.div
                         layoutId="sidebar-active"
                         className="absolute inset-0 rounded-full bg-brand shadow-[0_0_20px_rgba(197,150,58,0.35)]"
-                        transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                        transition={{ type: 'spring', stiffness: 300, damping: 34, mass: 0.8 }}
                       />
                     )}
                     <span className={cn('relative z-10 flex items-center', isIcons ? '' : 'gap-3')}>
@@ -232,7 +278,7 @@ export function Sidebar() {
                       <motion.div
                         layoutId="sidebar-active"
                         className="absolute inset-0 rounded-full bg-brand shadow-[0_0_20px_rgba(197,150,58,0.35)]"
-                        transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                        transition={{ type: 'spring', stiffness: 300, damping: 34, mass: 0.8 }}
                       />
                     )}
                     <span className={cn('relative z-10 flex items-center', isIcons ? '' : 'gap-3')}>
@@ -273,25 +319,18 @@ export function Sidebar() {
             </button>
           )}
 
-          {!isHidden && (
-            <button
-              onClick={cycleSidebarMode}
-              className={cn(
-                'flex w-full items-center justify-center rounded-full text-text-secondary hover:bg-surface/80 hover:text-text-primary transition-all duration-200',
-                isIcons ? 'p-2' : 'py-2',
-              )}
-              title="Comprimi"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </button>
-          )}
-
           {!isHidden && !isIcons && (
             <p className="px-4 text-xs text-text-secondary">
               NetFlow v{__APP_VERSION__}
             </p>
           )}
         </div>
+
+        {/* Resize handle on right edge */}
+        <div
+          className="absolute right-0 top-0 bottom-0 w-1.5 cursor-col-resize hover:bg-brand/30 active:bg-brand/50 transition-colors z-50"
+          onMouseDown={handleResizeStart}
+        />
       </motion.aside>
     </>
   )
