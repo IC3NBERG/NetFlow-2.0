@@ -1,7 +1,7 @@
 {
   "name": "netflow",
   "private": true,
-  "version": "0.44.20",
+  "version": "0.45.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
