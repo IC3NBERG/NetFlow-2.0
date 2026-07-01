@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useJobs } from '../../../lib/hooks/useJobs'
 import { useInvoices, useUpdateInvoice } from '../../../lib/hooks/useInvoices'
 import { useCreateInvoiceWithJobs } from '../../../lib/hooks/useCreateInvoiceWithJobs'
@@ -16,6 +17,7 @@ import type { InvoiceJob, Job } from '../../../types/database'
 type ToastState = { message: string; type: 'success' | 'error' | 'info' } | null
 
 export function InvoicingPage() {
+  const [searchParams, setSearchParams] = useSearchParams()
   const { data: jobs = [] } = useJobs()
   const { data: invoices = [] } = useInvoices()
   const { data: clients = [] } = useClients()
@@ -31,6 +33,16 @@ export function InvoicingPage() {
       if (!error && data) setInvoiceJobs(data)
     })
   }, [invoices])
+
+  // Pre-select job from query param
+  useEffect(() => {
+    const jobId = searchParams.get('job')
+    if (jobId && jobs.some((j) => j.id === jobId && j.status === 'completed_pending')) {
+      setSelectedIds(new Set([jobId]))
+      searchParams.delete('job')
+      setSearchParams(searchParams, { replace: true })
+    }
+  }, [searchParams, jobs, setSearchParams])
 
   const pendingJobs = jobs.filter((j) => j.status === 'completed_pending')
   const selectedJobs = jobs.filter((j) => selectedIds.has(j.id))

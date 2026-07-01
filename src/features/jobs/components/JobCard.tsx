@@ -1,8 +1,9 @@
 import { motion } from 'framer-motion'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { GlassCard } from '../../../shared/ui/GlassCard'
 import { Button } from '../../../shared/ui/Button'
-import { Edit3, Trash2, ChevronDown, ChevronUp, CreditCard, Banknote, ArrowRightCircle, CheckCircle } from 'lucide-react'
+import { Edit3, Trash2, ChevronDown, ChevronUp, CreditCard, Banknote, ArrowRightCircle, CheckCircle, FileText } from 'lucide-react'
 import { cn, formatDate } from '../../../lib/utils'
 import { formatCurrency } from '../../../lib/calculations'
 import type { Job } from '../../../types/database'
@@ -28,6 +29,7 @@ interface JobCardProps {
 
 export function JobCard({ job, onEdit, onDelete, onStatusChange }: JobCardProps) {
   const [expanded, setExpanded] = useState(false)
+  const navigate = useNavigate()
   const status = statusLabels[job.status] ?? { label: 'Sconosciuto', color: 'bg-pending/20 text-pending' }
   const PaymentIcon = paymentIcons[job.payment_method]
 
@@ -136,6 +138,18 @@ export function JobCard({ job, onEdit, onDelete, onStatusChange }: JobCardProps)
                   <next.icon className="mr-1 h-3.5 md:h-4 w-3.5 md:w-4" />
                   <span className="hidden sm:inline">{next.label}</span>
                   <span className="sm:hidden">{next.label === 'Concludi e passa a da incassare' ? 'Concludi' : 'Incassa'}</span>
+                </Button>
+              )}
+              {job.status === 'completed_pending' && (
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => navigate(`/invoicing?job=${job.id}`)}
+                  className="text-xs"
+                >
+                  <FileText className="mr-1 h-3.5 md:h-4 w-3.5 md:w-4" />
+                  <span className="hidden sm:inline">Fatturalo</span>
+                  <span className="sm:hidden">Fattura</span>
                 </Button>
               )}
             </div>

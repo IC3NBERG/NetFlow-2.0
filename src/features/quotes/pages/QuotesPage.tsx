@@ -81,9 +81,6 @@ export function QuotesPage() {
   const customIrpef = fiscalSetup?.custom_irpef_rate
 
   const grossTotal = formData.amount_card + formData.amount_cash
-  const fiscalDeduction = formData.net_amount > 0 && grossTotal > 0
-    ? grossTotal - formData.net_amount
-    : 0
 
   const syncing = useRef(false)
 
@@ -109,14 +106,13 @@ export function QuotesPage() {
   function handleNetChange(value: number) {
     if (syncing.current) return
     syncing.current = true
-    const net = value
     const gross = value > 0 ? netToGross(value, taxRegime, customIrpef) : 0
     setFormData((prev) => ({
       ...prev,
-      net_amount: net,
-      ...(prev.payment_method !== 'mixed'
-        ? { amount_card: gross, amount_cash: 0, gross_amount: gross }
-        : { gross_amount: gross }),
+      net_amount: value,
+      gross_amount: gross,
+      ...(prev.payment_method === 'card' ? { amount_card: gross, amount_cash: 0 } : {}),
+      ...(prev.payment_method === 'cash' ? { amount_cash: gross, amount_card: 0 } : {}),
     }))
     requestAnimationFrame(() => { syncing.current = false })
   }
@@ -124,14 +120,13 @@ export function QuotesPage() {
   function handleGrossChange(value: number) {
     if (syncing.current) return
     syncing.current = true
-    const gross = value
     const net = value > 0 ? grossToNet(value, taxRegime, customIrpef) : 0
     setFormData((prev) => ({
       ...prev,
       net_amount: net,
-      ...(prev.payment_method !== 'mixed'
-        ? { amount_card: gross, amount_cash: 0, gross_amount: gross }
-        : { gross_amount: gross }),
+      gross_amount: value,
+      ...(prev.payment_method === 'card' ? { amount_card: value, amount_cash: 0 } : {}),
+      ...(prev.payment_method === 'cash' ? { amount_cash: value, amount_card: 0 } : {}),
     }))
     requestAnimationFrame(() => { syncing.current = false })
   }
@@ -141,8 +136,13 @@ export function QuotesPage() {
       const next = { ...prev, payment_method: method }
       if (prev.net_amount > 0 && method !== 'mixed') {
         const gross = netToGross(prev.net_amount, taxRegime, customIrpef)
-        next.amount_card = gross
-        next.amount_cash = 0
+        if (method === 'card') {
+          next.amount_card = gross
+          next.amount_cash = 0
+        } else {
+          next.amount_card = 0
+          next.amount_cash = gross
+        }
         next.gross_amount = gross
       } else if (method === 'mixed') {
         next.gross_amount = prev.amount_card + prev.amount_cash || prev.gross_amount
@@ -151,18 +151,90 @@ export function QuotesPage() {
     })
   }
 
-  function handleCardChange(value: number) {
-    setFormData((prev) => {
-      const net = computeJobNetAmount(value, prev.amount_cash, 'mixed', prev.include_cash_in_invoice, taxRegime, customIrpef)
-      return { ...prev, amount_card: value, gross_amount: value + prev.amount_cash, net_amount: net }
-    })
+  function handleCashSingleChange(value: number) {
+    if (syncing.current) return
+    syncing.current = true
+    setFormData((prev) => ({
+      ...prev,
+      amount_card: 0,
+      amount_cash: value,
+      gross_amount: value,
+      net_amount: value,
+    }))
+    requestAnimationFrame(() => { syncing.current = false })
   }
 
-  function handleCashChange(value: number) {
+  function handleMixedCardNettoChange(value: number) {
+    if (syncing.current) return
+    syncing.current = true
+    const cardLordo = value > 0 ? netToGross(value, taxRegime, customIrpef) : 0
     setFormData((prev) => {
-      const net = computeJobNetAmount(prev.amount_card, value, 'mixed', prev.include_cash_in_invoice, taxRegime, customIrpef)
-      return { ...prev, amount_cash: value, gross_amount: prev.amount_card + value, net_amount: net }
+      const cashNet = prev.include_cash_in_invoice
+        ? (prev.amount_cash > 0 ? grossToNet(prev.amount_cash, taxRegime, customIrpef) : 0)
+        : prev.amount_cash
+      return {
+        ...prev,
+        amount_card: cardLordo,
+        gross_amount: cardLordo + prev.amount_cash,
+        net_amount: value + cashNet,
+      }
     })
+    requestAnimationFrame(() => { syncing.current = false })
+  }
+
+  function handleMixedCardLordoChange(value: number) {
+    if (syncing.current) return
+    syncing.current = true
+    setFormData((prev) => {
+      const cardNet = value > 0 ? grossToNet(value, taxRegime, customIrpef) : 0
+      const cashNet = prev.include_cash_in_invoice
+        ? (prev.amount_cash > 0 ? grossToNet(prev.amount_cash, taxRegime, customIrpef) : 0)
+        : prev.amount_cash
+      return {
+        ...prev,
+        amount_card: value,
+        gross_amount: value + prev.amount_cash,
+        net_amount: cardNet + cashNet,
+      }
+    })
+    requestAnimationFrame(() => { syncing.current = false })
+  }
+
+  function handleMixedCashNettoChange(value: number) {
+    if (syncing.current) return
+    syncing.current = true
+    const cashLordo = value > 0 ? netToGross(value, taxRegime, customIrpef) : 0
+    setFormData((prev) => ({
+      ...prev,
+      amount_cash: cashLordo,
+      gross_amount: prev.amount_card + cashLordo,
+      net_amount: (prev.amount_card > 0 ? grossToNet(prev.amount_card, taxRegime, customIrpef) : 0) + value,
+    }))
+    requestAnimationFrame(() => { syncing.current = false })
+  }
+
+  function handleMixedCashLordoChange(value: number) {
+    if (syncing.current) return
+    syncing.current = true
+    setFormData((prev) => ({
+      ...prev,
+      amount_cash: value,
+      gross_amount: prev.amount_card + value,
+      net_amount: (prev.amount_card > 0 ? grossToNet(prev.amount_card, taxRegime, customIrpef) : 0) + (value > 0 ? grossToNet(value, taxRegime, customIrpef) : 0),
+    }))
+    requestAnimationFrame(() => { syncing.current = false })
+  }
+
+  function handleMixedCashSingleChange(value: number) {
+    if (syncing.current) return
+    syncing.current = true
+    setFormData((prev) => ({
+      ...prev,
+      amount_cash: value,
+      gross_amount: prev.amount_card + value,
+      net_amount: (prev.amount_card > 0 ? grossToNet(prev.amount_card, taxRegime, customIrpef) : 0) + value,
+    }))
+    requestAnimationFrame(() => { syncing.current = false })
   }
 
   function handleIncludeCashChange(checked: boolean) {
@@ -363,32 +435,7 @@ export function QuotesPage() {
             </div>
           </div>
 
-          {formData.payment_method === 'mixed' && (
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">Carta (€)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={formData.amount_card || ''}
-                  onChange={(e) => handleCardChange(parseFloat(e.target.value) || 0)}
-                  placeholder="0.00"
-                  className="w-full rounded-xl border border-border bg-surface/60 px-4 py-2.5 text-sm backdrop-blur-xl focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand font-mono"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Contanti (€)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={formData.amount_cash || ''}
-                  onChange={(e) => handleCashChange(parseFloat(e.target.value) || 0)}
-                  placeholder="0.00"
-                  className="w-full rounded-xl border border-border bg-surface/60 px-4 py-2.5 text-sm backdrop-blur-xl focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand font-mono"
-                />
-              </div>
-            </div>
-          )}
+
 
           {(formData.payment_method === 'cash' || formData.payment_method === 'mixed') && (
             <label className="flex items-center gap-3 cursor-pointer p-3 rounded-xl bg-surface/60">
@@ -415,32 +462,156 @@ export function QuotesPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Netto desiderato (€)</label>
-              <input
-                type="number"
-                step="0.01"
-                value={formData.net_amount || ''}
-                onChange={(e) => handleNetChange(parseFloat(e.target.value) || 0)}
-                placeholder="0.00"
-                className="w-full rounded-xl border border-border bg-surface/60 px-4 py-2.5 text-sm backdrop-blur-xl focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand font-mono"
-              />
+          {formData.payment_method === 'card' && (
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Netto desiderato (€)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={formData.net_amount || ''}
+                  onChange={(e) => handleNetChange(parseFloat(e.target.value) || 0)}
+                  placeholder="0.00"
+                  className="w-full rounded-xl border border-border bg-surface/60 px-4 py-2.5 text-sm backdrop-blur-xl focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand font-mono"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Lordo (€)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={grossTotal || ''}
+                  onChange={(e) => handleGrossChange(parseFloat(e.target.value) || 0)}
+                  placeholder="0.00"
+                  className="w-full rounded-xl border border-border bg-surface/60 px-4 py-2.5 text-sm backdrop-blur-xl focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand font-mono"
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Lordo (€)</label>
-              <input
-                type="number"
-                step="0.01"
-                value={grossTotal || ''}
-                onChange={(e) => handleGrossChange(parseFloat(e.target.value) || 0)}
-                placeholder="0.00"
-                className="w-full rounded-xl border border-border bg-surface/60 px-4 py-2.5 text-sm backdrop-blur-xl focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand font-mono"
-              />
-            </div>
-          </div>
+          )}
 
-          {fiscalDeduction > 0 && (
+          {formData.payment_method === 'cash' && !formData.include_cash_in_invoice && (
+            <div>
+              <label className="block text-sm font-medium mb-1">Contanti (€)</label>
+              <input
+                type="number"
+                step="0.01"
+                value={formData.amount_cash || ''}
+                onChange={(e) => handleCashSingleChange(parseFloat(e.target.value) || 0)}
+                placeholder="0.00"
+                className="w-full rounded-xl border border-border bg-surface/60 px-4 py-2.5 text-sm backdrop-blur-xl focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand font-mono"
+              />
+            </div>
+          )}
+
+          {formData.payment_method === 'cash' && formData.include_cash_in_invoice && (
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Netto desiderato (€)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={formData.net_amount || ''}
+                  onChange={(e) => handleNetChange(parseFloat(e.target.value) || 0)}
+                  placeholder="0.00"
+                  className="w-full rounded-xl border border-border bg-surface/60 px-4 py-2.5 text-sm backdrop-blur-xl focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand font-mono"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Lordo (€)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={grossTotal || ''}
+                  onChange={(e) => handleGrossChange(parseFloat(e.target.value) || 0)}
+                  placeholder="0.00"
+                  className="w-full rounded-xl border border-border bg-surface/60 px-4 py-2.5 text-sm backdrop-blur-xl focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand font-mono"
+                />
+              </div>
+            </div>
+          )}
+
+          {formData.payment_method === 'mixed' && (
+            <div className="space-y-4">
+              <div>
+                <p className="text-xs font-medium text-text-secondary mb-2">Carta di credito</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Netto (€)</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={formData.amount_card > 0 ? grossToNet(formData.amount_card, taxRegime, customIrpef) : ''}
+                      onChange={(e) => handleMixedCardNettoChange(parseFloat(e.target.value) || 0)}
+                      placeholder="0.00"
+                      className="w-full rounded-xl border border-border bg-surface/60 px-4 py-2.5 text-sm backdrop-blur-xl focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Lordo (€)</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={formData.amount_card || ''}
+                      onChange={(e) => handleMixedCardLordoChange(parseFloat(e.target.value) || 0)}
+                      placeholder="0.00"
+                      className="w-full rounded-xl border border-border bg-surface/60 px-4 py-2.5 text-sm backdrop-blur-xl focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand font-mono"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div>
+                <p className="text-xs font-medium text-text-secondary mb-2">
+                  Contanti
+                  {!formData.include_cash_in_invoice && <span className="text-text-secondary/60 ml-1">(non in fattura)</span>}
+                </p>
+                {formData.include_cash_in_invoice ? (
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Netto (€)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.amount_cash > 0 ? grossToNet(formData.amount_cash, taxRegime, customIrpef) : ''}
+                        onChange={(e) => handleMixedCashNettoChange(parseFloat(e.target.value) || 0)}
+                        placeholder="0.00"
+                        className="w-full rounded-xl border border-border bg-surface/60 px-4 py-2.5 text-sm backdrop-blur-xl focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand font-mono"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Lordo (€)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.amount_cash || ''}
+                        onChange={(e) => handleMixedCashLordoChange(parseFloat(e.target.value) || 0)}
+                        placeholder="0.00"
+                        className="w-full rounded-xl border border-border bg-surface/60 px-4 py-2.5 text-sm backdrop-blur-xl focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand font-mono"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Contanti (€)</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={formData.amount_cash || ''}
+                      onChange={(e) => handleMixedCashSingleChange(parseFloat(e.target.value) || 0)}
+                      placeholder="0.00"
+                      className="w-full rounded-xl border border-border bg-surface/60 px-4 py-2.5 text-sm backdrop-blur-xl focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand font-mono"
+                    />
+                  </div>
+                )}
+              </div>
+              {formData.net_amount > 0 && grossTotal > 0 && (
+                <p className="text-xs text-text-secondary">
+                  Totale: Netto {formData.net_amount.toFixed(2)}€ → Lordo {grossTotal.toFixed(2)}€
+                </p>
+              )}
+            </div>
+          )}
+
+          {formData.net_amount > 0 && grossTotal > 0 && formData.payment_method !== 'mixed' && (
             <p className="text-xs text-text-secondary">
               Deduzione fiscale: {(1 - formData.net_amount / grossTotal) * 100 > 0
                 ? `${((1 - formData.net_amount / grossTotal) * 100).toFixed(1)}%`

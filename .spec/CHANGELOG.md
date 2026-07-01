@@ -8,6 +8,37 @@
 
 ---
 
+## [v0.44.10] - 2026-07-01
+### Ristrutturazione form lavori e preventivi — Dati Fiscali dinamici per contanti/misto
+- **[MINOR] JobFormModal:** Il form creazione lavori ora mostra i campi "Dati Fiscali" in base al metodo di pagamento:
+  - **Carta:** Netto + Lordo (invariato)
+  - **Contanti senza "Includi contanti in fattura":** Singolo campo "Contanti (€)" — non tassato, non in fattura
+  - **Contanti con "Includi contanti in fattura":** Netto + Lordo — tassato e fatturabile
+  - **Misto:** Carta di credito (Netto + Lordo) sempre visibile; Contanti con Netto+Lordo (se incluso in fattura) o singolo campo (se non incluso)
+  - Rimossi i campi importo carta/contanti dalla sezione "Tipo di Pagamento" per il metodo misto (spostati in Dati Fiscali)
+- **[MINOR] QuotesPage:** Stessa ristrutturazione applicata al form di creazione preventivi, con correzione del bug per cui i contanti venivano salvati su `amount_card` invece di `amount_cash`
+- **File modificati:** `src/features/jobs/components/JobFormModal.tsx`, `src/features/quotes/pages/QuotesPage.tsx`
+- **Build:** `npx tsc --noEmit` — 0 errori. `npm run build` — OK.
+
+## [v0.44.9] - 2026-07-01
+### Storico cliente — pulsante (i) con storico lavori, preventivi e modifiche
+- **[MINOR] ClientHistoryModal:** Nuovo componente che mostra in un modale lo storico completo di un cliente: lavori, preventivi e registro modifiche (audit_log). Accessibile tramite un pulsante (i) su ogni card cliente.
+- **[PATCH] Pulsante (i) in ClientsPage:** Aggiunto pulsante `Info` in ogni card cliente, visibile all'hover su desktop e sempre su mobile, che apre il modale storico.
+- **File modificati:** `src/features/clients/components/ClientHistoryModal.tsx` (nuovo), `src/features/clients/pages/ClientsPage.tsx`
+- **Build:** `npx tsc --noEmit` — 0 errori.
+
+### Fix refresh_calendar_token — 404 cliccando refresh del calendario esterno
+- **[PATCH] Fix RPC `refresh_calendar_token` search_path:** La RPC aveva `SET search_path = ''` ma riferiva `profiles` senza schema qualificato (`public.`), causando errore runtime 404. Stesso bug già fixato in `get_calendar_events_by_token` (v0.44.4). Aggiunto prefisso `public.` alla tabella `profiles`.
+- **[PATCH] Nuova migration `20260624000006_fix_refresh_calendar_token_search_path.sql`:** `CREATE OR REPLACE FUNCTION` con `UPDATE public.profiles`.
+- **Nuovo file:** `supabase/migrations/20260624000006_fix_refresh_calendar_token_search_path.sql`
+- **Build:** `npx tsc --noEmit` — verificare.
+
+## [v0.44.8] - 2026-07-01
+### Bottone "Fatturalo" nei lavori da incassare
+- **[MINOR] Bottone "Fatturalo" in JobCard:** Aggiunto bottone "Fatturalo" affianco a "Segna come incassato" per i lavori con stato `completed_pending`. Il bottone reindirizza alla pagina Fatturazione con il lavoro pre-selezionato tramite query param `?job=ID`.
+- **[PATCH] Pre-selezione lavoro in InvoicingPage:** La pagina Fatturazione ora legge il query param `job` e pre-seleziona automaticamente il lavoro corrispondente nella lista dei lavori in attesa.
+- **File modificati:** `src/features/jobs/components/JobCard.tsx`, `src/features/invoicing/pages/InvoicingPage.tsx`
+
 ## [v0.44.7] - 2026-07-01
 ### Fix forms centrati — SlideOver sostituito con Modal per lavori e clienti
 - **[PATCH] JobFormModal da SlideOver a Modal:** Il form creazione/modifica lavori ora appare centrato invece che laterale.

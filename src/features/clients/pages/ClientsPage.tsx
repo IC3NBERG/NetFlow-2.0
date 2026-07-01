@@ -9,7 +9,8 @@ import { FormSection } from '../../../shared/ui/FormSection'
 import { EmptyState } from '../../../shared/ui/EmptyState'
 import { useClients, useCreateClient, useUpdateClient, useDeleteClient } from '../../../lib/hooks/useClients'
 import { isOfflineQueued } from '../../../lib/syncBridge'
-import { Plus, Pencil, Trash2, Check, Mail, Phone, Building2, CreditCard } from 'lucide-react'
+import { Plus, Pencil, Trash2, Check, Mail, Phone, Building2, CreditCard, Info } from 'lucide-react'
+import { ClientHistoryModal } from '../components/ClientHistoryModal'
 
 type ToastState = { message: string; type: 'success' | 'error' | 'info' } | null
 
@@ -29,6 +30,7 @@ export function ClientsPage() {
   const [address, setAddress] = useState('')
   const [notes, setNotes] = useState('')
   const [color, setColor] = useState('#C5963A')
+  const [historyClientId, setHistoryClientId] = useState<string | null>(null)
 
   function resetForm() {
     setName('')
@@ -241,6 +243,13 @@ export function ClientsPage() {
                     </div>
                   </div>
                   <div className="flex gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity shrink-0">
+                    <button
+                      onClick={() => setHistoryClientId(client.id)}
+                      className="rounded-full p-1.5 text-text-secondary hover:bg-surface/80 hover:text-brand min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0"
+                      aria-label="Storico cliente"
+                    >
+                      <Info className="h-3.5 md:h-4 w-3.5 md:w-4" />
+                    </button>
                     <button onClick={() => openEdit(client)} className="rounded-full p-1.5 text-text-secondary hover:bg-surface/80 hover:text-brand min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0">
                       <Pencil className="h-3.5 md:h-4 w-3.5 md:w-4" />
                     </button>
@@ -267,6 +276,14 @@ export function ClientsPage() {
       <Modal open={isFormOpen} onClose={resetForm} title={editingId ? 'Modifica cliente' : 'Nuovo cliente'}>
         {formFields}
       </Modal>
+
+      {historyClientId && (
+        <ClientHistoryModal
+          client={clients.find((c) => c.id === historyClientId)!}
+          open={!!historyClientId}
+          onClose={() => setHistoryClientId(null)}
+        />
+      )}
 
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
     </div>
