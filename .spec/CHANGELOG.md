@@ -8,6 +8,23 @@
 
 ---
 
+## [v0.45.0] - 2026-07-01
+
+### ✨ Portale Clienti, Sistema Chat e Miglioramenti Fiscali
+
+- **Portale Clienti Dedicato**: Nuovo link di condivisione specifico per cliente, accessibile tramite token. Include visualizzazione limitata di lavori, fatture e preventivi associati.
+- **Chat Integrata**: Sistema di messaggistica bidirezionale tra proprietario e cliente direttamente dal portale (lato cliente) e dal pannello dell'app (lato professionista).
+- **Notifiche Messaggi**: Nuova categoria di notifica `message` che avvisa il proprietario quando il cliente invia un messaggio tramite il portale.
+- **Blocco Proprietario**: Aggiunto un blocco di sicurezza (Accesso Limitato) per impedire al proprietario di visualizzare la vista cliente del proprio portale per errore; re-indirizzato all'OwnerChatPanel.
+- **Isolamento Anno Fiscale**: Modifiche ai dati fiscali dell'account ora si salvano automaticamente e sono isolate per anno, preservando i dati storici sui lavori pregressi.
+- **SharesManager UI**: Separazione visiva e logica tra "Portali Clienti" e "Condivisioni Classiche".
+- **Database e Sicurezza**: 
+  - Aggiunto `client_id` alle fatture (`invoices`) con auto-propagazione tramite trigger `sync_invoice_client_id` (migration `20260701000002_fix_invoice_client_id.sql`).
+  - Creata tabella `share_messages` e configurate RPC sicure (`send_share_message`, `get_share_messages`) per la gestione della chat.
+  - Implementate policy RLS complete per garantire isolamento e sicurezza lato database.
+
+---
+
 ## [v0.44.20] - 2026-07-01
 
 ### 🔐 EMERGENZA SICUREZZA — Fix critici RLS, password hashing, XSS, CORS, CSP/HSTS
