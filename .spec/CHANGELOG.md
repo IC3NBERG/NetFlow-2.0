@@ -8,6 +8,12 @@
 
 ---
 
+## [v0.44.7] - 2026-07-01
+### Fix forms centrati — SlideOver sostituito con Modal per lavori e clienti
+- **[PATCH] JobFormModal da SlideOver a Modal:** Il form creazione/modifica lavori ora appare centrato invece che laterale.
+- **[PATCH] ClientsPage da SlideOver a Modal:** Il form creazione/modifica clienti ora appare centrato invece che laterale.
+- **File modificati:** `src/features/jobs/components/JobFormModal.tsx`, `src/features/clients/pages/ClientsPage.tsx`
+
 ## [v0.44.6] - 2026-07-01
 ### Nuovo logo brand — Ocra Caldo, rimossi asset viola legacy
 - **[PATCH] Sostituiti tutti gli asset logo:** Rimosso il vecchio logo con gradiente viola (#5B4BD5→#8B7CF7). Nuovo logo: simbolo N-arrow su sfondo ocra `#C5963A` (primary brand color), con variante dark `#0F0F1A` e full logo orizzontale/verticale con scritta "NETFLOW".

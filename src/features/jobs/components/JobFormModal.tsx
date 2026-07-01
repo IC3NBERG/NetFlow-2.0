@@ -2,7 +2,7 @@ import { useEffect, useRef, useCallback } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { SlideOver } from '../../../shared/ui/SlideOver'
+import { Modal } from '../../../shared/ui/Modal'
 import { Input } from '../../../shared/ui/Input'
 import { FormSection } from '../../../shared/ui/FormSection'
 import { Button } from '../../../shared/ui/Button'
@@ -405,8 +405,8 @@ export function JobFormModal({ open, onClose, onSubmit, initialData, isSubmittin
   )
 
   return (
-    <SlideOver open={open} onClose={onClose} title={initialData ? 'Modifica Lavoro' : 'Nuovo Lavoro'}>
+    <Modal open={open} onClose={onClose} title={initialData ? 'Modifica Lavoro' : 'Nuovo Lavoro'}>
       {formContent}
-    </SlideOver>
+    </Modal>
   )
 }
