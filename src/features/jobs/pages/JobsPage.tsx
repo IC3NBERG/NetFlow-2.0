@@ -153,7 +153,7 @@ export function JobsPage() {
         </Button>
       </div>
 
-        <div className="flex flex-col gap-4 items-center">
+        <div className="flex flex-col gap-4">
           <div className="flex gap-1 rounded-full bg-surface p-1 border border-border w-fit overflow-x-auto">
           {tabs.map((tab) => (
             <button
