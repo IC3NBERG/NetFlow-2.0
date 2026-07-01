@@ -16,6 +16,12 @@
 - **File modificati:** `src/shared/layouts/Sidebar.tsx`
 - **Build:** `npx tsc --noEmit` — 0 errori.
 
+### PDF & QR — fix font Inter 404 e QR vuoto su iPhone
+- **[PATCH] PDF font:** Sostituiti URL Google Fonts v12 (404) con font Inter .ttf locali in `public/fonts/` — scaricati da release ufficiale Inter v4.1.
+- **[PATCH] QR code:** Passato da `toDataURL` (canvas) a `toString` (SVG) per compatibilità iOS Safari. Aggiunto stato errore visivo.
+- **File modificati:** `src/shared/ui/InvoiceDocument.tsx`, `src/shared/ui/InvoiceQRCode.tsx`, `public/fonts/Inter-{Regular,SemiBold,Bold}.ttf`
+- **Build:** `npx tsc --noEmit` — 0 errori.
+
 ## [v0.44.11] - 2026-07-01
 
 ### Fix: 400 creazione fattura — due_date vuota
